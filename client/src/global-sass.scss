@@ -1,0 +1,7 @@
+// note: to use this, import into component sass thusly:
+// @import "~global-sass.scss";
+
+@mixin mat-avatar-size($size: 20px) {
+  height: $size;
+  width: $size;
+}

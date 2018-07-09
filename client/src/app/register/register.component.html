@@ -1,0 +1,52 @@
+<div class="register-container" fxLayoutAlign="center center">
+      <!-- fxLayout="row"
+      fxLayout.sm="column"
+      fxLayout.xs="column" -->
+    <form novalidate #registerForm="ngForm" class="register-form" fxLayout="column" (ngSubmit)="onRegisterClick()">
+      <mat-toolbar class="toolbar">
+        <h3 align="center">Register a new user</h3>
+      </mat-toolbar>
+      <mat-form-field>
+        <input matInput maxlength="30" placeholder="Full Name" type="text" [(ngModel)]="auth.user.name" #name="ngModel" name="name" required>
+        <!-- <mat-hint align="end">{{input.value?.length || 0}}/20</mat-hint> -->
+        <mat-hint>
+          <span [hidden]="name.pristine">
+            <span [hidden]="!name.errors?.required">** Full Name is required **</span>
+          </span>
+        </mat-hint>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput maxlength="20" placeholder="Choose a username" type="text" [(ngModel)]="auth.user.username" #username="ngModel" name="username" required>
+        <!-- <mat-hint align="end">{{input.value?.length || 0}}/20</mat-hint> -->
+        <mat-hint>
+          <span [hidden]="username.pristine">
+            <span [hidden]="!username.errors?.required">** Username is required **</span>
+          </span>
+        </mat-hint>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput maxlength="30" placeholder="Choose a password" [type]="hidePass ? 'password' : 'text'"
+           [(ngModel)]="auth.user.password" name="password" #password="ngModel" required>
+        <mat-icon matSuffix (click)="hidePass = !hidePass">{{hidePass ? 'visibility' : 'visibility_off'}}</mat-icon>
+        <mat-hint>
+          <span [hidden]="password.pristine">
+            <span [hidden]="!password.errors?.required">** Password is required **</span>
+          </span>
+        </mat-hint>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput maxlength="40" placeholder="Email" type="email" [(ngModel)]="auth.user.email" #email="ngModel" name="email" required>
+        <!-- <mat-hint align="end">{{input.value?.length || 0}}/20</mat-hint> -->
+        <mat-hint>
+          <span [hidden]="email.pristine">
+            <span [hidden]="!email.errors?.required">** email is required **</span>
+          </span>
+        </mat-hint>
+      </mat-form-field>
+      <div fxLayout="row">
+        <button mat-button mat-dialog-close>Cancel</button>
+        <span class="fill-space"></span>
+        <button mat-raised-button routerLink="/gallery" routerLinkActive="active" type="submit" color="primary" [disabled]="registerForm.form.invalid">Register</button>
+      </div>
+    </form>
+</div>

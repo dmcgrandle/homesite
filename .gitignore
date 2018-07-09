@@ -1,0 +1,51 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output and static content
+/dist
+/public
+/tmp
+/out-tsc
+
+# dependencies
+/client/node_modules
+/server/node_modules
+
+# test .jpgs and .mp4s
+/server/protected/images
+/server/protected/videos
+/server/protected/downloads
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Any packet captures
+*.pcap
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/server/keys
+/.sass-cache
+/connect.lock
+/coverage
+/database
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db

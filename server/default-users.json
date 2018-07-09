@@ -1,0 +1,26 @@
+[
+  {
+    "_id" : 0,
+    "name" : "Admin User",
+    "username" : "admin",
+    "password" : "password",
+    "email" : "admin@example.com",
+    "level" : 4
+  },
+  {
+    "_id" : 1,
+    "name" : "Guest Account",
+    "username" : "guest",
+    "password" : "password",
+    "email" : "guest@example.com",
+    "level" : 1
+  },
+  {
+    "_id" : 2,
+    "name" : "Guest Account",
+    "username" : "guest2",
+    "password" : "password",
+    "email" : "guest2@example.com",
+    "level" : 1
+  }
+]

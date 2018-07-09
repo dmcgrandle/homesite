@@ -1,0 +1,40 @@
+#BackImage {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  // height: 100%;
+  // width: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  filter:opacity(60%);
+  z-index: -1;
+  background-position: right;
+  background-size: cover;
+}
+
+.login-container {
+  min-height: 100vh; //Note: this is needed for vertical centering on the page
+}
+
+.login-form {
+  min-width: 300px;
+  background-color: white;
+  border-radius: 5px;
+  border: 1px;
+  border-color: black;
+  border-style: ridge;
+  padding: 10px;
+}
+
+// h3 {
+//   color: indigo;
+// }
+
+#forgotCredentials {
+  padding-top: 10px;
+  color: indigo;
+}
+
+a {
+  cursor: pointer;
+}

@@ -1,0 +1,25 @@
+.forgot-dialog-form {
+  min-width: 250px;
+  max-width: 500px;
+  background-color: white;
+  border-radius: 5px;
+  border: 1px;
+  border-color: black;
+  border-style: ridge;
+  padding: 10px;
+  padding-bottom: 20px;
+}
+
+h3 {
+  font-size: 4.3vw;
+  @media screen and (min-width: 680px) {
+    font-size: 30px;
+  }
+
+}
+
+
+// .register-container {
+  // min-width: 350px;
+  // max-width: 400px;
+// }

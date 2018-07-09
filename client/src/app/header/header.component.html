@@ -1,0 +1,17 @@
+<div *ngIf="auth.isAuthenticated()">
+  <mat-toolbar class="toolbar" fxFlex>
+      <span>www.McGrandle.com</span>
+      <a mat-button routerLink="/gallery" routerLinkActive="active" fxFlexOffset="1" >Home</a>
+      <a mat-button routerLink="/downloads" routerLinkActive="active">Downloads</a>
+      <button mat-button [matMenuTriggerFor]="galleryMenu">Gallery Menu</button>
+      <mat-menu #galleryMenu="matMenu">
+        <button mat-menu-item routerLink="/" >Gallery Home</button>
+        <hr>
+        <button mat-menu-item routerLink="/videos" >Video Gallery</button>
+        <button mat-menu-item routerLink="/pictures">Picture Gallery</button>
+      </mat-menu>
+      <a mat-button routerLink="/about" routerLinkActive="active">About</a>
+      <span class="fill-space"></span>
+      <a mat-button routerLink="/" routerLinkActive="active" (click)="auth.authLogout()">Logout</a>
+  </mat-toolbar>
+</div>

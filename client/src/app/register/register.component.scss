@@ -1,0 +1,16 @@
+.register-form {
+  min-width: 200px;
+  background-color: white;
+  border-radius: 5px;
+  border: 1px;
+  border-color: black;
+  border-style: ridge;
+  padding: 10px;
+}
+
+h3 {
+  font-size: 4.8vw;
+  @media screen and (min-width: 412px) {
+    font-size: 25px;
+  }
+}

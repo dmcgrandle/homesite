@@ -1,0 +1,20 @@
+// img, h3, p {
+//   cursor: pointer;
+// }
+
+.mat-card {
+  border-radius: 5px;
+  border: 1px;
+  border-color: black;
+  border-style: ridge;
+  padding: 10px 10px 30px 10px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+[mat-card-image] { // had to override material design defaults
+  margin: 0 0 30px 0;
+  width: 100%;
+  align-self:center;
+  border-radius: 5px;
+}

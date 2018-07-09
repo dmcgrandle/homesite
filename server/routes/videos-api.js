@@ -1,0 +1,21 @@
+/* videos.js - router for '/api/videos' path API */
+
+// External Imports:
+const express = require('express');
+const router = express.Router();
+const bodyParser = require('body-parser');
+
+// Project Imports:
+const tokenSvc = require('../services/token-service');
+const vidSvc = require('../services/video-service');
+
+
+// middleware that is specific to this router
+router.use(function timeLog (req, res, next) {
+  console.log(Date(Date.now()) + " : Videos API called - '" + req.originalUrl + "'");
+  next();
+});
+router.use(tokenSvc.middlewareCheck());
+router.use(bodyParser.json());
+
+module.exports = router;

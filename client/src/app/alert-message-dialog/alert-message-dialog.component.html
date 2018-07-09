@@ -1,0 +1,15 @@
+<div class="alert-message-container" fxLayoutAlign="center center">
+  <div fxLayout="column">
+    <mat-toolbar class="toolbar" align="center">
+      <h3 >Note</h3>
+    </mat-toolbar>
+    <div mat-dialog-content>
+      <p>{{data.alertMessage}}</p>
+    </div>
+    <div mat-dialog-actions>
+      <!-- <button mat-raised-button color="secondary" mat-dialog-close>Cancel</button> -->
+      <span class="fill-space"></span>
+      <button mat-raised-button type="submit" (click)="onOkClick()" color="primary" cdkFocusInitial>Ok</button>
+    </div>
+  </div>
+</div>
