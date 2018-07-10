@@ -30,6 +30,11 @@ cfg.userService = {
     }
 }
 
+// config for file-service
+cfg.fileService = {
+
+}
+
 // config for photo-service
 cfg.photoService = {
 

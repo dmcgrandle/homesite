@@ -12,7 +12,7 @@ const cfg = require('../config').dbService;
 // but because of the need for a promise within a promise, I felt this
 // method makes it more clear that this module returns a promise and
 // exactly what it resolves to.
-database = new Promise( function(resolve, reject) {
+let database = new Promise( function(resolve, reject) {
   try {
       MongoClient.connect(cfg.db_url).then(client => {
         console.log(Date(Date.now()) + ' : Connected to ' + cfg.db_url +

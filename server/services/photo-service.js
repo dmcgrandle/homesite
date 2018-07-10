@@ -8,15 +8,48 @@ const util = require('util');
 
 // Project Imports:
 const cfg = require('../config').photoService;
-let db;  // this module-scope variable is set asynchronously from a promise in db-service.
-require('./db-service').then(res => {db = res});
+fileSvc = require('./file-service');
 
-// Constants:
-// TODO: put these in a config file
-const SERVER_URL = 'http://localhost:3000';
-const MIN_FIELD_LENGTH = 5; // min length of username, password and email
-const MAX_FIELD_LENGTH = 30;
+let aIndex = 0;
+let db, dirs, files, albums;
+(async function() {
+// promise chain to run during init, building the albums and photo objects
+// and storing them in the database for retrieval by the client via the api.
+    require('./db-service')
+    .then(res => {
+        db = res; 
+        return fileSvc.dirs('images');
+    })
+    .then(res => {
+        dirs = res;
+        console.log('dirs: ' + util.inspect(dirs, {depth:10}));
+        return fileSvc.photoFiles('images');
+    })
+    .then(res => {
+        files = res;
+        console.log('files: ' + util.inspect(files, {depth:10}));
+        albums = makeAlbums(dirs, files);
+    })
+    .catch(err => errAndExit(err, 1));
+})();
 
-exports.deleteme = async function() {
+makeAlbums = function(dirs, files) {
+    if (dirs.length > 1) {
+        for (dir in dirs) {
+            let album = {};
+            album._id = aIndex++;
+            album.path = dir;
+            album.description = '';
+            album.featuredPhoto = {filename: '', caption: ''};
+            album.containsAlbums = (dirs.length > 1);
+        }
+    }
+    else {
 
+    }
+};
+
+errAndExit = function(err, code) {
+    console.log(err);
+    process.exit(code);
 };
