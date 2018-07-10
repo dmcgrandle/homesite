@@ -3,7 +3,8 @@ let cfg = {};
 
 // config for db-service
 cfg.dbService = {
-
+    db_url: 'mongodb://localhost:27017',
+    db_name: 'homesite'
 };
 
 // config for token-service

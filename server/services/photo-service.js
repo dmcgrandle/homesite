@@ -7,6 +7,7 @@ const fs = require('fs-extra');
 const util = require('util');
 
 // Project Imports:
+const cfg = require('../config').photoService;
 let db;  // this module-scope variable is set asynchronously from a promise in db-service.
 require('./db-service').then(res => {db = res});
 

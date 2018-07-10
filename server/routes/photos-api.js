@@ -1,4 +1,4 @@
-/* photos.js - router for '/api/photos' path API */
+/* photos-api.js - router for '/api/photos' path API */
 
 // External Imports:
 const express = require('express');

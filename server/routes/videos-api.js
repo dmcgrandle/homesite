@@ -1,4 +1,4 @@
-/* videos.js - router for '/api/videos' path API */
+/* videos-api.js - router for '/api/videos' path API */
 
 // External Imports:
 const express = require('express');

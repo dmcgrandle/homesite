@@ -1,4 +1,4 @@
-/* users.js - router for '/api/users' path API */
+/* users-api.js - router for '/api/users' path API */
 
 // External Imports:
 const express = require('express');
