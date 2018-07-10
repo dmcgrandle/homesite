@@ -10,21 +10,25 @@ level 4 - admin - account able to download/upload and manage user accounts
 
 // External Imports:
 const fs = require('fs-extra');
-const assert = require('assert');
+const assert = require('assert'); 
 const nodemailer = require('nodemailer');
 const util = require('util');
 
 // Project Imports:
 const tokenSvc = require('./token-service');
 
+// set up cfg
+let cfg = require('../config').userService;
+console.log('cfg is: ' + util.inspect(cfg, {depth: 5}));
+
 // Set up cfg (for holding variables from config.json) and db (for database access):
-let cfg, db; // module scope needed, these variables are used throughout the module.
+let cofg, db; // module scope needed, these variables are used throughout the module.
 (async function() { // set up module-scope variables asynchronously.
   try { // if errors then crash
-    let config = JSON.parse(await require('./config-service.js')).user;
+/*    let config = JSON.parse(await require('./config-service.js')).user;
     // need to reset smtp_auth to the contents of the secret file pointed to by the config value
     config.mail.smtp_config.auth = JSON.parse(await fs.readFile(config.mail.smtp_config.auth, 'utf8'));
-    cfg = config; // danged JS immutability!  Once set, cfg internals can't be changed, thus "config".
+    cofg = config; // danged JS immutability!  Once set, cfg internals can't be changed, thus "config". */
     db = await require('./db-service');
     if (0 === await db.collection('users').find({_id : 0}).limit(1).count()) {
       console.log(Date(Date.now()) + ' : created new "user" document in db.');
