@@ -17,45 +17,25 @@ const util = require('util');
 // Project Imports:
 const tokenSvc = require('./token-service');
 
-// Constants:
-// TODO: put these in a config file
-const SERVER_URL = 'http://localhost:3000';
-const DEFAULT_USERS = './default-users.json';
-const MIN_FIELD_LENGTH = 5; // min length of username, password and email
-const MAX_FIELD_LENGTH = 30;
-const MAIL_SMTP_AUTH = JSON.parse(fs.readFileSync('./keys/smtp-auth.user', 'utf8'));
-const MAIL_SMTP_CONFIG = {
-  host: 'mail.mcgrandle.com',
-  port: 587,
-  secure: false, // upgrade later with STARTTLS
-  auth: MAIL_SMTP_AUTH
-};
-
-// Database setup and check:
-let db; // module scope needed, this variable used throughout the module.
-require('./db-service') //db-service returns a promise which resolves to db object.
-  .then(res => {     // once we have a valid db connection, check the data
-    db = res; //store db in module-scope variable, then set up next promise in the chain:
-    return db.collection('users').find({_id : 0}).limit(1).count(); // any users in db?
-  })
-  .then(res => {
-    if (res === 0) { // if zero users in db, create defaults, otherwise, we're done.
+// Set up cfg (for holding variables from config.json) and db (for database access):
+let cfg, db; // module scope needed, these variables are used throughout the module.
+(async function() { // set up module-scope variables asynchronously.
+  try { // if errors then crash
+    let config = JSON.parse(await require('./config-service.js')).user;
+    // need to reset smtp_auth to the contents of the secret file pointed to by the config value
+    config.mail.smtp_config.auth = JSON.parse(await fs.readFile(config.mail.smtp_config.auth, 'utf8'));
+    cfg = config; // danged JS immutability!  Once set, cfg internals can't be changed, thus "config".
+    db = await require('./db-service');
+    if (0 === await db.collection('users').find({_id : 0}).limit(1).count()) {
       console.log(Date(Date.now()) + ' : created new "user" document in db.');
-      let len;
-      fs.readFile(DEFAULT_USERS, 'utf8') 
-        .then(result => {
-          const defUsers = JSON.parse(result);
-          len = defUsers.length; //save for use in next promise result function
-          return db.collection('users').insertMany(defUsers);
-        })
-        .then(result => {
-          assert.equal(len, result.insertedCount); // checking creation was successful
-          console.log('testing create result is good ...');
-        })
-        .catch(err => errAndExit(err, 1));
+      const defUsers = JSON.parse(await fs.readFile(cfg.default_users, 'utf8'));
+      const res = await db.collection('users').insertMany(defUsers);
+      assert.equal(defUsers.length, res.insertedCount); // checking creation was successful   
     }
-  })
-  .catch(err => errAndExit(err, 2));
+  }
+  catch(err) {errAndExit(err, 1)};
+})(); // IIFE 
+
 
 exports.getUser = async function(user) {
   const userReturned = await db.collection('users').findOne({username : user.username});
@@ -156,34 +136,36 @@ exports.changePassword = async function(user) {
 };
 
 exports.emailReset = async function(user) {
+  console.log('cfg is: ' + util.inspect(cfg, {depth: 4}));
   let token = await tokenSvc.getEmailChangeToken(user.username);
   let message = {
-    from: 'webserver@mcgrandle.com',
+    from: cfg.mail.smtp_config.auth.user,
     to: user.email,
     subject: 'Username or Password Forgotten',
     text: 'Dear ' + user.name + ',\n\n' + 'This is the reminder email ' + 'you requested.  Your username is "' +
-      user.username + '".  To log in with this username, click the following link:\n\n' +  SERVER_URL +
+      user.username + '".  To log in with this username, click the following link:\n\n' +  cfg.server_url +
       '/login\n\nIf however you have forgotten your password, then please click the following link to reset it.  ' +
-      'Please note this link will expire in 1 hour.\n\n' + SERVER_URL + '/changepass/' + user.username +
-      '/' + token + '\n\n' + 'Best regards,\n' + MAIL_SMTP_AUTH.user
+      'Please note this link will expire in 1 hour.\n\n' + cfg.server_url + '/changepass/' + user.username +
+      '/' + token + '\n\n' + 'Best regards,\n' + cfg.mail.smtp_config.auth.user
   };
-  let transporter = await nodemailer.createTransport(MAIL_SMTP_CONFIG);
+  let transporter = await nodemailer.createTransport(cfg.mail.smtp_config);
   await transporter.sendMail(message);
   await transporter.close();
   return user;
 };
 
 // Internal functions:
+
 isValidData = async function(user) {
 // TODO: implement more complex validations
   for (i in user) {
-    if (user[i].length < MIN_FIELD_LENGTH) {
+    if (user[i].length < cfg.min_field_length) {
       throw new Error('400 ' + i + ' too small: must be minimum '
-        + MIN_FIELD_LENGTH + ' characters');
+        + cfg.min_field_length + ' characters');
     }
-    else if (user[i].length > MAX_FIELD_LENGTH) {
+    else if (user[i].length > cfg.max_field_length) {
       throw new Error('400 ' + i + ' too large: must be maximum '
-        + MAX_FIELD_LENGTH + ' characters');
+        + cfg.max_field_length + ' characters');
     }
   }
   return true;

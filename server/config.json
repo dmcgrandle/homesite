@@ -1,0 +1,33 @@
+{   "db" : {
+
+    },
+    "token" : {
+        "private_key" : "./keys/jwtRS256.key",
+        "public_key" : "./keys/jwtRS256.key.pub",
+        "email_secret" : "./keys/email-secret.key"
+        
+    },
+    "user" : {
+        "server_url" : "http://localhost:3000",
+        "default_users" : "./default-users.json",
+        "min_field_length" : 5,   // TODO: eventually will have separate values for name, pw, etc.
+        "max_field_length" : 30,
+        "mail" : {
+            "smtp_config" : {
+                "host": "mail.mcgrandle.com",
+                "port": 587,
+                "secure": false,
+                "auth": "./keys/smtp-auth.user" // This value will be replaced with contents of file.
+            }
+        } 
+    },
+    "photo" : {
+
+    },
+    "video" : {
+
+    },
+    "download" : {
+        
+    }
+}
