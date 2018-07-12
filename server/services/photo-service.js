@@ -10,46 +10,101 @@ const util = require('util');
 const cfg = require('../config').photoService;
 fileSvc = require('./file-service');
 
-let aIndex = 0;
-let db, dirs, files, albums;
+let db, paths, files = [], albums = [];
 (async function() {
 // promise chain to run during init, building the albums and photo objects
 // and storing them in the database for retrieval by the client via the api.
     require('./db-service')
     .then(res => {
         db = res; 
-        return fileSvc.dirs('images');
+        return fileSvc.paths('images');
     })
     .then(res => {
-        dirs = res;
-        console.log('dirs: ' + util.inspect(dirs, {depth:10}));
+        paths = res;
         return fileSvc.photoFiles('images');
     })
     .then(res => {
         files = res;
-        console.log('files: ' + util.inspect(files, {depth:10}));
-        albums = makeAlbums(dirs, files);
+        albums = buildAlbums(paths, files);
     })
     .catch(err => errAndExit(err, 1));
 })();
 
-makeAlbums = function(dirs, files) {
-    if (dirs.length > 1) {
-        for (dir in dirs) {
-            let album = {};
-            album._id = aIndex++;
-            album.path = dir;
-            album.description = '';
-            album.featuredPhoto = {filename: '', caption: ''};
-            album.containsAlbums = (dirs.length > 1);
+buildAlbums = function(paths, files) {
+    let aIndex = 0; // albumIndex = album._id
+    let splitPaths = [];
+    let prevTargetAlbumPath = '';
+    let prevTargetAlbumIndex = 0;
+    paths.forEach(path => { // Create albums array of album objects
+        // 1. First set up some default info for this album.
+        // Three good things come from splitting the path: it makes stripping the last 
+        // directory off the path easy for comparing this path to the previous one; 
+        // the album.name is the last element in the split array; and finally it
+        // allows us to quickly assemble all parents 
+        splitPaths = path.split('/');
+        let album = {};
+        album._id = aIndex;
+        album.name = splitPaths[splitPaths.length-1];
+        album.path = path;
+        album.description = '';
+        album.featuredPhoto = {};
+        album.photos = [];
+        album.albums = [];
+        albums[aIndex] = album;
+        // 2. Now add this album's index (which equals it's _id) to it's parent's
+        // albums array.
+        targetAlbumPath = path.slice(0,-(splitPaths[splitPaths.length-1].length+1));
+        targetAlbumIndex = ((targetAlbumPath === prevTargetAlbumPath) ? prevTargetAlbumIndex : 
+            albums.findIndex(album => album.path === targetAlbumPath));
+        albums[targetAlbumIndex].albums.push(aIndex); // add to proper albums array
+        prevTargetAlbumPath = targetAlbumPath;
+        prevTargetAlbumIndex = targetAlbumIndex;
+        aIndex++;
+    }); // end create albums array of album objects
+    prevTargetAlbumPath = '';
+    aIndex = targetAlbumIndex = prevTargetAlbumIndex = 0;
+    // 3. Now build the photos array in each album that contains photos.
+    files.forEach(file => {
+        splitPaths = file.split('/');
+        let targetAlbumPath = file.slice(0,-(splitPaths[splitPaths.length-1].length+1));
+        if (targetAlbumPath === prevTargetAlbumPath) {
+            targetAlbumIndex = prevTargetAlbumIndex;
+        } else { // first photo in a new album, so set up featuredPhoto(s)
+            targetAlbumIndex = albums.findIndex(album => album.path === targetAlbumPath);
+            albums[targetAlbumIndex].featuredPhoto = {filename: file, caption: ''};
+            splitPaths.pop(); // first, drop the filename 
+            let numParents = splitPaths.length-1; 
+            for (let i=0;i<numParents;i++) {// walk up the tree finding all parents
+                splitPaths.pop(); // drop current album name to find the parent
+                let parentAlbumPath = splitPaths.join('/');
+                if (parentAlbumPath) {
+                    // findIndex is potentially a time-intesive process which is why I tried to
+                    // minimize as much as possible how often to do it.
+                    parentAlbumIndex = albums.findIndex(album => album.path === parentAlbumPath);
+                    if (isEmpty(albums[parentAlbumIndex].featuredPhoto)) {
+                        albums[parentAlbumIndex].featuredPhoto = {filename: file, caption: ''};
+                    }
+                }
+            }// end for
         }
-    }
-    else {
-
-    }
+        albums[targetAlbumIndex].photos.push({filename: file, caption: ''}); // add photo to photos array
+        prevTargetAlbumPath = targetAlbumPath;
+        prevTargetAlbumIndex = targetAlbumIndex;
+    });
+    // root album featuredPhoto is not set by above code, so set it manually to first photo in root album
+    albums[0].featuredPhoto = albums[0].photos[0];
+//    console.log('albums: ' + util.inspect(albums, {depth: 8, maxArrayLength: 300}));
 };
 
 errAndExit = function(err, code) {
     console.log(err);
     process.exit(code);
 };
+
+isEmpty = function(obj) {
+    for(let key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}

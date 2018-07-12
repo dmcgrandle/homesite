@@ -16,7 +16,6 @@ let fSvc = {};
 
 const filterExcludeIfNotPhoto = through2.obj(function (item, enc, next) {
     if (item.stats.isFile() && isPhotoSuffix(item.path.substr(-4,4).toLowerCase())) { 
-        item.path = item.path.substr(item.path.search(/protected/i)+9);
         this.push(item);
     }
     next();
@@ -24,38 +23,41 @@ const filterExcludeIfNotPhoto = through2.obj(function (item, enc, next) {
 
 const filterExcludeFiles = through2.obj(function (item, enc, next) {
     if (item.stats.isDirectory()) {
-        // Give the path relative to /protected, not the whole path
-        item.path = item.path.substr(item.path.search(/protected/i)+9);
         this.push(item);
     }
     next();
 });
 
-fSvc.dirs = function(dir) {
+fSvc.paths = function(path) {
     return new Promise( function(resolve, reject) {
         try {
             let items = [];
-            klaw('./protected/' + dir)
+            klaw('./protected/' + path)
                 .pipe(filterExcludeFiles)
-                .on('data', item => items.push(item.path))
+                .on('data', item => items.push(stripPath(item, path)))
                 .on('end', () => resolve(items))
         } catch(err) {
             reject(err);
         }
     });
 }
-fSvc.photoFiles = function(dir) {
+fSvc.photoFiles = function(path) {
     return new Promise( function(resolve, reject) {
         try {
-            let items = [];
-            klaw('./protected/' + dir)
+            let items = []; 
+            klaw('./protected/' + path)
                 .pipe(filterExcludeIfNotPhoto)
-                .on('data', item => items.push(item.path))
+                .on('data', item => items.push(stripPath(item, path)))
                 .on('end', () => resolve(items))
         } catch(err) {
             reject(err);
         }
     });
+}
+
+stripPath = function(item, path) {
+    // strip out everything in path up to and including the 'dir' sent.
+    return item.path.substr(item.path.search('protected/'+path)+11+path.length);
 }
 
 isPhotoSuffix = function(str) { //TODO: add more recognized picture formats

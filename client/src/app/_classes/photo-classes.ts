@@ -2,11 +2,12 @@
 
 export class Album {
   _id: number;              // id of this PhotoAlbum - top level id == 0
+  name: string;             // Name of the album (directory name)
   path: string;             // physical directory path of this album
   description: string;      // Description of this album
   featuredPhoto: Photo;     // Photo to be displayed as the album cover
-  containsAlbums: boolean;  // if true, this is an album of albums, not photos
-  contains: Array<Photo> | Array<number>; // Array of photo(s) or album ids
+  photos: Array<Photo>;     // Photos (if any) this album contains
+  albums: Array<number>;    // album ids (if any) this album contains
 };
 
 export class Photo {
