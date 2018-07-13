@@ -1,4 +1,8 @@
-// No photos may be present in an album which contains other albums, if
+// photo-classes.ts - Declaration of Photo and Album classes
+// 
+// Note on the "albums" element of class Album: it can be either
+// an array of numbers or an array of Album(s).  This is because
+// of depth - if an 
 
 export class Album {
   _id: number;              // id of this PhotoAlbum - top level id == 0
@@ -7,7 +11,7 @@ export class Album {
   description: string;      // Description of this album
   featuredPhoto: Photo;     // Photo to be displayed as the album cover
   photos: Array<Photo>;     // Photos (if any) this album contains
-  albums: Array<number>;    // album ids (if any) this album contains
+  albums: Array<number> | Array<Album>;
 };
 
 export class Photo {

@@ -10,8 +10,9 @@ const util = require('util');
 const cfg = require('../config').photoService;
 fileSvc = require('./file-service');
 
-let db, paths, files = [], albums = [];
+let db;
 (async function() {
+    let paths, files = [], albums = [];
 // promise chain to run during init, building the albums and photo objects
 // and storing them in the database for retrieval by the client via the api.
     require('./db-service')
@@ -26,11 +27,47 @@ let db, paths, files = [], albums = [];
     .then(res => {
         files = res;
         albums = buildAlbums(paths, files);
+        return exports.saveAlbumsToDB(albums);
+    })
+    .then(() => {
+        console.log(Date(Date.now()) + ' : created new "albums" document in db.');
     })
     .catch(err => errAndExit(err, 1));
 })();
 
+exports.saveAlbumsToDB = async function (albums) {
+    try { // TODO: update existing instead of wiping every time.
+        if (0 != await db.collection('albums').find({_id : 0}).limit(1).count()) {// already exists
+            await db.collection('albums').drop(); // wipe it out.
+        }
+        await db.collection('albums').insertMany(albums);    
+    } catch (err) { errAndExit(err) };
+}
+
+exports.getAlbum = async function (id) {
+    if ((id < 0) || typeof(id) != 'number') throw new Error('404 Bad ID.');
+    const album = await db.collection('albums').findOne({_id : id});
+    if (!album) throw new Error('404 Unknown Album.');
+    return album;
+}
+
+exports.getAlbums = async function (albumIdsList) {
+    const idsArray = albumIdsList.slice(1,-1).split('+').map(Number);
+    let pArray = []; // set up promises array for all of the albums being requested
+    for (var i=0;i<idsArray.length;i++) {
+        pArray.push(db.collection('albums').findOne({_id : idsArray[i]}));
+    }
+    albums = await Promise.all(pArray);
+    for (var i=0;i<idsArray.length;i++) {
+        if (!albums[i]) // validity check
+            throw new Error('403 Album IDs list: ' + albumIdsList + ' is invalid.');
+    }
+    return albums;
+}
+
+
 buildAlbums = function(paths, files) {
+    let albums = [];
     let aIndex = 0; // albumIndex = album._id
     let splitPaths = [];
     let prevTargetAlbumPath = '';
@@ -91,8 +128,10 @@ buildAlbums = function(paths, files) {
         prevTargetAlbumPath = targetAlbumPath;
         prevTargetAlbumIndex = targetAlbumIndex;
     });
-    // root album featuredPhoto is not set by above code, so set it manually to first photo in root album
+    // root album featuredPhoto is not set by above code, so set it manually: first photo in root album
     albums[0].featuredPhoto = albums[0].photos[0];
+    albums[0].name = 'All Photo Albums';
+    return albums;
 //    console.log('albums: ' + util.inspect(albums, {depth: 8, maxArrayLength: 300}));
 };
 
