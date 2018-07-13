@@ -1,0 +1,12 @@
+{
+    "env": {
+        "name": "#{envName}"
+    },
+    "header": {
+        "title": "Homesite"
+    },
+    "footer": {
+        "title": "www.example.com",
+        "email": "webmaster@example.com"
+    }
+}

@@ -1,10 +1,6 @@
 <div *ngIf="auth.isAuthenticated()">
-  <mat-toolbar class="toolbar" fxLayout="column" fxLayoutGap="5px">
-    <div fxLayout="row" fxLayoutAlign="center">
-      <p>&copy; www.McGrandle.com</p>
-    </div>
-    <div fxLayout="row" fxLayoutAlign="center center">
-      <p>Contact <a href="mailto:darren@mcgrandle.com">darren@mcgrandle.com</a> with any issues.</p>
-    </div>
+  <mat-toolbar class="toolbar" fxLayout="column" fxLayoutGap="0px" fxLayoutAlign="center center">
+      <h2>{{CFG.settings.footer.title}}</h2>
+      <p>Contact <a href="mailto:{{CFG.settings.footer.email}}">{{CFG.settings.footer.email}}</a> with any issues.</p>
   </mat-toolbar>
 </div>

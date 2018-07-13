@@ -1,20 +1,27 @@
-<h2>{{currentAlbumList.name}}:</h2>
-<div class="container"
-  fxLayout="row wrap"
-  fxLayoutGap="4px"
-  fxLayoutAlign.gt-xs="space-evenly stretch">
-  <mat-card *ngFor="let listItem of currentAlbumList.contains" (click)="navToListItem(listItem)"
-    fxFlex.xl="16.2%" fxFlex.lg="24.5%" fxFlex.md="32.5%" fxFlex.sm="49%" fxFlex.xs="98%">
-    <mat-card-header>
-      <mat-card-title>
-        <h3 fxFlexAlign>{{listItem.name}}</h3>
-      </mat-card-title>
-      <mat-card-subtitle>{{listItem.description}}</mat-card-subtitle>
-    </mat-card-header>
-    <div fxFill fxLayout="center center">
-      <img mat-card-image [src]='listItem.featuredPhoto.filename | secure'>
-    </div>
-    <mat-card-footer>
-    </mat-card-footer>
-  </mat-card>
+<div *ngIf="currentAlbums">
+  <h2>{{currentAlbum.name}}:</h2>
+  <div class="container"
+    fxLayout="row wrap"
+    fxLayoutGap="4px"
+    fxLayoutAlign.gt-xs="space-evenly stretch">
+    <mat-card *ngFor="let album of currentAlbums" (click)="navToAlbum(album)"
+      fxFlex.xl="16.2%" fxFlex.lg="24.5%" fxFlex.md="32.5%" fxFlex.sm="49%" fxFlex.xs="98%">
+      <mat-card-header>
+        <mat-card-title>
+          <h3 fxFlexAlign>{{album.name}}</h3>
+        </mat-card-title>
+        <mat-card-subtitle>{{album.description}}</mat-card-subtitle>
+      </mat-card-header>
+      <div fxFill fxLayout="center center">
+        <img mat-card-image [src]='("/protected/images/"+album.featuredPhoto.filename) | secure'>
+      </div>
+      <mat-card-footer>
+      </mat-card-footer>
+    </mat-card>
+  </div>
 </div>
+
+<div *ngIf="!currentAlbums">
+  <p>Waiting on server ...</p>
+</div>
+

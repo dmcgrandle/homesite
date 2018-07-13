@@ -3,6 +3,8 @@ import { Observable, Subject, BehaviorSubject, pipe, of } from 'rxjs';
 import { tap, map, shareReplay } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
+import { Album, Photo } from '../_classes/photo-classes';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +14,6 @@ export class AuthService {
 //  private _authenticated: BehaviorSubject<boolean> = new BehaviorSubject(false);
   user = {};
 
-  // constructor(private http: Http) {
   constructor(private http: HttpClient) {
   // set up default starting values
     localStorage.setItem('userId', "-1"); //no user logged in to start with
@@ -75,6 +76,15 @@ export class AuthService {
 
   public lastLoggedInUserLevel(): string {
     return localStorage.getItem('level');
+  }
+
+  public getAlbum(id: number): Observable<any> {
+    return this.http.get('/api/photos/album/' + id);
+  }
+
+  public getAlbums(albums: Array<number>): Observable<any> {
+    let albumString = '(' + albums.join('+') + ')';
+    return this.http.get('/api/photos/albums/' + albumString);
   }
 
 

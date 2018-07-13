@@ -28,8 +28,8 @@ router.get('/album/:id', function(req, res, next) { //req.body.id has requested 
 });
 
 /*  GET array of albums of with given ids.  Needs level 2+ access
-    Format of :albumsIdsList - array of idnumbers, made URL-friendly with no spaces, and
-    by replacing [] with () and commas with +, so for example the array [0, 2, 7]
+    Format of :albumsIdsList - array of id numbers, made URL-friendly with no spaces, and
+    by replacing [] with () and commas with +, so for example the array [ 0, 2, 7 ]
     becomes (0+2+7) and entire url is "http://example.com/api/photos/albums/(0+2+7)"     */
 router.get('/albums/:albumIdsList', function(req, res, next) { //req.body.id has requested album id
   userSvc.isValidLevel(req.user, 2)
@@ -38,6 +38,7 @@ router.get('/albums/:albumIdsList', function(req, res, next) { //req.body.id has
     .catch(err => processError(err, res));
 });
 
+// Internal functions:
 
 processError = function (err, res) {
   // This function called when an error has occurred during the settling of a

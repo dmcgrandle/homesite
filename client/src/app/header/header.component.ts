@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../_services/auth.service';
-import { LoginComponent } from '../login/login.component';
 import { MatMenuModule } from '@angular/material';
+
+import { AuthService } from '../_services/auth.service';
+import { AppConfig } from '../app.config';
 
 @Component({
   selector: 'app-header',
@@ -10,9 +11,8 @@ import { MatMenuModule } from '@angular/material';
 })
 export class HeaderComponent implements OnInit {
 
-  constructor(private auth: AuthService) { }
+  constructor(private auth: AuthService, public CFG: AppConfig) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
 }

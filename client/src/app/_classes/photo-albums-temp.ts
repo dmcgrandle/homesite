@@ -1,4 +1,4 @@
-import { PhotoAlbumList } from './photo-classes';
+/* import { PhotoAlbumList } from './photo-classes';
 
 export const ROOT_ALBUMLIST: PhotoAlbumList = {
   name: 'All Photo Albums',
@@ -227,3 +227,4 @@ export const ROOT_ALBUMLIST: PhotoAlbumList = {
     },
   ]
 }
+ */ 

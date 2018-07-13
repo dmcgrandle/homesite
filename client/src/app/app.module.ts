@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+//for configuration file read during initialization:
+import { APP_INITIALIZER } from '@angular/core';
+import { AppConfig } from './app.config';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
@@ -82,7 +85,14 @@ const appRoutes: Routes = [
     MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule,
     FlexLayoutModule, MatMenuModule
   ],
-  providers: [{
+  providers: [
+    AppConfig, {
+      provide: APP_INITIALIZER,
+      useFactory: loadConfigDuringInit,
+      deps: [AppConfig],
+      multi: true
+    },
+    {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,
       multi: true
@@ -93,3 +103,7 @@ const appRoutes: Routes = [
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+export function loadConfigDuringInit(appConfig: AppConfig) {
+  return () => appConfig.load();
+}

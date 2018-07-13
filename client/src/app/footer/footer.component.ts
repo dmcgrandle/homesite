@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+
 import { AuthService } from '../_services/auth.service';
+import { AppConfig } from '../app.config';
 
 @Component({
   selector: 'app-footer',
@@ -8,9 +10,9 @@ import { AuthService } from '../_services/auth.service';
 })
 export class FooterComponent implements OnInit {
 
-  constructor(private auth: AuthService) { }
+  constructor(private auth: AuthService,
+              public CFG: AppConfig) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
 }
