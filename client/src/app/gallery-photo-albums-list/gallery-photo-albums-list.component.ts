@@ -26,8 +26,6 @@ export class GalleryPhotoAlbumsListComponent implements OnInit {
     this.currentAlbum = new Album;
     this.auth.getAlbum(0).subscribe(
       (album) => {
-        console.log("Album 0 is :" + JSON.stringify(album, null, 2));
-//          this.router.navigate(['/gallery']);
         this.currentAlbum = album;
         this.auth.getAlbums(this.currentAlbum.albums).subscribe(
           (albums) => this.currentAlbums = albums,
@@ -37,18 +35,16 @@ export class GalleryPhotoAlbumsListComponent implements OnInit {
       (err) => this.errAlert('Problem getting album zero!', err),
       () => {}
     );
-//    this.currentAlbum = ROOT_ALBUMLIST; // first time start with the root list
  }
 
   navToAlbum(album: Album) {
-    console.log('album is ' + JSON.stringify(album));
     if (album.albums) {// means this album contains other albums
       this.currentAlbum = album;
       this.auth.getAlbums(album.albums).subscribe(
         (albums) => this.currentAlbums = albums,
         (err) => this.errAlert('Problem getting albums!', err)
       );
-    } else { // not an album of albums!  Navigate to 
+    } else { // not an album of albums!  Navigate to photos
       this.router.navigate(['/gallery']);
     }
 

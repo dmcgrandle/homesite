@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../_services/auth.service';
 import { Router } from '@angular/router';
+
+import { AuthService } from '../_services/auth.service';
+import { AppConfig } from '../app.config';
 
 @Component({
   selector: 'app-gallery',
@@ -10,7 +12,8 @@ import { Router } from '@angular/router';
 export class GalleryComponent implements OnInit {
 
   constructor(private auth: AuthService,
-              private router: Router) { }
+              private router: Router,
+              public CFG: AppConfig) { }
 
   ngOnInit() {
     if (!this.auth.isAuthenticated()) { // unauthenticated!  Check stored credentials

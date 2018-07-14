@@ -539,6 +539,73 @@ var AlertMessageDialogComponent = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./src/app/app-routing.module.ts":
+/*!***************************************!*\
+  !*** ./src/app/app-routing.module.ts ***!
+  \***************************************/
+/*! exports provided: AppRoutingModule */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AppRoutingModule", function() { return AppRoutingModule; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
+/* harmony import */ var _login_login_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./login/login.component */ "./src/app/login/login.component.ts");
+/* harmony import */ var _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./change-password/change-password.component */ "./src/app/change-password/change-password.component.ts");
+/* harmony import */ var _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./gallery/gallery.component */ "./src/app/gallery/gallery.component.ts");
+/* harmony import */ var _gallery_video_albums_list_gallery_video_albums_list_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./gallery-video-albums-list/gallery-video-albums-list.component */ "./src/app/gallery-video-albums-list/gallery-video-albums-list.component.ts");
+/* harmony import */ var _gallery_photo_albums_list_gallery_photo_albums_list_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./gallery-photo-albums-list/gallery-photo-albums-list.component */ "./src/app/gallery-photo-albums-list/gallery-photo-albums-list.component.ts");
+/* harmony import */ var _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./page-not-found/page-not-found.component */ "./src/app/page-not-found/page-not-found.component.ts");
+/* harmony import */ var _about_about_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./about/about.component */ "./src/app/about/about.component.ts");
+/* harmony import */ var _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./downloads/downloads.component */ "./src/app/downloads/downloads.component.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+
+
+
+
+
+
+
+var appRoutes = [
+    { path: 'gallery', component: _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_4__["GalleryComponent"] },
+    { path: 'videos', component: _gallery_video_albums_list_gallery_video_albums_list_component__WEBPACK_IMPORTED_MODULE_5__["GalleryVideoAlbumListComponent"] },
+    { path: 'photo-albums', component: _gallery_photo_albums_list_gallery_photo_albums_list_component__WEBPACK_IMPORTED_MODULE_6__["GalleryPhotoAlbumsListComponent"] },
+    { path: 'downloads', component: _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_9__["DownloadsComponent"] },
+    { path: 'changepass/:username/:token', component: _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_3__["ChangePasswordComponent"] },
+    { path: 'about', component: _about_about_component__WEBPACK_IMPORTED_MODULE_8__["AboutComponent"] },
+    { path: 'login', component: _login_login_component__WEBPACK_IMPORTED_MODULE_2__["LoginComponent"] },
+    { path: '', redirectTo: 'login', pathMatch: 'full' },
+    { path: '**', component: _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_7__["PageNotFoundComponent"] }
+];
+var AppRoutingModule = /** @class */ (function () {
+    function AppRoutingModule() {
+    }
+    AppRoutingModule = __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["NgModule"])({
+            imports: [
+                _angular_router__WEBPACK_IMPORTED_MODULE_1__["RouterModule"].forRoot(appRoutes)
+            ],
+            exports: [
+                _angular_router__WEBPACK_IMPORTED_MODULE_1__["RouterModule"]
+            ]
+        })
+    ], AppRoutingModule);
+    return AppRoutingModule;
+}());
+
+
+
+/***/ }),
+
 /***/ "./src/app/app.component.html":
 /*!************************************!*\
   !*** ./src/app/app.component.html ***!
@@ -625,7 +692,6 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 var AppConfig = /** @class */ (function () {
     function AppConfig(http) {
         this.http = http;
-        this.settings = {};
     }
     AppConfig.prototype.load = function () {
         var _this = this;
@@ -662,15 +728,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/platform-browser */ "./node_modules/@angular/platform-browser/fesm5/platform-browser.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
-/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
-/* harmony import */ var _app_config__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./app.config */ "./src/app/app.config.ts");
-/* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/platform-browser/animations */ "./node_modules/@angular/platform-browser/fesm5/animations.js");
-/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
-/* harmony import */ var _angular_flex_layout__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/flex-layout */ "./node_modules/@angular/flex-layout/esm5/flex-layout.es5.js");
-/* harmony import */ var hammerjs__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! hammerjs */ "./node_modules/hammerjs/hammer.js");
-/* harmony import */ var hammerjs__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(hammerjs__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
+/* harmony import */ var _app_config__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./app.config */ "./src/app/app.config.ts");
+/* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/platform-browser/animations */ "./node_modules/@angular/platform-browser/fesm5/animations.js");
+/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
+/* harmony import */ var _angular_flex_layout__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/flex-layout */ "./node_modules/@angular/flex-layout/esm5/flex-layout.es5.js");
+/* harmony import */ var hammerjs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! hammerjs */ "./node_modules/hammerjs/hammer.js");
+/* harmony import */ var hammerjs__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(hammerjs__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
+/* harmony import */ var _app_routing_module__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./app-routing.module */ "./src/app/app-routing.module.ts");
 /* harmony import */ var _header_header_component__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./header/header.component */ "./src/app/header/header.component.ts");
 /* harmony import */ var _footer_footer_component__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./footer/footer.component */ "./src/app/footer/footer.component.ts");
 /* harmony import */ var _login_login_component__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./login/login.component */ "./src/app/login/login.component.ts");
@@ -692,7 +758,6 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-
 
 
 
@@ -721,27 +786,14 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
-var appRoutes = [
-    { path: 'gallery', component: _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_18__["GalleryComponent"] },
-    { path: 'videos', component: _gallery_video_albums_list_gallery_video_albums_list_component__WEBPACK_IMPORTED_MODULE_19__["GalleryVideoAlbumListComponent"] },
-    { path: 'photo-albums', component: _gallery_photo_albums_list_gallery_photo_albums_list_component__WEBPACK_IMPORTED_MODULE_20__["GalleryPhotoAlbumsListComponent"] },
-    { path: 'downloads', component: _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_23__["DownloadsComponent"] },
-    { path: 'changepass/:username/:token', component: _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_17__["ChangePasswordComponent"] },
-    { path: 'about', component: _about_about_component__WEBPACK_IMPORTED_MODULE_22__["AboutComponent"] },
-    { path: 'login', component: _login_login_component__WEBPACK_IMPORTED_MODULE_13__["LoginComponent"] },
-    { path: '',
-        redirectTo: 'login',
-        pathMatch: 'full'
-    },
-    { path: '**', component: _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_21__["PageNotFoundComponent"] }
-];
+
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
     AppModule = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["NgModule"])({
             declarations: [
-                _app_component__WEBPACK_IMPORTED_MODULE_10__["AppComponent"],
+                _app_component__WEBPACK_IMPORTED_MODULE_9__["AppComponent"],
                 _header_header_component__WEBPACK_IMPORTED_MODULE_11__["HeaderComponent"],
                 _footer_footer_component__WEBPACK_IMPORTED_MODULE_12__["FooterComponent"],
                 _login_login_component__WEBPACK_IMPORTED_MODULE_13__["LoginComponent"],
@@ -758,28 +810,26 @@ var AppModule = /** @class */ (function () {
                 _helpers_secure_pipe__WEBPACK_IMPORTED_MODULE_25__["SecurePipe"]
             ],
             imports: [
+                _app_routing_module__WEBPACK_IMPORTED_MODULE_10__["AppRoutingModule"],
                 _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
-                _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_6__["BrowserAnimationsModule"],
+                _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_5__["BrowserAnimationsModule"],
                 _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormsModule"],
-                _angular_common_http__WEBPACK_IMPORTED_MODULE_4__["HttpClientModule"],
-                _angular_router__WEBPACK_IMPORTED_MODULE_3__["RouterModule"].forRoot(appRoutes
-                //      { enableTracing: true } // <-- debugging purposes only
-                ),
-                _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatButtonModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatCheckboxModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatDatepickerModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatFormFieldModule"],
-                _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatInputModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatRadioModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatSelectModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatSliderModule"],
-                _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatSlideToggleModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatToolbarModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatListModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatGridListModule"],
-                _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatCardModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatIconModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatProgressSpinnerModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatDialogModule"],
-                _angular_flex_layout__WEBPACK_IMPORTED_MODULE_8__["FlexLayoutModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatMenuModule"]
+                _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClientModule"],
+                _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatButtonModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatCheckboxModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatDatepickerModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatFormFieldModule"],
+                _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatInputModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatRadioModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatSelectModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatSliderModule"],
+                _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatSlideToggleModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatToolbarModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatListModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatGridListModule"],
+                _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatCardModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatIconModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatProgressSpinnerModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatDialogModule"],
+                _angular_flex_layout__WEBPACK_IMPORTED_MODULE_7__["FlexLayoutModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatMenuModule"]
             ],
             providers: [
-                _app_config__WEBPACK_IMPORTED_MODULE_5__["AppConfig"], {
+                _app_config__WEBPACK_IMPORTED_MODULE_4__["AppConfig"], {
                     provide: _angular_core__WEBPACK_IMPORTED_MODULE_1__["APP_INITIALIZER"],
                     useFactory: loadConfigDuringInit,
-                    deps: [_app_config__WEBPACK_IMPORTED_MODULE_5__["AppConfig"]],
+                    deps: [_app_config__WEBPACK_IMPORTED_MODULE_4__["AppConfig"]],
                     multi: true
                 },
                 {
-                    provide: _angular_common_http__WEBPACK_IMPORTED_MODULE_4__["HTTP_INTERCEPTORS"],
+                    provide: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HTTP_INTERCEPTORS"],
                     useClass: _helpers_jwt_interceptor__WEBPACK_IMPORTED_MODULE_24__["JwtInterceptor"],
                     multi: true
                 }
@@ -787,7 +837,7 @@ var AppModule = /** @class */ (function () {
             entryComponents: [
                 _register_register_component__WEBPACK_IMPORTED_MODULE_15__["RegisterComponent"], _forgot_dialog_forgot_dialog_component__WEBPACK_IMPORTED_MODULE_16__["ForgotDialogComponent"], _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_14__["AlertMessageDialogComponent"]
             ],
-            bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_10__["AppComponent"]]
+            bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_9__["AppComponent"]]
         })
     ], AppModule);
     return AppModule;
@@ -1193,16 +1243,12 @@ var GalleryPhotoAlbumsListComponent = /** @class */ (function () {
         var _this = this;
         this.currentAlbum = new _classes_photo_classes__WEBPACK_IMPORTED_MODULE_5__["Album"];
         this.auth.getAlbum(0).subscribe(function (album) {
-            console.log("Album 0 is :" + JSON.stringify(album, null, 2));
-            //          this.router.navigate(['/gallery']);
             _this.currentAlbum = album;
             _this.auth.getAlbums(_this.currentAlbum.albums).subscribe(function (albums) { return _this.currentAlbums = albums; }, function (err) { return _this.errAlert('Problem getting albums!', err); });
         }, function (err) { return _this.errAlert('Problem getting album zero!', err); }, function () { });
-        //    this.currentAlbum = ROOT_ALBUMLIST; // first time start with the root list
     };
     GalleryPhotoAlbumsListComponent.prototype.navToAlbum = function (album) {
         var _this = this;
-        console.log('album is ' + JSON.stringify(album));
         if (album.albums) {
             this.currentAlbum = album;
             this.auth.getAlbums(album.albums).subscribe(function (albums) { return _this.currentAlbums = albums; }, function (err) { return _this.errAlert('Problem getting albums!', err); });
@@ -1309,7 +1355,7 @@ var GalleryVideoAlbumListComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <h2>Select which gallery you'd like to view:</h2>\n  <div class=\"container\"\n     fxLayout=\"row\"\n     fxLayout.xs=\"column\"\n     fxLayoutAlign.gt-xs=\"space-evenly center\"\n     fxLayoutGap=\"10px\">\n    <mat-card fxFlex=\"33\">\n      <mat-card-header fxLayoutAlign=\"center center\">\n        <mat-card-title>\n          <h3 fxFlexAlign>Picture Gallery</h3>\n        </mat-card-title>\n      </mat-card-header>\n      <img mat-card-image [routerLink]=\"['/photo-albums']\" [src]=\"'protected/images/2018-00-03Graduation0364.jpg' | secure\" alt=\"Rachel Grade 8 Grad\">\n    </mat-card>\n    <mat-card fxFlex=\"33\">\n      <mat-card-header fxLayoutAlign=\"center center\">\n        <mat-card-title>\n          <h3>Video Gallery</h3>\n        </mat-card-title>\n      </mat-card-header>\n      <img mat-card-image [routerLink]=\"['/videos']\" [src]=\"'protected/images/2018-05-23PianoRecital0356.jpg' | secure\" alt=\"Rachel Plays Piano\">\n    </mat-card>\n  </div>\n</div>\n"
+module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <h2>Select which gallery you'd like to view:</h2>\n  <div class=\"container\"\n     fxLayout=\"row\"\n     fxLayout.xs=\"column\"\n     fxLayoutAlign.gt-xs=\"space-evenly center\"\n     fxLayoutGap=\"10px\">\n    <mat-card fxFlex=\"33\">\n      <mat-card-header fxLayoutAlign=\"center center\">\n        <mat-card-title>\n          <h3 fxFlexAlign>Picture Gallery</h3>\n        </mat-card-title>\n      </mat-card-header>\n      <img mat-card-image [routerLink]=\"['/photo-albums']\" [src]=\"CFG.settings.gallery.featuredPhoto.filename | secure\">\n    </mat-card>\n    <mat-card fxFlex=\"33\">\n      <mat-card-header fxLayoutAlign=\"center center\">\n        <mat-card-title>\n          <h3>Video Gallery</h3>\n        </mat-card-title>\n      </mat-card-header>\n      <img mat-card-image [routerLink]=\"['/videos']\" [src]=\"CFG.settings.gallery.featuredVideo.filename | secure\">\n    </mat-card>\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -1335,8 +1381,9 @@ module.exports = "img {\n  cursor: pointer; }\n\nh2, h3 {\n  text-align: center;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GalleryComponent", function() { return GalleryComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
-/* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
+/* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
+/* harmony import */ var _app_config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../app.config */ "./src/app/app.config.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1349,10 +1396,12 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
+
 var GalleryComponent = /** @class */ (function () {
-    function GalleryComponent(auth, router) {
+    function GalleryComponent(auth, router, CFG) {
         this.auth = auth;
         this.router = router;
+        this.CFG = CFG;
     }
     GalleryComponent.prototype.ngOnInit = function () {
         if (!this.auth.isAuthenticated()) {
@@ -1375,8 +1424,9 @@ var GalleryComponent = /** @class */ (function () {
             template: __webpack_require__(/*! ./gallery.component.html */ "./src/app/gallery/gallery.component.html"),
             styles: [__webpack_require__(/*! ./gallery.component.scss */ "./src/app/gallery/gallery.component.scss")]
         }),
-        __metadata("design:paramtypes", [_services_auth_service__WEBPACK_IMPORTED_MODULE_1__["AuthService"],
-            _angular_router__WEBPACK_IMPORTED_MODULE_2__["Router"]])
+        __metadata("design:paramtypes", [_services_auth_service__WEBPACK_IMPORTED_MODULE_2__["AuthService"],
+            _angular_router__WEBPACK_IMPORTED_MODULE_1__["Router"],
+            _app_config__WEBPACK_IMPORTED_MODULE_3__["AppConfig"]])
     ], GalleryComponent);
     return GalleryComponent;
 }());

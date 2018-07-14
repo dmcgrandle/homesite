@@ -17,6 +17,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import 'hammerjs';
 
 import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { LoginComponent } from './login/login.component';
@@ -37,20 +38,6 @@ import { UrlHelperService } from './_services/url-helper.service';
 import { JwtInterceptor } from './_helpers/jwt-interceptor';
 import { SecurePipe } from './_helpers/secure.pipe';
 
-const appRoutes: Routes = [
-  { path: 'gallery', component: GalleryComponent },
-  { path: 'videos', component: GalleryVideoAlbumListComponent },
-  { path: 'photo-albums', component: GalleryPhotoAlbumsListComponent },
-  { path: 'downloads', component: DownloadsComponent },
-  { path: 'changepass/:username/:token', component: ChangePasswordComponent },
-  { path: 'about', component: AboutComponent },
-  { path: 'login', component: LoginComponent },
-  { path: '',
-    redirectTo: 'login',
-    pathMatch: 'full'
-  },
-  { path: '**', component: PageNotFoundComponent }
-];
 
 @NgModule({
   declarations: [
@@ -71,14 +58,11 @@ const appRoutes: Routes = [
     SecurePipe
   ],
   imports: [
+    AppRoutingModule,
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
     HttpClientModule,
-    RouterModule.forRoot(
-      appRoutes
-//      { enableTracing: true } // <-- debugging purposes only
-    ),
     MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
     MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule,
     MatSlideToggleModule, MatToolbarModule, MatListModule, MatGridListModule,

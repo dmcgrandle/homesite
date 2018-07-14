@@ -8,5 +8,13 @@
     "footer": {
         "title": "www.example.com",
         "email": "webmaster@example.com"
+    },
+    "gallery": {
+        "featuredPhoto": {
+            "filename": "protected/images/2018-00-03Graduation0364.jpg"
+        },
+        "featuredVideo": {
+            "filename": "protected/images/2018-05-23PianoRecital0356.jpg"
+        }
     }
 }

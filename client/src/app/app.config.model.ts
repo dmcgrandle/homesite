@@ -9,4 +9,12 @@ export interface IAppConfig {
         title: string;
         email: string;
     };
+    gallery: {
+        featuredPhoto: {
+            filename: string;
+        },
+        featuredVideo: {
+            filename: string;
+        }
+    }
 }
