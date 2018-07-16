@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GalleryPhotoAlbumsListComponent } from './gallery-photo-albums-list.component';
+import { GalleryPhotoAlbumsComponent } from './gallery-photo-albums.component';
 
 describe('GalleryPhotoAlbumsListComponent', () => {
-  let component: GalleryPhotoAlbumsListComponent;
-  let fixture: ComponentFixture<GalleryPhotoAlbumsListComponent>;
+  let component: GalleryPhotoAlbumsComponent;
+  let fixture: ComponentFixture<GalleryPhotoAlbumsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GalleryPhotoAlbumsListComponent ]
+      declarations: [ GalleryPhotoAlbumsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GalleryPhotoAlbumsListComponent);
+    fixture = TestBed.createComponent(GalleryPhotoAlbumsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

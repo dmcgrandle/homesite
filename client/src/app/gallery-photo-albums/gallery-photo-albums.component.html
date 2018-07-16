@@ -4,7 +4,7 @@
     fxLayout="row wrap"
     fxLayoutGap="4px"
     fxLayoutAlign.gt-xs="space-evenly stretch">
-    <mat-card *ngFor="let album of currentAlbums" (click)="navToAlbum(album)"
+    <mat-card *ngFor="let album of currentAlbums" (click)="updateDisplayedAlbumOrNavToPhotos(album)"
       fxFlex.xl="16.2%" fxFlex.lg="24.5%" fxFlex.md="32.5%" fxFlex.sm="49%" fxFlex.xs="98%">
       <mat-card-header>
         <mat-card-title>

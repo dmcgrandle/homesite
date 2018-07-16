@@ -26,8 +26,8 @@ import { RegisterComponent } from './register/register.component';
 import { ForgotDialogComponent } from './forgot-dialog/forgot-dialog.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { GalleryComponent } from './gallery/gallery.component';
-import { GalleryVideoAlbumListComponent } from './gallery-video-albums-list/gallery-video-albums-list.component';
-import { GalleryPhotoAlbumsListComponent } from './gallery-photo-albums-list/gallery-photo-albums-list.component';
+import { GalleryVideoAlbumsComponent } from './gallery-video-albums/gallery-video-albums.component';
+import { GalleryPhotoAlbumsComponent } from './gallery-photo-albums/gallery-photo-albums.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AboutComponent } from './about/about.component';
 import { DownloadsComponent } from './downloads/downloads.component';
@@ -50,8 +50,8 @@ import { SecurePipe } from './_helpers/secure.pipe';
     ForgotDialogComponent,
     ChangePasswordComponent,
     GalleryComponent,
-    GalleryVideoAlbumListComponent,
-    GalleryPhotoAlbumsListComponent,
+    GalleryVideoAlbumsComponent,
+    GalleryPhotoAlbumsComponent,
     PageNotFoundComponent,
     AboutComponent,
     DownloadsComponent,

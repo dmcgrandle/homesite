@@ -37,16 +37,6 @@ __webpack_require__.r(__webpack_exports__);
 // photo-classes.ts - Declaration of Photo and Album classes
 var Album = /** @class */ (function () {
     function Album() {
-        /*  this._id = 0;
-          this.name = '';
-          this.path = '';
-          this.description = '';
-          this.featuredPhoto = {
-            filename : '',
-            caption: ''
-          }
-          this.photos = [];
-          this.albums = []; */
     }
     return Album;
 }());
@@ -58,6 +48,7 @@ var Photo = /** @class */ (function () {
     return Photo;
 }());
 
+;
 
 
 /***/ }),
@@ -554,8 +545,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _login_login_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./login/login.component */ "./src/app/login/login.component.ts");
 /* harmony import */ var _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./change-password/change-password.component */ "./src/app/change-password/change-password.component.ts");
 /* harmony import */ var _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./gallery/gallery.component */ "./src/app/gallery/gallery.component.ts");
-/* harmony import */ var _gallery_video_albums_list_gallery_video_albums_list_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./gallery-video-albums-list/gallery-video-albums-list.component */ "./src/app/gallery-video-albums-list/gallery-video-albums-list.component.ts");
-/* harmony import */ var _gallery_photo_albums_list_gallery_photo_albums_list_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./gallery-photo-albums-list/gallery-photo-albums-list.component */ "./src/app/gallery-photo-albums-list/gallery-photo-albums-list.component.ts");
+/* harmony import */ var _gallery_video_albums_gallery_video_albums_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./gallery-video-albums/gallery-video-albums.component */ "./src/app/gallery-video-albums/gallery-video-albums.component.ts");
+/* harmony import */ var _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./gallery-photo-albums/gallery-photo-albums.component */ "./src/app/gallery-photo-albums/gallery-photo-albums.component.ts");
 /* harmony import */ var _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./page-not-found/page-not-found.component */ "./src/app/page-not-found/page-not-found.component.ts");
 /* harmony import */ var _about_about_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./about/about.component */ "./src/app/about/about.component.ts");
 /* harmony import */ var _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./downloads/downloads.component */ "./src/app/downloads/downloads.component.ts");
@@ -577,8 +568,11 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 var appRoutes = [
     { path: 'gallery', component: _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_4__["GalleryComponent"] },
-    { path: 'videos', component: _gallery_video_albums_list_gallery_video_albums_list_component__WEBPACK_IMPORTED_MODULE_5__["GalleryVideoAlbumListComponent"] },
-    { path: 'photo-albums', component: _gallery_photo_albums_list_gallery_photo_albums_list_component__WEBPACK_IMPORTED_MODULE_6__["GalleryPhotoAlbumsListComponent"] },
+    { path: 'videos', component: _gallery_video_albums_gallery_video_albums_component__WEBPACK_IMPORTED_MODULE_5__["GalleryVideoAlbumsComponent"] },
+    { path: 'albums', component: _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_6__["GalleryPhotoAlbumsComponent"] },
+    { path: 'albums', children: [
+            { path: '**', component: _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_6__["GalleryPhotoAlbumsComponent"] }
+        ] },
     { path: 'downloads', component: _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_9__["DownloadsComponent"] },
     { path: 'changepass/:username/:token', component: _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_3__["ChangePasswordComponent"] },
     { path: 'about', component: _about_about_component__WEBPACK_IMPORTED_MODULE_8__["AboutComponent"] },
@@ -745,8 +739,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _forgot_dialog_forgot_dialog_component__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./forgot-dialog/forgot-dialog.component */ "./src/app/forgot-dialog/forgot-dialog.component.ts");
 /* harmony import */ var _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./change-password/change-password.component */ "./src/app/change-password/change-password.component.ts");
 /* harmony import */ var _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./gallery/gallery.component */ "./src/app/gallery/gallery.component.ts");
-/* harmony import */ var _gallery_video_albums_list_gallery_video_albums_list_component__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./gallery-video-albums-list/gallery-video-albums-list.component */ "./src/app/gallery-video-albums-list/gallery-video-albums-list.component.ts");
-/* harmony import */ var _gallery_photo_albums_list_gallery_photo_albums_list_component__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./gallery-photo-albums-list/gallery-photo-albums-list.component */ "./src/app/gallery-photo-albums-list/gallery-photo-albums-list.component.ts");
+/* harmony import */ var _gallery_video_albums_gallery_video_albums_component__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./gallery-video-albums/gallery-video-albums.component */ "./src/app/gallery-video-albums/gallery-video-albums.component.ts");
+/* harmony import */ var _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./gallery-photo-albums/gallery-photo-albums.component */ "./src/app/gallery-photo-albums/gallery-photo-albums.component.ts");
 /* harmony import */ var _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./page-not-found/page-not-found.component */ "./src/app/page-not-found/page-not-found.component.ts");
 /* harmony import */ var _about_about_component__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./about/about.component */ "./src/app/about/about.component.ts");
 /* harmony import */ var _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./downloads/downloads.component */ "./src/app/downloads/downloads.component.ts");
@@ -802,8 +796,8 @@ var AppModule = /** @class */ (function () {
                 _forgot_dialog_forgot_dialog_component__WEBPACK_IMPORTED_MODULE_16__["ForgotDialogComponent"],
                 _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_17__["ChangePasswordComponent"],
                 _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_18__["GalleryComponent"],
-                _gallery_video_albums_list_gallery_video_albums_list_component__WEBPACK_IMPORTED_MODULE_19__["GalleryVideoAlbumListComponent"],
-                _gallery_photo_albums_list_gallery_photo_albums_list_component__WEBPACK_IMPORTED_MODULE_20__["GalleryPhotoAlbumsListComponent"],
+                _gallery_video_albums_gallery_video_albums_component__WEBPACK_IMPORTED_MODULE_19__["GalleryVideoAlbumsComponent"],
+                _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_20__["GalleryPhotoAlbumsComponent"],
                 _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_21__["PageNotFoundComponent"],
                 _about_about_component__WEBPACK_IMPORTED_MODULE_22__["AboutComponent"],
                 _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_23__["DownloadsComponent"],
@@ -1179,21 +1173,21 @@ var ForgotDialogComponent = /** @class */ (function () {
 
 /***/ }),
 
-/***/ "./src/app/gallery-photo-albums-list/gallery-photo-albums-list.component.html":
-/*!************************************************************************************!*\
-  !*** ./src/app/gallery-photo-albums-list/gallery-photo-albums-list.component.html ***!
-  \************************************************************************************/
+/***/ "./src/app/gallery-photo-albums/gallery-photo-albums.component.html":
+/*!**************************************************************************!*\
+  !*** ./src/app/gallery-photo-albums/gallery-photo-albums.component.html ***!
+  \**************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"currentAlbums\">\n  <h2>{{currentAlbum.name}}:</h2>\n  <div class=\"container\"\n    fxLayout=\"row wrap\"\n    fxLayoutGap=\"4px\"\n    fxLayoutAlign.gt-xs=\"space-evenly stretch\">\n    <mat-card *ngFor=\"let album of currentAlbums\" (click)=\"navToAlbum(album)\"\n      fxFlex.xl=\"16.2%\" fxFlex.lg=\"24.5%\" fxFlex.md=\"32.5%\" fxFlex.sm=\"49%\" fxFlex.xs=\"98%\">\n      <mat-card-header>\n        <mat-card-title>\n          <h3 fxFlexAlign>{{album.name}}</h3>\n        </mat-card-title>\n        <mat-card-subtitle>{{album.description}}</mat-card-subtitle>\n      </mat-card-header>\n      <div fxFill fxLayout=\"center center\">\n        <img mat-card-image [src]='(\"/protected/images/\"+album.featuredPhoto.filename) | secure'>\n      </div>\n      <mat-card-footer>\n      </mat-card-footer>\n    </mat-card>\n  </div>\n</div>\n\n<div *ngIf=\"!currentAlbums\">\n  <p>Waiting on server ...</p>\n</div>\n\n"
+module.exports = "<div *ngIf=\"currentAlbums\">\n  <h2>{{currentAlbum.name}}:</h2>\n  <div class=\"container\"\n    fxLayout=\"row wrap\"\n    fxLayoutGap=\"4px\"\n    fxLayoutAlign.gt-xs=\"space-evenly stretch\">\n    <mat-card *ngFor=\"let album of currentAlbums\" (click)=\"updateDisplayedAlbumOrNavToPhotos(album)\"\n      fxFlex.xl=\"16.2%\" fxFlex.lg=\"24.5%\" fxFlex.md=\"32.5%\" fxFlex.sm=\"49%\" fxFlex.xs=\"98%\">\n      <mat-card-header>\n        <mat-card-title>\n          <h3 fxFlexAlign>{{album.name}}</h3>\n        </mat-card-title>\n        <mat-card-subtitle>{{album.description}}</mat-card-subtitle>\n      </mat-card-header>\n      <div fxFill fxLayout=\"center center\">\n        <img mat-card-image [src]='(\"/protected/images/\"+album.featuredPhoto.filename) | secure'>\n      </div>\n      <mat-card-footer>\n      </mat-card-footer>\n    </mat-card>\n  </div>\n</div>\n\n<div *ngIf=\"!currentAlbums\">\n  <p>Waiting on server ...</p>\n</div>\n\n"
 
 /***/ }),
 
-/***/ "./src/app/gallery-photo-albums-list/gallery-photo-albums-list.component.scss":
-/*!************************************************************************************!*\
-  !*** ./src/app/gallery-photo-albums-list/gallery-photo-albums-list.component.scss ***!
-  \************************************************************************************/
+/***/ "./src/app/gallery-photo-albums/gallery-photo-albums.component.scss":
+/*!**************************************************************************!*\
+  !*** ./src/app/gallery-photo-albums/gallery-photo-albums.component.scss ***!
+  \**************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -1201,22 +1195,23 @@ module.exports = ".mat-card {\n  border-radius: 5px;\n  border: 1px;\n  border-c
 
 /***/ }),
 
-/***/ "./src/app/gallery-photo-albums-list/gallery-photo-albums-list.component.ts":
-/*!**********************************************************************************!*\
-  !*** ./src/app/gallery-photo-albums-list/gallery-photo-albums-list.component.ts ***!
-  \**********************************************************************************/
-/*! exports provided: GalleryPhotoAlbumsListComponent */
+/***/ "./src/app/gallery-photo-albums/gallery-photo-albums.component.ts":
+/*!************************************************************************!*\
+  !*** ./src/app/gallery-photo-albums/gallery-photo-albums.component.ts ***!
+  \************************************************************************/
+/*! exports provided: GalleryPhotoAlbumsComponent */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GalleryPhotoAlbumsListComponent", function() { return GalleryPhotoAlbumsListComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GalleryPhotoAlbumsComponent", function() { return GalleryPhotoAlbumsComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
-/* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
-/* harmony import */ var _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../alert-message-dialog/alert-message-dialog.component */ "./src/app/alert-message-dialog/alert-message-dialog.component.ts");
-/* harmony import */ var _classes_photo_classes__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_classes/photo-classes */ "./src/app/_classes/photo-classes.ts");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/fesm5/common.js");
+/* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
+/* harmony import */ var _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../alert-message-dialog/alert-message-dialog.component */ "./src/app/alert-message-dialog/alert-message-dialog.component.ts");
+/* harmony import */ var _classes_photo_classes__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../_classes/photo-classes */ "./src/app/_classes/photo-classes.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1232,35 +1227,48 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
-//import { ROOT_ALBUMLIST } from '../_classes/photo-albums-temp';
-var GalleryPhotoAlbumsListComponent = /** @class */ (function () {
-    function GalleryPhotoAlbumsListComponent(auth, router, dialog) {
+
+var GalleryPhotoAlbumsComponent = /** @class */ (function () {
+    function GalleryPhotoAlbumsComponent(auth, route, router, dialog, location) {
         this.auth = auth;
+        this.route = route;
         this.router = router;
         this.dialog = dialog;
+        this.location = location;
     }
-    GalleryPhotoAlbumsListComponent.prototype.ngOnInit = function () {
+    GalleryPhotoAlbumsComponent.prototype.ngOnInit = function () {
         var _this = this;
-        this.currentAlbum = new _classes_photo_classes__WEBPACK_IMPORTED_MODULE_5__["Album"];
+        console.log('Number of segments is: ' + this.route.snapshot.url.length);
+        for (var i = 0; i < this.route.snapshot.url.length; i++) {
+            console.log('Segment ' + i + ' is: ' + this.route.snapshot.url[i]);
+        }
+        console.log(this.route.snapshot.url);
+        this.currentAlbum = new _classes_photo_classes__WEBPACK_IMPORTED_MODULE_6__["Album"];
         this.auth.getAlbum(0).subscribe(function (album) {
             _this.currentAlbum = album;
             _this.auth.getAlbums(_this.currentAlbum.albums).subscribe(function (albums) { return _this.currentAlbums = albums; }, function (err) { return _this.errAlert('Problem getting albums!', err); });
-        }, function (err) { return _this.errAlert('Problem getting album zero!', err); }, function () { });
+        }, function (err) { return _this.errAlert('Problem getting first album!', err); }, function () { });
     };
-    GalleryPhotoAlbumsListComponent.prototype.navToAlbum = function (album) {
+    GalleryPhotoAlbumsComponent.prototype.updateDisplayedAlbumOrNavToPhotos = function (album) {
         var _this = this;
         if (album.albums) {
-            this.currentAlbum = album;
-            this.auth.getAlbums(album.albums).subscribe(function (albums) { return _this.currentAlbums = albums; }, function (err) { return _this.errAlert('Problem getting albums!', err); });
+            this.currentAlbum = album; // go down one level.
+            this.auth.getAlbums(album.albums).subscribe(// get the albums array for this new album
+            function (albums) {
+                _this.currentAlbums = albums; // set albums to display
+                // Construct an url relative to the existing URL - just add the new album.name to the end:
+                var url = _this.router.createUrlTree([album.name], { relativeTo: _this.route }).toString();
+                _this.location.go(url); // Update the URL in the browser window.
+            }, function (err) { return _this.errAlert('Problem getting albums!', err); });
         }
         else {
             this.router.navigate(['/gallery']);
         }
     };
     ;
-    GalleryPhotoAlbumsListComponent.prototype.errAlert = function (msg, err) {
+    GalleryPhotoAlbumsComponent.prototype.errAlert = function (msg, err) {
         var alertMessage = msg + err.error;
-        var dialogRef = this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_4__["AlertMessageDialogComponent"], {
+        var dialogRef = this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_5__["AlertMessageDialogComponent"], {
             width: '400px',
             data: { alertMessage: alertMessage }
         });
@@ -1268,38 +1276,40 @@ var GalleryPhotoAlbumsListComponent = /** @class */ (function () {
         console.log(err);
         this.router.navigate(['/gallery']);
     };
-    GalleryPhotoAlbumsListComponent = __decorate([
+    GalleryPhotoAlbumsComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
-            selector: 'app-gallery-photo-albums-list',
-            template: __webpack_require__(/*! ./gallery-photo-albums-list.component.html */ "./src/app/gallery-photo-albums-list/gallery-photo-albums-list.component.html"),
-            styles: [__webpack_require__(/*! ./gallery-photo-albums-list.component.scss */ "./src/app/gallery-photo-albums-list/gallery-photo-albums-list.component.scss")]
+            selector: 'app-gallery-photo-albums',
+            template: __webpack_require__(/*! ./gallery-photo-albums.component.html */ "./src/app/gallery-photo-albums/gallery-photo-albums.component.html"),
+            styles: [__webpack_require__(/*! ./gallery-photo-albums.component.scss */ "./src/app/gallery-photo-albums/gallery-photo-albums.component.scss")]
         }),
-        __metadata("design:paramtypes", [_services_auth_service__WEBPACK_IMPORTED_MODULE_3__["AuthService"],
+        __metadata("design:paramtypes", [_services_auth_service__WEBPACK_IMPORTED_MODULE_4__["AuthService"],
+            _angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"],
             _angular_router__WEBPACK_IMPORTED_MODULE_2__["Router"],
-            _angular_material__WEBPACK_IMPORTED_MODULE_1__["MatDialog"]])
-    ], GalleryPhotoAlbumsListComponent);
-    return GalleryPhotoAlbumsListComponent;
+            _angular_material__WEBPACK_IMPORTED_MODULE_1__["MatDialog"],
+            _angular_common__WEBPACK_IMPORTED_MODULE_3__["Location"]])
+    ], GalleryPhotoAlbumsComponent);
+    return GalleryPhotoAlbumsComponent;
 }());
 
 
 
 /***/ }),
 
-/***/ "./src/app/gallery-video-albums-list/gallery-video-albums-list.component.html":
-/*!************************************************************************************!*\
-  !*** ./src/app/gallery-video-albums-list/gallery-video-albums-list.component.html ***!
-  \************************************************************************************/
+/***/ "./src/app/gallery-video-albums/gallery-video-albums.component.html":
+/*!**************************************************************************!*\
+  !*** ./src/app/gallery-video-albums/gallery-video-albums.component.html ***!
+  \**************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<p>\n  gallery-video-albums-list not yet implemented!\n</p>\n"
+module.exports = "<p>\n  gallery-video-albums not yet implemented!\n</p>\n"
 
 /***/ }),
 
-/***/ "./src/app/gallery-video-albums-list/gallery-video-albums-list.component.scss":
-/*!************************************************************************************!*\
-  !*** ./src/app/gallery-video-albums-list/gallery-video-albums-list.component.scss ***!
-  \************************************************************************************/
+/***/ "./src/app/gallery-video-albums/gallery-video-albums.component.scss":
+/*!**************************************************************************!*\
+  !*** ./src/app/gallery-video-albums/gallery-video-albums.component.scss ***!
+  \**************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -1307,16 +1317,16 @@ module.exports = ""
 
 /***/ }),
 
-/***/ "./src/app/gallery-video-albums-list/gallery-video-albums-list.component.ts":
-/*!**********************************************************************************!*\
-  !*** ./src/app/gallery-video-albums-list/gallery-video-albums-list.component.ts ***!
-  \**********************************************************************************/
-/*! exports provided: GalleryVideoAlbumListComponent */
+/***/ "./src/app/gallery-video-albums/gallery-video-albums.component.ts":
+/*!************************************************************************!*\
+  !*** ./src/app/gallery-video-albums/gallery-video-albums.component.ts ***!
+  \************************************************************************/
+/*! exports provided: GalleryVideoAlbumsComponent */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GalleryVideoAlbumListComponent", function() { return GalleryVideoAlbumListComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GalleryVideoAlbumsComponent", function() { return GalleryVideoAlbumsComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -1328,20 +1338,20 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
-var GalleryVideoAlbumListComponent = /** @class */ (function () {
-    function GalleryVideoAlbumListComponent() {
+var GalleryVideoAlbumsComponent = /** @class */ (function () {
+    function GalleryVideoAlbumsComponent() {
     }
-    GalleryVideoAlbumListComponent.prototype.ngOnInit = function () {
+    GalleryVideoAlbumsComponent.prototype.ngOnInit = function () {
     };
-    GalleryVideoAlbumListComponent = __decorate([
+    GalleryVideoAlbumsComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
-            selector: 'app-gallery-video-albums-list',
-            template: __webpack_require__(/*! ./gallery-video-albums-list.component.html */ "./src/app/gallery-video-albums-list/gallery-video-albums-list.component.html"),
-            styles: [__webpack_require__(/*! ./gallery-video-albums-list.component.scss */ "./src/app/gallery-video-albums-list/gallery-video-albums-list.component.scss")]
+            selector: 'app-gallery-video-albums',
+            template: __webpack_require__(/*! ./gallery-video-albums.component.html */ "./src/app/gallery-video-albums/gallery-video-albums.component.html"),
+            styles: [__webpack_require__(/*! ./gallery-video-albums.component.scss */ "./src/app/gallery-video-albums/gallery-video-albums.component.scss")]
         }),
         __metadata("design:paramtypes", [])
-    ], GalleryVideoAlbumListComponent);
-    return GalleryVideoAlbumListComponent;
+    ], GalleryVideoAlbumsComponent);
+    return GalleryVideoAlbumsComponent;
 }());
 
 
@@ -1355,7 +1365,7 @@ var GalleryVideoAlbumListComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <h2>Select which gallery you'd like to view:</h2>\n  <div class=\"container\"\n     fxLayout=\"row\"\n     fxLayout.xs=\"column\"\n     fxLayoutAlign.gt-xs=\"space-evenly center\"\n     fxLayoutGap=\"10px\">\n    <mat-card fxFlex=\"33\">\n      <mat-card-header fxLayoutAlign=\"center center\">\n        <mat-card-title>\n          <h3 fxFlexAlign>Picture Gallery</h3>\n        </mat-card-title>\n      </mat-card-header>\n      <img mat-card-image [routerLink]=\"['/photo-albums']\" [src]=\"CFG.settings.gallery.featuredPhoto.filename | secure\">\n    </mat-card>\n    <mat-card fxFlex=\"33\">\n      <mat-card-header fxLayoutAlign=\"center center\">\n        <mat-card-title>\n          <h3>Video Gallery</h3>\n        </mat-card-title>\n      </mat-card-header>\n      <img mat-card-image [routerLink]=\"['/videos']\" [src]=\"CFG.settings.gallery.featuredVideo.filename | secure\">\n    </mat-card>\n  </div>\n</div>\n"
+module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <h2>Select which gallery you'd like to view:</h2>\n  <div class=\"container\"\n     fxLayout=\"row\"\n     fxLayout.xs=\"column\"\n     fxLayoutAlign.gt-xs=\"space-evenly center\"\n     fxLayoutGap=\"10px\">\n    <mat-card fxFlex=\"33\">\n      <mat-card-header fxLayoutAlign=\"center center\">\n        <mat-card-title>\n          <h3 fxFlexAlign>Picture Gallery</h3>\n        </mat-card-title>\n      </mat-card-header>\n      <img mat-card-image [routerLink]=\"['/albums']\" [src]=\"CFG.settings.gallery.featuredPhoto.filename | secure\">\n    </mat-card>\n    <mat-card fxFlex=\"33\">\n      <mat-card-header fxLayoutAlign=\"center center\">\n        <mat-card-title>\n          <h3>Video Gallery</h3>\n        </mat-card-title>\n      </mat-card-header>\n      <img mat-card-image [routerLink]=\"['/videos']\" [src]=\"CFG.settings.gallery.featuredVideo.filename | secure\">\n    </mat-card>\n  </div>\n</div>\n"
 
 /***/ }),
 
