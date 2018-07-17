@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { OverlayModule, OverlayContainer, FullscreenOverlayContainer } from '@angular/cdk/overlay';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -28,10 +29,12 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
 import { GalleryComponent } from './gallery/gallery.component';
 import { GalleryVideoAlbumsComponent } from './gallery-video-albums/gallery-video-albums.component';
 import { GalleryPhotoAlbumsComponent } from './gallery-photo-albums/gallery-photo-albums.component';
+import { GalleryPhotoPhotosComponent } from './gallery-photo-photos/gallery-photo-photos.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AboutComponent } from './about/about.component';
 import { DownloadsComponent } from './downloads/downloads.component';
 
+import { MediaService } from './_services/media.service';
 import { AuthService } from './_services/auth.service';
 import { UrlHelperService } from './_services/url-helper.service';
 
@@ -52,6 +55,7 @@ import { SecurePipe } from './_helpers/secure.pipe';
     GalleryComponent,
     GalleryVideoAlbumsComponent,
     GalleryPhotoAlbumsComponent,
+    GalleryPhotoPhotosComponent,
     PageNotFoundComponent,
     AboutComponent,
     DownloadsComponent,
@@ -75,6 +79,10 @@ import { SecurePipe } from './_helpers/secure.pipe';
       useFactory: loadConfigDuringInit,
       deps: [AppConfig],
       multi: true
+    },
+    {
+      provide: OverlayContainer, 
+      useClass: FullscreenOverlayContainer
     },
     {
       provide: HTTP_INTERCEPTORS,

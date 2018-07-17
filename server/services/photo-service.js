@@ -44,10 +44,17 @@ exports.saveAlbumsToDB = async function (albums) {
     } catch (err) { errAndExit(err) };
 }
 
-exports.getAlbum = async function (id) {
+exports.getAlbumById = async function (id) {
     if ((id < 0) || typeof(id) != 'number') throw new Error('404 Bad ID.');
     const album = await db.collection('albums').findOne({_id : id});
     if (!album) throw new Error('404 Unknown Album.');
+    return album;
+}
+
+exports.getAlbumByPath = async function (pathEncoded) {
+    const path = pathEncoded.slice(1,-1).replace(/\+/g, '/');
+    const album = await db.collection('albums').findOne({path : path});
+    if (!album) throw new Error('404 Unknown Album: ' + path);
     return album;
 }
 

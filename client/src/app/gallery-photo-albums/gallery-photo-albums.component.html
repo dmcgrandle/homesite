@@ -1,10 +1,10 @@
-<div *ngIf="currentAlbums">
-  <h2>{{currentAlbum.name}}:</h2>
+<div *ngIf="displayAlbums">
+  <h2>{{media.curAlbum.name}}:</h2>
   <div class="container"
     fxLayout="row wrap"
     fxLayoutGap="4px"
     fxLayoutAlign.gt-xs="space-evenly stretch">
-    <mat-card *ngFor="let album of currentAlbums" (click)="updateDisplayedAlbumOrNavToPhotos(album)"
+    <mat-card *ngFor="let album of displayAlbums" (click)="updateDisplayAlbumOrNavToPhotos(album)"
       fxFlex.xl="16.2%" fxFlex.lg="24.5%" fxFlex.md="32.5%" fxFlex.sm="49%" fxFlex.xs="98%">
       <mat-card-header>
         <mat-card-title>
@@ -12,7 +12,7 @@
         </mat-card-title>
         <mat-card-subtitle>{{album.description}}</mat-card-subtitle>
       </mat-card-header>
-      <div fxFill fxLayout="center center">
+      <div *ngIf='album.featuredPhoto.filename' fxFill fxLayout="center center">
         <img mat-card-image [src]='("/protected/images/"+album.featuredPhoto.filename) | secure'>
       </div>
       <mat-card-footer>
@@ -21,7 +21,7 @@
   </div>
 </div>
 
-<div *ngIf="!currentAlbums">
+<div *ngIf="!displayAlbums">
   <p>Waiting on server ...</p>
 </div>
 

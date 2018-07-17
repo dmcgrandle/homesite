@@ -168,6 +168,7 @@ isValidData = async function(user) {
 };
 
 errAndExit = function(err, code) {
+//  throw new Error('001 Error connecting to database');
   console.log(err);
   process.exit(code);
 };

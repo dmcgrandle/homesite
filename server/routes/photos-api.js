@@ -20,12 +20,26 @@ router.use(tokenSvc.middlewareCheck());
 router.use(bodyParser.json());
 
 /* GET album with given id.  Needs level 2+ access */
-router.get('/album/:id', function(req, res, next) { //req.body.id has requested album id
+router.get('/album-by-id/:id', function(req, res, next) { 
   userSvc.isValidLevel(req.user, 2) // check username in jwt token for level
-    .then(() => photoSvc.getAlbum(Number(req.params.id)))
+    .then(() => photoSvc.getAlbumById(Number(req.params.id)))
     .then(album => res.status(200).json(album))
     .catch(err => processError(err, res));
 });
+
+/* GET album with given id.  Needs level 2+ access     
+    Format of :path - array of id strings, made URL-friendly with no spaces, and
+    by replacing / with +, so for example the path '/test/one/two' becomes
+    (test+one+two) and entire url is "http://example.com/api/photos/album/(test+one+two)" */
+router.get('/album-by-path/:path', function(req, res, next) {
+  userSvc.isValidLevel(req.user, 2)
+    .then(() => photoSvc.getAlbumByPath(req.params.path))
+    .then(album => res.status(200).json(album))
+    .catch(err => processError(err, res));
+});
+
+
+router.get
 
 /*  GET array of albums of with given ids.  Needs level 2+ access
     Format of :albumsIdsList - array of id numbers, made URL-friendly with no spaces, and

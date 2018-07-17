@@ -9,6 +9,7 @@ import { GalleryPhotoAlbumsComponent } from './gallery-photo-albums/gallery-phot
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AboutComponent } from './about/about.component';
 import { DownloadsComponent } from './downloads/downloads.component';
+import { GalleryPhotoPhotosComponent } from './gallery-photo-photos/gallery-photo-photos.component';
 
 const appRoutes: Routes = [
     { path: 'gallery', component: GalleryComponent },
@@ -16,6 +17,9 @@ const appRoutes: Routes = [
     { path: 'albums', component: GalleryPhotoAlbumsComponent }, 
     { path: 'albums', children: [
         { path: '**', component: GalleryPhotoAlbumsComponent}
+    ]},
+    { path: 'photos', children: [
+        { path: '**', component: GalleryPhotoPhotosComponent}
     ]},
     { path: 'downloads', component: DownloadsComponent },
     { path: 'changepass/:username/:token', component: ChangePasswordComponent },

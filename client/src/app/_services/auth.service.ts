@@ -78,16 +78,6 @@ export class AuthService {
     return localStorage.getItem('level');
   }
 
-  public getAlbum(id: number): Observable<any> {
-    return this.http.get('/api/photos/album/' + id);
-  }
-
-  public getAlbums(albums: Array<number>): Observable<any> {
-    let albumString = '(' + albums.join('+') + ')';
-    return this.http.get('/api/photos/albums/' + albumString);
-  }
-
-
   public authLogout() {
     localStorage.removeItem('username');
     localStorage.removeItem('jwtToken');
