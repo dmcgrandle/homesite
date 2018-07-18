@@ -21,7 +21,7 @@ export class AuthService {
 
   public isAuthenticated(): boolean {
 //    return this._authenticated.value;
-    return this._authenticated;
+    return !this.isLoginExpired();
   }
 
   public setAuthenticated (value: boolean) {

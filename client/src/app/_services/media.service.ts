@@ -12,7 +12,6 @@ import { UrlSegment } from '../../../node_modules/@angular/router';
 export class MediaService {
 
   public curAlbum: Album;
-  public prevPath: string = '';
 
   constructor(private http: HttpClient) {
   // set up default starting values

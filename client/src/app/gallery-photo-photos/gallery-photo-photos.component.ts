@@ -29,7 +29,9 @@ export class GalleryPhotoPhotosComponent implements OnInit {
   onFSChange() {// when minimizing back from full screen, nav back to albums
     if (!(document.fullscreenElement || document.webkitFullscreenElement 
         || document['mozFullScreenElement'] || document['msFullScreenElement'])){
-      this.router.navigate(['/albums/' + this.media.prevPath]); 
+      let parent = this.media.curAlbum.path.split('/').slice(0,-1).join('/');
+      let url = 'albums' + this.router.createUrlTree([parent]).toString();
+      this.router.navigate([url]); 
     } // This makes this component effectively live ONLY in full screen mode.
   }
   

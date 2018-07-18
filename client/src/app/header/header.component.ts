@@ -13,6 +13,8 @@ export class HeaderComponent implements OnInit {
 
   constructor(private auth: AuthService, public CFG: AppConfig) { }
 
-  ngOnInit() { }
+  ngOnInit() { 
+    console.log('init for HeaderComponent called.');
+  }
 
 }

@@ -13,6 +13,9 @@ export class FooterComponent implements OnInit {
   constructor(private auth: AuthService,
               public CFG: AppConfig) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    console.log('init for FooterComponent called.');
+    console.log('Value of isAuthenticated is ' + this.auth.isAuthenticated());
+   }
 
 }

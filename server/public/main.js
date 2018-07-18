@@ -258,7 +258,7 @@ var AuthService = /** @class */ (function () {
     }
     AuthService.prototype.isAuthenticated = function () {
         //    return this._authenticated.value;
-        return this._authenticated;
+        return !this.isLoginExpired();
     };
     AuthService.prototype.setAuthenticated = function (value) {
         //    this._authenticated.next(value);
@@ -353,7 +353,6 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 var MediaService = /** @class */ (function () {
     function MediaService(http) {
         this.http = http;
-        this.prevPath = '';
         // set up default starting values
     }
     MediaService.prototype.getAlbumById = function (id) {
@@ -1115,7 +1114,10 @@ var FooterComponent = /** @class */ (function () {
         this.auth = auth;
         this.CFG = CFG;
     }
-    FooterComponent.prototype.ngOnInit = function () { };
+    FooterComponent.prototype.ngOnInit = function () {
+        console.log('init for FooterComponent called.');
+        console.log('Value of isAuthenticated is ' + this.auth.isAuthenticated());
+    };
     FooterComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: 'app-footer',
@@ -1308,61 +1310,20 @@ this.newAlbumDisp();
 } */
     GalleryPhotoAlbumsComponent.prototype.ngOnInit = function () {
         var _this = this;
-        //  const id: Observable<string> = this.route.params.pipe(map(p => p.id));
-        //  const url: Observable<string> = this.route.url.pipe(map(segments => segments.join('')));
-        // route.data includes both `data` and `resolve`
         this.route.url.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["map"])(function (segments) { return segments.join('/'); })).subscribe(function (path) {
             console.log('URL changed!  New url is:');
             console.log(path);
             _this.newAlbumFetch(path);
         });
-        /*  const user = route.data.map(d => d.user);
-          this.route.params
-            .map(params => params['topCategory'])
-            .subscribe(topCategory => {
-                if (typeof topCategory !== 'undefined' &&
-                    topCategory !== null
-                ) {
-                    self.UiState.startArrowWasDismised = true;
-                    self.UiState.selectedTopCategory = topCategory;
-                }
-            }); */
-        /*
-          console.log('ngOnInit called ...');
-          console.log('Number of segments is: ' + this.route.snapshot.url.length);
-          for (let i=0;i<this.route.snapshot.url.length;i++) {
-            console.log('Path ' + i + ' is: ' + this.route.snapshot.url[i].path);
-          }
-        this.newAlbumFetch(); */
-        /*  if (!this.route.snapshot.parent.url.length) {
-            this.media.getAlbumById(0).subscribe(
-              (album) => this.newAlbumDisp(album),
-              (err) => this.errAlert('Problem getting first album!', err),
-              () => {}
-            );
-          }
-          else {
-              this.media.getAlbumByPath(this.route.snapshot.url.join('/')).subscribe(
-                (album) => this.newAlbumDisp(album),
-                (err) => this.errAlert('Problem getting first album!', err),
-                () => {}
-              );
-          //this.route.snapshot.pathFromRoot
-           } */
     };
     GalleryPhotoAlbumsComponent.prototype.updateDisplayAlbumOrNavToPhotos = function (album) {
         var _this = this;
-        this.media.prevPath += this.media.curAlbum.path; // so we can nav back from /photos
         this.media.curAlbum = album; // go down one level (directory).
         if (album.albums.length > 0) {
             this.media.getAlbums(album.albums).subscribe(// get the albums array for this new album
             function (albums) {
                 _this.displayAlbums = albums; // set albums to display
-                // Construct an url relative to the existing URL - just add the new album.name to the end:
                 var url = 'albums' + _this.router.createUrlTree([album.path]).toString();
-                console.log('url is :');
-                console.log(url);
-                //          const url = this.router.createUrlTree([album.path], {relativeTo: this.route}).toString();
                 _this.location.go(url); // Update the URL in the browser window without navigating.
             }, function (err) { return _this.errAlert('Problem getting albums!', err); });
         }
@@ -1475,7 +1436,9 @@ var GalleryPhotoPhotosComponent = /** @class */ (function () {
     GalleryPhotoPhotosComponent.prototype.onFSChange = function () {
         if (!(document.fullscreenElement || document.webkitFullscreenElement
             || document['mozFullScreenElement'] || document['msFullScreenElement'])) {
-            this.router.navigate(['/albums/' + this.media.prevPath]);
+            var parent_1 = this.media.curAlbum.path.split('/').slice(0, -1).join('/');
+            var url = 'albums' + this.router.createUrlTree([parent_1]).toString();
+            this.router.navigate([url]);
         } // This makes this component effectively live ONLY in full screen mode.
     };
     GalleryPhotoPhotosComponent.prototype.ngOnInit = function () {
@@ -1734,7 +1697,9 @@ var HeaderComponent = /** @class */ (function () {
         this.auth = auth;
         this.CFG = CFG;
     }
-    HeaderComponent.prototype.ngOnInit = function () { };
+    HeaderComponent.prototype.ngOnInit = function () {
+        console.log('init for HeaderComponent called.');
+    };
     HeaderComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: 'app-header',
@@ -1757,7 +1722,7 @@ var HeaderComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"!auth.isAuthenticated()\">\n  <video *ngIf=\"auth.hasLoggedInBefore()\" autoplay muted loop id=\"BackImage\">\n    <source src=\"assets/video/Beach_Waves_Sunset-480p.mp4\" type=\"video/mp4\">\n  </video>\n  <img *ngIf=\"!auth.hasLoggedInBefore()\" src=\"assets/images/Mountain.jpg\" id=\"BackImage\" fxFlexFill>\n  <div class=\"login-container\" fxLayoutAlign=\"center center\">\n        <!-- fxLayout=\"row\"\n        fxLayout.sm=\"column\"\n        fxLayout.xs=\"column\" -->\n      <form novalidate #loginForm=\"ngForm\" class=\"login-form\" fxLayout=\"column\">\n        <mat-toolbar class=\"toolbar\">\n          <h3 align=\"center\">Login to www.McGrandle.com</h3>\n        </mat-toolbar>\n        <mat-form-field>\n          <input matInput maxlength=\"20\" placeholder=\"Username\" type=\"text\" [(ngModel)]=\"auth.user.username\" #username=\"ngModel\" name=\"username\" required>\n          <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n          <mat-hint>\n            <span [hidden]=\"username.pristine\">\n              <span [hidden]=\"!username.errors?.required\">** Username is required **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <mat-form-field>\n          <input matInput maxlength=\"30\" placeholder=\"Password\" [type]=\"hide ? 'password' : 'text'\"\n             [(ngModel)]=\"auth.user.password\" name=\"password\" #password=\"ngModel\" required>\n          <mat-icon matSuffix (click)=\"hide = !hide\">{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"password.pristine\">\n              <span [hidden]=\"!password.errors?.required\">** Password is required **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <div fxLayout=\"row\">\n          <button mat-raised-button color=\"primary\" type=\"button\" (click)=\"openRegisterDialog()\">Register New User</button>\n          <span class=\"fill-space\"></span>\n          <button mat-raised-button type=\"submit\"\n             color=\"primary\" [disabled]=\"loginForm.form.invalid\" (click)=\"onLogin()\" cdkFocusInitial>Login</button>\n        </div>\n        <a id=\"forgotCredentials\" align=\"center\" (click)=\"openForgotDialog()\">Forgot username or password</a>\n      </form>\n  </div>\n\n</div>\n"
+module.exports = "<div *ngIf=\"!auth.isAuthenticated()\">\n  <video *ngIf=\"auth.hasLoggedInBefore()\" autoplay muted loop class=\"BackImage\">\n    <source src=\"assets/video/Beach_Waves_Sunset-480p.mp4\" type=\"video/mp4\">\n  </video>\n  <img *ngIf=\"!auth.hasLoggedInBefore()\" src=\"assets/images/Mountain.jpg\" class=\"BackImage\" fxFlexFill>\n  <div class=\"login-container\" fxLayoutAlign=\"center center\">\n        <!-- fxLayout=\"row\"\n        fxLayout.sm=\"column\"\n        fxLayout.xs=\"column\" -->\n      <form novalidate #loginForm=\"ngForm\" class=\"login-form\" fxLayout=\"column\">\n        <mat-toolbar class=\"toolbar\">\n          <h3 align=\"center\">Login to www.McGrandle.com</h3>\n        </mat-toolbar>\n        <mat-form-field>\n          <input matInput maxlength=\"20\" placeholder=\"Username\" type=\"text\" [(ngModel)]=\"auth.user.username\" #username=\"ngModel\" name=\"username\" required>\n          <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n          <mat-hint>\n            <span [hidden]=\"username.pristine\">\n              <span [hidden]=\"!username.errors?.required\">** Username is required **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <mat-form-field>\n          <input matInput maxlength=\"30\" placeholder=\"Password\" [type]=\"hide ? 'password' : 'text'\"\n             [(ngModel)]=\"auth.user.password\" name=\"password\" #password=\"ngModel\" required>\n          <mat-icon matSuffix (click)=\"hide = !hide\">{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"password.pristine\">\n              <span [hidden]=\"!password.errors?.required\">** Password is required **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <div fxLayout=\"row\">\n          <button mat-raised-button color=\"primary\" type=\"button\" (click)=\"openRegisterDialog()\">Register New User</button>\n          <span class=\"fill-space\"></span>\n          <button mat-raised-button type=\"submit\"\n             color=\"primary\" [disabled]=\"loginForm.form.invalid\" (click)=\"onLogin()\" cdkFocusInitial>Login</button>\n        </div>\n        <a id=\"forgotCredentials\" align=\"center\" (click)=\"openForgotDialog()\">Forgot username or password</a>\n      </form>\n  </div>\n\n</div>\n"
 
 /***/ }),
 
@@ -1768,7 +1733,7 @@ module.exports = "<div *ngIf=\"!auth.isAuthenticated()\">\n  <video *ngIf=\"auth
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "#BackImage {\n  position: fixed;\n  right: 0;\n  bottom: 0;\n  min-width: 100%;\n  min-height: 100%;\n  -webkit-filter: opacity(60%);\n          filter: opacity(60%);\n  z-index: -1;\n  background-position: right;\n  background-size: cover; }\n\n.login-container {\n  min-height: 100vh; }\n\n.login-form {\n  min-width: 300px;\n  background-color: white;\n  border-radius: 5px;\n  border: 1px;\n  border-color: black;\n  border-style: ridge;\n  padding: 10px; }\n\n#forgotCredentials {\n  padding-top: 10px;\n  color: indigo; }\n\na {\n  cursor: pointer; }\n"
+module.exports = ".BackImage {\n  position: fixed;\n  right: 0;\n  bottom: 0;\n  min-width: 100%;\n  min-height: 100%;\n  -webkit-filter: opacity(60%);\n          filter: opacity(60%);\n  z-index: -1;\n  background-position: right;\n  background-size: cover; }\n\n.login-container {\n  min-height: 100vh; }\n\n.login-form {\n  min-width: 300px;\n  background-color: white;\n  border-radius: 5px;\n  border: 1px;\n  border-color: black;\n  border-style: ridge;\n  padding: 10px; }\n\n#forgotCredentials {\n  padding-top: 10px;\n  color: indigo; }\n\na {\n  cursor: pointer; }\n"
 
 /***/ }),
 

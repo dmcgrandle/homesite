@@ -54,6 +54,7 @@ exports.getAlbumById = async function (id) {
 exports.getAlbumByPath = async function (pathEncoded) {
     const path = pathEncoded.slice(1,-1).replace(/\+/g, '/');
     const album = await db.collection('albums').findOne({path : path});
+    console.log(album);
     if (!album) throw new Error('404 Unknown Album: ' + path);
     return album;
 }

@@ -21,7 +21,7 @@ export class GalleryPhotoAlbumsComponent implements OnInit {
   constructor(private media: MediaService,
               private route: ActivatedRoute,
               private router: Router, 
-              public dialog: MatDialog,
+              public  dialog: MatDialog,
               private location: Location) { }
 
               /*
@@ -33,65 +33,22 @@ onPopState(event) {
 } */
 
 ngOnInit() {
-
-//  const id: Observable<string> = this.route.params.pipe(map(p => p.id));
-//  const url: Observable<string> = this.route.url.pipe(map(segments => segments.join('')));
-  // route.data includes both `data` and `resolve`
   this.route.url.pipe(map(segments => segments.join('/'))).subscribe(
-    (path) => { // this is executed on initial call, or when nav button hit (back or fwd)
+    (path) => { // this observable changes on init, or when nav button hit (back or fwd)
       console.log('URL changed!  New url is:');
       console.log(path);
       this.newAlbumFetch(path);
     }
-  )
-/*  const user = route.data.map(d => d.user);
-  this.route.params
-    .map(params => params['topCategory'])
-    .subscribe(topCategory => {
-        if (typeof topCategory !== 'undefined' &&
-            topCategory !== null
-        ) {
-            self.UiState.startArrowWasDismised = true;
-            self.UiState.selectedTopCategory = topCategory;
-        }
-    }); */
-/*
-  console.log('ngOnInit called ...');
-  console.log('Number of segments is: ' + this.route.snapshot.url.length);
-  for (let i=0;i<this.route.snapshot.url.length;i++) {
-    console.log('Path ' + i + ' is: ' + this.route.snapshot.url[i].path);
-  }
-this.newAlbumFetch(); */
-/*  if (!this.route.snapshot.parent.url.length) {
-    this.media.getAlbumById(0).subscribe(
-      (album) => this.newAlbumDisp(album),
-      (err) => this.errAlert('Problem getting first album!', err),
-      () => {}
-    );
-  } 
-  else {
-      this.media.getAlbumByPath(this.route.snapshot.url.join('/')).subscribe(
-        (album) => this.newAlbumDisp(album),
-        (err) => this.errAlert('Problem getting first album!', err),
-        () => {}
-      );
-  //this.route.snapshot.pathFromRoot
-   } */
-    
+  )    
  }
 
   updateDisplayAlbumOrNavToPhotos(album: Album) {
-    this.media.prevPath += this.media.curAlbum.path; // so we can nav back from /photos
     this.media.curAlbum = album; // go down one level (directory).
     if (album.albums.length > 0) {// means this album contains other albums
       this.media.getAlbums(album.albums).subscribe( // get the albums array for this new album
         (albums) => {
           this.displayAlbums = albums; // set albums to display
-          // Construct an url relative to the existing URL - just add the new album.name to the end:
           const url = 'albums' + this.router.createUrlTree([album.path]).toString();
-          console.log('url is :');
-          console.log(url);
-//          const url = this.router.createUrlTree([album.path], {relativeTo: this.route}).toString();
           this.location.go(url); // Update the URL in the browser window without navigating.
         },
         (err) => this.errAlert('Problem getting albums!', err)
@@ -112,7 +69,7 @@ private newAlbumFetch(path: string) {
 }
 
 private newAlbumsFetch(album) {
-  this.media.curAlbum = album;
+  this.media.curAlbum = album; 
   this.media.getAlbums(this.media.curAlbum.albums).subscribe(
     (albums) => this.displayAlbums = albums,
     (err) => this.errAlert('Problem getting albums!', err)

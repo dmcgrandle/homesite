@@ -1,8 +1,8 @@
 <div *ngIf="!auth.isAuthenticated()">
-  <video *ngIf="auth.hasLoggedInBefore()" autoplay muted loop id="BackImage">
+  <video *ngIf="auth.hasLoggedInBefore()" autoplay muted loop class="BackImage">
     <source src="assets/video/Beach_Waves_Sunset-480p.mp4" type="video/mp4">
   </video>
-  <img *ngIf="!auth.hasLoggedInBefore()" src="assets/images/Mountain.jpg" id="BackImage" fxFlexFill>
+  <img *ngIf="!auth.hasLoggedInBefore()" src="assets/images/Mountain.jpg" class="BackImage" fxFlexFill>
   <div class="login-container" fxLayoutAlign="center center">
         <!-- fxLayout="row"
         fxLayout.sm="column"
