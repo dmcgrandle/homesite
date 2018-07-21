@@ -360,7 +360,6 @@ var MediaService = /** @class */ (function () {
     };
     MediaService.prototype.getAlbumByPath = function (path) {
         var pathString = '(' + path.split('/').join('+') + ')';
-        console.log('pathString is: ' + pathString);
         return this.http.get('/api/photos/album-by-path/' + pathString);
     };
     MediaService.prototype.getAlbums = function (albums) {
@@ -1115,8 +1114,6 @@ var FooterComponent = /** @class */ (function () {
         this.CFG = CFG;
     }
     FooterComponent.prototype.ngOnInit = function () {
-        console.log('init for FooterComponent called.');
-        console.log('Value of isAuthenticated is ' + this.auth.isAuthenticated());
     };
     FooterComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
@@ -1243,7 +1240,7 @@ var ForgotDialogComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"displayAlbums\">\n  <h2>{{media.curAlbum.name}}:</h2>\n  <div class=\"container\"\n    fxLayout=\"row wrap\"\n    fxLayoutGap=\"4px\"\n    fxLayoutAlign.gt-xs=\"space-evenly stretch\">\n    <mat-card *ngFor=\"let album of displayAlbums\" (click)=\"updateDisplayAlbumOrNavToPhotos(album)\"\n      fxFlex.xl=\"16.2%\" fxFlex.lg=\"24.5%\" fxFlex.md=\"32.5%\" fxFlex.sm=\"49%\" fxFlex.xs=\"98%\">\n      <mat-card-header>\n        <mat-card-title>\n          <h3 fxFlexAlign>{{album.name}}</h3>\n        </mat-card-title>\n        <mat-card-subtitle>{{album.description}}</mat-card-subtitle>\n      </mat-card-header>\n      <div *ngIf='album.featuredPhoto.filename' fxFill fxLayout=\"center center\">\n        <img mat-card-image [src]='(\"/protected/images/\"+album.featuredPhoto.filename) | secure'>\n      </div>\n      <mat-card-footer>\n      </mat-card-footer>\n    </mat-card>\n  </div>\n</div>\n\n<div *ngIf=\"!displayAlbums\">\n  <p>Waiting on server ...</p>\n</div>\n\n"
+module.exports = "<div *ngIf=\"displayAlbums\">\n  <h2>{{media.curAlbum.name}}:</h2>\n  <div class=\"container\"\n    fxLayout=\"row wrap\"\n    fxLayoutGap=\"4px\"\n    fxLayoutAlign.gt-xs=\"space-evenly stretch\">\n    <mat-card *ngFor=\"let album of displayAlbums\" (click)=\"updateDisplayAlbumOrNavToPhotos(album)\"\n      fxFlex.xl=\"16.2%\" fxFlex.lg=\"24.5%\" fxFlex.md=\"32.5%\" fxFlex.sm=\"49%\" fxFlex.xs=\"98%\">\n      <mat-card-header>\n        <mat-card-title>\n          <h3 fxFlexAlign>{{album.name}}</h3>\n        </mat-card-title>\n        <mat-card-subtitle>{{album.description}}</mat-card-subtitle>\n      </mat-card-header>\n      <div *ngIf='album.featuredPhoto.filename' fxFill fxLayout=\"center center\">\n        <img mat-card-image [src]='(album.featuredPhoto.fullpath) | secure'>\n      </div>\n      <mat-card-footer>\n      </mat-card-footer>\n    </mat-card>\n  </div>\n</div>\n\n<div *ngIf=\"!displayAlbums\">\n  <p>Waiting on server ...</p>\n</div>\n\n"
 
 /***/ }),
 
@@ -1301,20 +1298,10 @@ var GalleryPhotoAlbumsComponent = /** @class */ (function () {
         this.dialog = dialog;
         this.location = location;
     }
-    /*
-@HostListener('window:popstate', ['$event']) // detects back button pressed in browser
-onPopState(event) {
-console.log('Nav (back or forward) button pressed, calling newAlbumDisp()');
-let path = this.route.snapshot.url.join('/');
-this.newAlbumDisp();
-} */
     GalleryPhotoAlbumsComponent.prototype.ngOnInit = function () {
         var _this = this;
-        this.route.url.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["map"])(function (segments) { return segments.join('/'); })).subscribe(function (path) {
-            console.log('URL changed!  New url is:');
-            console.log(path);
-            _this.newAlbumFetch(path);
-        });
+        // this observable changes on init, or when nav button hit (back or fwd)
+        this.route.url.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["map"])(function (segments) { return segments.join('/'); })).subscribe(function (path) { return _this.newAlbumFetch(path); });
     };
     GalleryPhotoAlbumsComponent.prototype.updateDisplayAlbumOrNavToPhotos = function (album) {
         var _this = this;
@@ -1380,7 +1367,7 @@ this.newAlbumDisp();
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<mat-toolbar color=\"primary\">\n  Angular Material 2 App\n</mat-toolbar>\n<div class=\"basic-container\">\n  <p>\n    <button mat-raised-button (click)=\"setFullScreen()\">FullScreen</button>\n  </p>\n  <span class=\"version-info\">Current build: {{version.full}}</span>\n</div>\n<div style=\"background-color: purple\" id=\"full-screen\">Full screen div\n  <button (click)=\"openDialog()\">Open dialog</button>\n</div>\n\n<!-- <p>\n  gallery-photo-photos works!\n</p> -->\n"
+module.exports = "<div id=\"full-screen\">\n  <div class=\"title\" fxLayout=\"row\">\n    <h2><span>{{media.curAlbum.name}}:</span></h2>\n    <span class=\"fill-space\"></span>\n    <a [download]='curPhoto.filename' [href]='curPhoto.fullpath | secure'>\n      <mat-icon>vertical_align_bottom</mat-icon>\n    </a>\n  </div>\n  <div class=\"container\"\n    fxLayout=\"column\"\n    fxLayoutGap=\"4px\"\n    fxLayoutAlign.gt-xs=\"space-evenly stretch\">\n    <div fxHide.lt-md fxLayout=\"column\" fxLayoutAlign=\"none center\">\n      <mat-card (click)=\"makeFullscreen()\" >   <!-- main display picture -->\n        <!-- <mat-card-header>\n          <mat-card-title>\n            <h3 fxFlexAlign>{{album.name}}</h3>\n          </mat-card-title>\n          <mat-card-subtitle>{{album.description}}</mat-card-subtitle>\n        </mat-card-header> -->\n        <img class=\"img-large\" mat-card-image [src]='curPhoto.fullpath | secure'>\n      </mat-card>\n    </div>\n    <div id=\"thumbnails\" fxLayout.gt-sm=\"row\" fxLayout.lt-md=\"column\" fxLayoutGap=\"6px\" fxLayoutAlign.gt-sm=\"none center\">  <!-- scrollable row of thumbnails -->\n      <mat-card *ngFor=\"let photo of media.curAlbum.photos\" (click)=\"changePhoto(photo)\"\n        fxFlex.xl=\"1 0 6.2%\" fxFlex.lg=\"1 0 8%\" fxFlex.md=\"1 0 12.2%\" fxFlex.lt-md=\"98%\">\n          <img #thumb class=\"img-thumbs\" [id]=\"highlightAndScroll(photo, thumb)\" mat-card-image [src]='photo.fullpath | secure'>\n      </mat-card>\n    </div>>\n  </div>\n</div>\n\n<!-- \n<mat-toolbar color=\"primary\">\n  Angular Material 2 App\n</mat-toolbar>\n<div class=\"basic-container\">\n  <p>\n    <button mat-raised-button (click)=\"setFullScreen()\">FullScreen</button>\n  </p>\n  <span class=\"version-info\">Current build: {{version.full}}</span>\n</div>\n<div style=\"background-color: purple\" id=\"full-screen\">Full screen div\n  <button (click)=\"openDialog()\">Open dialog</button>\n</div> -->\n\n<!-- <p>\n  gallery-photo-photos works!\n</p> -->\n"
 
 /***/ }),
 
@@ -1391,7 +1378,7 @@ module.exports = "<mat-toolbar color=\"primary\">\n  Angular Material 2 App\n</m
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ""
+module.exports = ".mat-card-image {\n  border-radius: 6px;\n  border: 3px;\n  border-color: black;\n  border-style: ridge; }\n\n.img-large {\n  max-height: 60vh;\n  width: auto;\n  max-width: 95vw; }\n\n.title {\n  margin: 0 0 5px 0;\n  padding-top: 5px;\n  color: floralwhite; }\n\n.title h2 {\n    margin: 0;\n    padding: 5px; }\n\n.title a {\n    color: floralwhite; }\n\n.title a .mat-icon {\n      padding: 5px;\n      margin-right: 5px; }\n\n.mat-card {\n  cursor: pointer;\n  background-color: black; }\n\n#thumbnails {\n  overflow: scroll; }\n\n#selected {\n  border-color: white; }\n\n#full-screen {\n  background-color: black; }\n"
 
 /***/ }),
 
@@ -1399,17 +1386,17 @@ module.exports = ""
 /*!************************************************************************!*\
   !*** ./src/app/gallery-photo-photos/gallery-photo-photos.component.ts ***!
   \************************************************************************/
-/*! exports provided: GalleryPhotoPhotosComponent */
+/*! exports provided: KEY_CODE, GalleryPhotoPhotosComponent */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "KEY_CODE", function() { return KEY_CODE; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GalleryPhotoPhotosComponent", function() { return GalleryPhotoPhotosComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
 /* harmony import */ var _services_media_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_services/media.service */ "./src/app/_services/media.service.ts");
-/* harmony import */ var _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../alert-message-dialog/alert-message-dialog.component */ "./src/app/alert-message-dialog/alert-message-dialog.component.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1424,7 +1411,17 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
-
+Event;
+var KEY_CODE;
+(function (KEY_CODE) {
+    KEY_CODE[KEY_CODE["PAGE_UP"] = 33] = "PAGE_UP";
+    KEY_CODE[KEY_CODE["PAGE_DOWN"] = 34] = "PAGE_DOWN";
+    KEY_CODE[KEY_CODE["END"] = 35] = "END";
+    KEY_CODE[KEY_CODE["HOME"] = 36] = "HOME";
+    KEY_CODE[KEY_CODE["LEFT_ARROW"] = 37] = "LEFT_ARROW";
+    KEY_CODE[KEY_CODE["RIGHT_ARROW"] = 39] = "RIGHT_ARROW";
+})(KEY_CODE || (KEY_CODE = {}));
+;
 var GalleryPhotoPhotosComponent = /** @class */ (function () {
     function GalleryPhotoPhotosComponent(media, router, dialog) {
         this.media = media;
@@ -1432,17 +1429,65 @@ var GalleryPhotoPhotosComponent = /** @class */ (function () {
         this.dialog = dialog;
         this.version = _angular_material__WEBPACK_IMPORTED_MODULE_1__["VERSION"];
     }
+    /*
     // Note: No standard (yet) in browsers for this event, so listen to all of them...
-    GalleryPhotoPhotosComponent.prototype.onFSChange = function () {
+      @HostListener('document:fullscreenchange', []) // the standard ... will work someday
+      @HostListener('document:webkitfullscreenchange', []) // Chrome
+      @HostListener('document:mozfullscreenchange', []) // Firefox
+      @HostListener('document:msfullscreenchange', []) // IE
+      onFSChange() {// when minimizing back from full screen, nav back to albums
         if (!(document.fullscreenElement || document.webkitFullscreenElement
-            || document['mozFullScreenElement'] || document['msFullScreenElement'])) {
-            var parent_1 = this.media.curAlbum.path.split('/').slice(0, -1).join('/');
-            var url = 'albums' + this.router.createUrlTree([parent_1]).toString();
-            this.router.navigate([url]);
+            || document['mozFullScreenElement'] || document['msFullScreenElement'])){
+          let parent = this.media.curAlbum.path.split('/').slice(0,-1).join('/');
+          let url = 'albums' + this.router.createUrlTree([parent]).toString();
+          this.router.navigate([url]);
         } // This makes this component effectively live ONLY in full screen mode.
-    };
+      }
+    */
     GalleryPhotoPhotosComponent.prototype.ngOnInit = function () {
-        // immediately jump to full screen mode for this component
+        this.curPhoto = this.media.curAlbum.photos[0];
+        //    this.selectedPhoto.pipe(of([1,2,3]))
+    };
+    GalleryPhotoPhotosComponent.prototype.changePhoto = function (photo) {
+        this.curPhoto = photo;
+    };
+    GalleryPhotoPhotosComponent.prototype.highlightAndScroll = function (photo, e) {
+        if (photo === this.curPhoto) {
+            e.scrollIntoView({ behavior: "instant", block: "center", inline: "center" });
+            return "selected"; // changes the class of this element so css styles can outline it
+        }
+        else {
+            return "";
+        }
+    };
+    GalleryPhotoPhotosComponent.prototype.keyEvent = function (event) {
+        if (event.keyCode in KEY_CODE) {
+            var nextIndex = 0;
+            var curIndex = Number(this.media.curAlbum.photos.indexOf(this.curPhoto));
+            switch (event.keyCode) {
+                case KEY_CODE.RIGHT_ARROW:
+                    nextIndex = (curIndex === this.media.curAlbum.photos.length - 1) ? 0 : curIndex + 1;
+                    break;
+                case KEY_CODE.LEFT_ARROW:
+                    nextIndex = (curIndex === 0) ? this.media.curAlbum.photos.length - 1 : curIndex - 1;
+                    break;
+                case KEY_CODE.END:
+                    nextIndex = this.media.curAlbum.photos.length - 1;
+                    break;
+                case KEY_CODE.HOME:
+                    nextIndex = 0;
+                    break;
+                case KEY_CODE.PAGE_UP:
+                    //            console.log('Pressed PAGE_UP');
+                    break;
+                case KEY_CODE.PAGE_DOWN:
+                    //            console.log('Pressed PAGE_DOWN');
+                    break;
+            }
+            this.curPhoto = this.media.curAlbum.photos[nextIndex];
+        }
+    };
+    GalleryPhotoPhotosComponent.prototype.makeFullscreen = function () {
         var i = document.getElementById('full-screen');
         if (i.requestFullscreen) {
             i.requestFullscreen();
@@ -1457,27 +1502,12 @@ var GalleryPhotoPhotosComponent = /** @class */ (function () {
             i.msRequestFullscreen();
         }
     };
-    GalleryPhotoPhotosComponent.prototype.openDialog = function () {
-        var alertMessage = 'working!';
-        var dialogRef = this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_4__["AlertMessageDialogComponent"], {
-            width: '400px',
-            data: { alertMessage: alertMessage }
-        });
-        dialogRef.afterClosed().subscribe(function (result) { });
-    };
     __decorate([
-        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["HostListener"])('document:fullscreenchange', []) // the standard ... will work someday
-        ,
-        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["HostListener"])('document:webkitfullscreenchange', []) // Chrome
-        ,
-        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["HostListener"])('document:mozfullscreenchange', []) // Firefox
-        ,
-        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["HostListener"])('document:msfullscreenchange', []) // IE
-        ,
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["HostListener"])('window:keyup', ['$event']),
         __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
+        __metadata("design:paramtypes", [KeyboardEvent]),
         __metadata("design:returntype", void 0)
-    ], GalleryPhotoPhotosComponent.prototype, "onFSChange", null);
+    ], GalleryPhotoPhotosComponent.prototype, "keyEvent", null);
     GalleryPhotoPhotosComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: 'app-gallery-photo-photos',
@@ -1663,7 +1693,7 @@ module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <mat-toolbar class=\
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ""
+module.exports = ".mat-toolbar {\n  margin-bottom: 0; }\n"
 
 /***/ }),
 
@@ -1698,7 +1728,6 @@ var HeaderComponent = /** @class */ (function () {
         this.CFG = CFG;
     }
     HeaderComponent.prototype.ngOnInit = function () {
-        console.log('init for HeaderComponent called.');
     };
     HeaderComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({

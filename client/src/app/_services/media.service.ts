@@ -23,7 +23,6 @@ export class MediaService {
 
   public getAlbumByPath(path: string): Observable<any> {
     let pathString = '(' + path.split('/').join('+') + ')';
-    console.log('pathString is: ' + pathString);
     return this.http.get('/api/photos/album-by-path/' + pathString);
   }
 

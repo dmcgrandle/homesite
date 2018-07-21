@@ -54,7 +54,6 @@ exports.getAlbumById = async function (id) {
 exports.getAlbumByPath = async function (pathEncoded) {
     const path = pathEncoded.slice(1,-1).replace(/\+/g, '/');
     const album = await db.collection('albums').findOne({path : path});
-    console.log(album);
     if (!album) throw new Error('404 Unknown Album: ' + path);
     return album;
 }
@@ -75,6 +74,7 @@ exports.getAlbums = async function (albumIdsList) {
 
 
 buildAlbums = function(paths, files) {
+    const PREFIX = '/protected/images/';
     let albums = [];
     let aIndex = 0; // albumIndex = album._id
     let splitPaths = [];
@@ -111,12 +111,16 @@ buildAlbums = function(paths, files) {
     // 3. Now build the photos array in each album that contains photos.
     files.forEach(file => {
         splitPaths = file.split('/');
-        let targetAlbumPath = file.slice(0,-(splitPaths[splitPaths.length-1].length+1));
+        let photoName = splitPaths[splitPaths.length-1];
+        let targetAlbumPath = file.slice(0,-(photoName.length+1));
         if (targetAlbumPath === prevTargetAlbumPath) {
             targetAlbumIndex = prevTargetAlbumIndex;
         } else { // first photo in a new album, so set up featuredPhoto(s)
             targetAlbumIndex = albums.findIndex(album => album.path === targetAlbumPath);
-            albums[targetAlbumIndex].featuredPhoto = {filename: file, caption: ''};
+            albums[targetAlbumIndex].featuredPhoto = {
+                filename: photoName, 
+                fullpath: PREFIX + file, 
+                caption: ''};
             splitPaths.pop(); // first, drop the filename 
             let numParents = splitPaths.length-1; 
             for (let i=0;i<numParents;i++) {// walk up the tree finding all parents
@@ -127,12 +131,18 @@ buildAlbums = function(paths, files) {
                     // minimize as much as possible how often to do it.
                     parentAlbumIndex = albums.findIndex(album => album.path === parentAlbumPath);
                     if (isEmpty(albums[parentAlbumIndex].featuredPhoto)) {
-                        albums[parentAlbumIndex].featuredPhoto = {filename: file, caption: ''};
+                        albums[parentAlbumIndex].featuredPhoto = {
+                            filename: photoName, 
+                            fullpath: PREFIX + file, 
+                            caption: ''};
                     }
                 }
             }// end for
         }
-        albums[targetAlbumIndex].photos.push({filename: file, caption: ''}); // add photo to photos array
+        albums[targetAlbumIndex].photos.push({
+            filename: photoName, 
+            fullpath: PREFIX + file, 
+            caption: '' }); // add photo to photos array
         prevTargetAlbumPath = targetAlbumPath;
         prevTargetAlbumIndex = targetAlbumIndex;
     });

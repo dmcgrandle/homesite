@@ -24,22 +24,10 @@ export class GalleryPhotoAlbumsComponent implements OnInit {
               public  dialog: MatDialog,
               private location: Location) { }
 
-              /*
-@HostListener('window:popstate', ['$event']) // detects back button pressed in browser
-onPopState(event) {
-  console.log('Nav (back or forward) button pressed, calling newAlbumDisp()');
-  let path = this.route.snapshot.url.join('/');
-  this.newAlbumDisp();
-} */
-
 ngOnInit() {
+  // this observable changes on init, or when nav button hit (back or fwd)
   this.route.url.pipe(map(segments => segments.join('/'))).subscribe(
-    (path) => { // this observable changes on init, or when nav button hit (back or fwd)
-      console.log('URL changed!  New url is:');
-      console.log(path);
-      this.newAlbumFetch(path);
-    }
-  )    
+    (path) => this.newAlbumFetch(path))
  }
 
   updateDisplayAlbumOrNavToPhotos(album: Album) {
