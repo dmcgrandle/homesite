@@ -24,13 +24,17 @@ export class GalleryPhotoAlbumsComponent implements OnInit {
               public  dialog: MatDialog,
               private location: Location) { }
 
-ngOnInit() {
-  // this observable changes on init, or when nav button hit (back or fwd)
-  this.route.url.pipe(map(segments => segments.join('/'))).subscribe(
-    (path) => this.newAlbumFetch(path))
- }
+  ngOnInit() {
+    // this observable changes on init, or when nav button hit (back or fwd)
+//    this.route.url.subscribe(
+//      (segments) => this.newAlbumFetch(segments.join('/')));
+    this.media.getAlbumsByURL(this.route.url).subscribe(
+      (albums) => this.displayAlbums = albums,
+      (err) => this.errAlert('Problem getting albums!', err)
+    );
+  };
 
-  updateDisplayAlbumOrNavToPhotos(album: Album) {
+  public updateDisplayAlbumOrNavToPhotos(album: Album) {
     this.media.curAlbum = album; // go down one level (directory).
     if (album.albums.length > 0) {// means this album contains other albums
       this.media.getAlbums(album.albums).subscribe( // get the albums array for this new album
@@ -46,33 +50,35 @@ ngOnInit() {
     } 
   };
 
-private newAlbumFetch(path: string) {
-  this.media.curAlbum = new Album;
-  if (path == 'albums') path = ''; // 'albums' is our root path.
-  this.media.getAlbumByPath(path).subscribe(
-    (album) => this.newAlbumsFetch(album),
-    (err) => this.errAlert('Problem getting first album!', err),
-    () => {}
-  );
-}
-
-private newAlbumsFetch(album) {
-  this.media.curAlbum = album; 
-  this.media.getAlbums(this.media.curAlbum.albums).subscribe(
-    (albums) => this.displayAlbums = albums,
-    (err) => this.errAlert('Problem getting albums!', err)
-  );
-}
-
-private errAlert(msg: string, err) {
-  const alertMessage = msg + err.error;
-  const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-    width: '400px',
-    data: {alertMessage: alertMessage}
-  });
-  dialogRef.afterClosed().subscribe(result => {});
-  console.log(err);
-  this.router.navigate(['/gallery']);
+  /*
+  private newAlbumFetch(path: string) {
+    this.media.curAlbum = new Album;
+    if (path == 'albums') path = ''; // 'albums' is our root path.
+    this.media.getAlbumByPath(path).subscribe(
+      (album) => this.newAlbumsFetch(album),
+      (err) => this.errAlert('Problem getting first album!', err),
+      () => {}
+    );
   }
+
+  private newAlbumsFetch(album) {
+    this.media.curAlbum = album; 
+    this.media.getAlbums(this.media.curAlbum.albums).subscribe(
+      (albums) => this.displayAlbums = albums,
+      (err) => this.errAlert('Problem getting albums!', err)
+    );
+  }
+  */
+
+  private errAlert(msg: string, err) {
+    const alertMessage = msg + err.error;
+    const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
+      width: '400px',
+      data: {alertMessage: alertMessage}
+    });
+    dialogRef.afterClosed().subscribe(result => {});
+    console.log(err);
+    this.router.navigate(['/gallery']);
+  };
 
 }

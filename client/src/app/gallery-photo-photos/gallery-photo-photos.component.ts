@@ -53,8 +53,11 @@ export class GalleryPhotoPhotosComponent implements OnInit {
 */
 
   ngOnInit() {
-    this.curPhoto = this.media.curAlbum.photos[0];
-//    this.selectedPhoto.pipe(of([1,2,3]))
+    if (this.media.curAlbum) {
+      this.curPhoto = this.media.curAlbum.photos[0];
+    } else {// We need to load the curAlbum from the url sent.
+
+    }
   }
 
   private changePhoto(photo: Photo) {
@@ -64,8 +67,9 @@ export class GalleryPhotoPhotosComponent implements OnInit {
   private highlightAndScroll(photo: Photo, e: Element) {
     if (photo === this.curPhoto) {
       e.scrollIntoView({behavior: "instant", block: "center", inline: "center"})
-      return "selected"; // changes the class of this element so css styles can outline it
-    } else { return ""; }
+      return "selected"; // changes the id property of this element so css styles can outline it
+    }
+    return null;
   }
 
   @HostListener('window:keyup', ['$event'])
