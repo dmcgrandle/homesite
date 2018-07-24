@@ -48,8 +48,13 @@
     overflow: scroll;
 }
 
-.box {
-    background-color: white;
+.img-thumbs {
+    cursor: pointer;
+    border-radius: 6px;
+    border: 3px;
+    border-color: black;
+    border-style: ridge;
+    max-width: 100%;
 }
 
 #selected {
@@ -59,4 +64,5 @@
 #full-screen {
 //    max-height: 100vh;
     background-color: black;
+    border-radius: 6px;
 }

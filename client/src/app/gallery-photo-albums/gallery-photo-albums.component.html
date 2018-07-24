@@ -1,5 +1,5 @@
 <div *ngIf="displayAlbums">
-  <h2>{{media.curAlbum.name}}:</h2>
+  <h2>{{media.curPhotoAlbum.name}}:</h2>
   <div class="container"
     fxLayout="row wrap"
     fxLayoutGap="4px"
@@ -15,7 +15,7 @@
       <div *ngIf='album.featuredPhoto.filename' fxFill fxLayout="center center">
         <img mat-card-image [src]='(album.featuredPhoto.fullpath) | secure'>
       </div>
-      <mat-card-footer>
+      <mat-card-footer>  
       </mat-card-footer>
     </mat-card>
   </div>

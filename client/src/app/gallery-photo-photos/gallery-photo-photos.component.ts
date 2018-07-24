@@ -33,6 +33,7 @@ export class GalleryPhotoPhotosComponent implements OnInit {
   selectedPhoto: Observable<any>;
 
   constructor(private media: MediaService,
+              private route: ActivatedRoute,
               private router: Router, 
               public dialog: MatDialog) { }
 
@@ -53,11 +54,17 @@ export class GalleryPhotoPhotosComponent implements OnInit {
 */
 
   ngOnInit() {
-    if (this.media.curAlbum) {
-      this.curPhoto = this.media.curAlbum.photos[0];
+    if (this.media.curPhotoAlbum) {
+      this.curPhoto = this.media.curPhotoAlbum.photos[0];
     } else {// We need to load the curAlbum from the url sent.
-
-    }
+      this.media.getPhotoAlbumByURL(this.route.url).subscribe(
+        (album) => {
+          this.media.curPhotoAlbum = album;
+          this.curPhoto = this.media.curPhotoAlbum.photos[0];
+        },
+        (err) => this.errAlert('Problem getting albums!', err)
+      );
+      }
   }
 
   private changePhoto(photo: Photo) {
@@ -76,16 +83,16 @@ export class GalleryPhotoPhotosComponent implements OnInit {
   keyEvent(event: KeyboardEvent) {
     if (event.keyCode in KEY_CODE) {
       let nextIndex = 0;
-      const curIndex = Number(this.media.curAlbum.photos.indexOf(this.curPhoto));
+      const curIndex = Number(this.media.curPhotoAlbum.photos.indexOf(this.curPhoto));
       switch (event.keyCode) { // set nextIndex to where we are going next
         case KEY_CODE.RIGHT_ARROW:
-            nextIndex = (curIndex === this.media.curAlbum.photos.length-1) ? 0: curIndex + 1;
+            nextIndex = (curIndex === this.media.curPhotoAlbum.photos.length-1) ? 0: curIndex + 1;
             break;
         case KEY_CODE.LEFT_ARROW: 
-            nextIndex = (curIndex === 0) ? this.media.curAlbum.photos.length-1 : curIndex - 1;
+            nextIndex = (curIndex === 0) ? this.media.curPhotoAlbum.photos.length-1 : curIndex - 1;
             break;
         case KEY_CODE.END: 
-            nextIndex = this.media.curAlbum.photos.length-1;
+            nextIndex = this.media.curPhotoAlbum.photos.length-1;
             break;
         case KEY_CODE.HOME: 
             nextIndex = 0;
@@ -97,7 +104,7 @@ export class GalleryPhotoPhotosComponent implements OnInit {
 //            console.log('Pressed PAGE_DOWN');
             break;
       }
-      this.curPhoto = this.media.curAlbum.photos[nextIndex];
+      this.curPhoto = this.media.curPhotoAlbum.photos[nextIndex];
     }
   }
  
@@ -113,5 +120,17 @@ export class GalleryPhotoPhotosComponent implements OnInit {
       i.msRequestFullscreen();
     } 
   }
+
+  private errAlert(msg: string, err) {
+    const alertMessage = msg + err.error;
+    const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
+      width: '400px',
+      data: {alertMessage: alertMessage}
+    });
+    dialogRef.afterClosed().subscribe(result => {});
+    console.log(err);
+    this.router.navigate(['/gallery']);
+  };
+
 
 }

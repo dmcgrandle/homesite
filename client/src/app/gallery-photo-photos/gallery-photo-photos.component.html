@@ -1,6 +1,6 @@
-<div id="full-screen">
+<div id="full-screen" *ngIf="curPhoto">
   <div class="title" fxLayout="row">
-    <h2><span>{{media.curAlbum.name}}:</span></h2>
+    <h2><span>{{media.curPhotoAlbum.name}}:</span></h2>
     <span class="fill-space"></span>
     <a [download]='curPhoto.filename' [href]='curPhoto.fullpath | secure'>
       <mat-icon>vertical_align_bottom</mat-icon>
@@ -11,20 +11,21 @@
     fxLayoutGap="4px"
     fxLayoutAlign.gt-xs="space-evenly stretch">
     <!-- large display picture -->
-    <div fxHide.lt-md fxLayout="column" fxLayoutAlign="none center">
+    <div fxHide.lt-sm fxLayout="column" fxLayoutAlign="none center">
       <mat-card (click)="makeFullscreen()" >
         <img class="img-large" mat-card-image [src]='curPhoto.fullpath | secure'>
       </mat-card>
     </div>
     <!-- scrollable row of thumbnails -->
-    <div id="thumbnails" fxLayout.gt-sm="row" fxLayout.lt-md="column" fxLayoutGap="6px" fxLayoutAlign.gt-sm="none center">  
-      <div *ngFor="let photo of media.curAlbum.photos" (click)="changePhoto(photo)" class="box"
-      fxFlex.xl="6.2%" fxFlex.lg="8%" fxFlex.md="12.2%" fxFlex.lt-md="98%">Test
-      <!-- fxFlex.xl="1 0 6.2%" fxFlex.lg="1 0 8%" fxFlex.md="1 0 12.2%" fxFlex.lt-md="98%"> -->
-      <!-- <div class="box"></div> -->
-          <!-- <img #thumb class="img-thumbs" [id]="highlightAndScroll(photo, thumb)" [src]='photo.fullpath | secure'> -->
+    <div id="thumbnails" fxLayout.gt-xs="row" fxLayout.xs="column" fxLayoutGap.gt-xs="6px" fxLayoutGap.xs="1px" fxLayoutAlign.gt-xs="none center" fxLayoutAlign.xs="none none">  
+      <div *ngFor="let photo of media.curPhotoAlbum.photos" (click)="changePhoto(photo)"
+        fxFlex.xl="0 0 4.25%" fxFlex.lg="0 0 6.31%" fxFlex.md="0 0 7.8%" fxFlex.sm="0 0 11.75%" fxFlex.xs="0 0 98%">
+        <img #thumb fxFlexAlignSelf="center" class="img-thumbs" [id]="highlightAndScroll(photo, thumb)" [src]='photo.fullpath | secure'>
       </div>
     </div>>
   </div>
 </div>
 
+<div *ngIf="!curPhoto">
+  <p>Waiting on server ...</p>
+</div>
