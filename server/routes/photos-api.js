@@ -27,6 +27,14 @@ router.get('/album-by-id/:id', function(req, res, next) {
     .catch(err => processError(err, res));
 });
 
+/* GET photo with given id.  Needs level 2+ access */
+router.get('/photo-by-id/:id', function(req, res, next) { 
+  userSvc.isValidLevel(req.user, 2) // check username in jwt token for level
+    .then(() => photoSvc.getPhotoById(Number(req.params.id)))
+    .then(photo => res.status(200).json(photo))
+    .catch(err => processError(err, res));
+});
+
 /* GET album with given id.  Needs level 2+ access     
     Format of :path - array of id strings, made URL-friendly with no spaces, and
     by replacing / with +, so for example the path '/test/one/two' becomes
@@ -39,18 +47,32 @@ router.get('/album-by-path/:path', function(req, res, next) {
 });
 
 
-router.get
-
 /*  GET array of albums of with given ids.  Needs level 2+ access
     Format of :albumsIdsList - array of id numbers, made URL-friendly with no spaces, and
     by replacing [] with () and commas with +, so for example the array [ 0, 2, 7 ]
     becomes (0+2+7) and entire url is "http://example.com/api/photos/albums/(0+2+7)"     */
-router.get('/albums/:albumIdsList', function(req, res, next) { //req.body.id has requested album id
+router.get('/albums/:albumIdsList', function(req, res, next) { 
   userSvc.isValidLevel(req.user, 2)
     .then(() => photoSvc.getAlbums(req.params.albumIdsList))
     .then(albums => res.status(200).json(albums))
     .catch(err => processError(err, res));
 });
+
+router.get('/photos/:photoIdsList', function(req, res, next) { 
+  userSvc.isValidLevel(req.user, 2)
+    .then(() => photoSvc.getPhotos(req.params.photoIdsList))
+    .then(photos => res.status(200).json(photos))
+    .catch(err => processError(err, res));
+});
+
+router.get('/thumbs/:photoIdsList', function(req, res, next) { 
+  userSvc.isValidLevel(req.user, 2)
+    .then(() => photoSvc.getThumbs(req.params.photoIdsList))
+    .then(thumbs => res.status(200).json(thumbs))
+    .catch(err => processError(err, res));
+});
+
+
 
 // Internal functions:
 

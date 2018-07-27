@@ -10,6 +10,9 @@
 /client/node_modules
 /server/node_modules
 
+# Angular build target
+/server/public
+
 # test .jpgs and .mp4s
 /server/protected/images
 /server/protected/videos

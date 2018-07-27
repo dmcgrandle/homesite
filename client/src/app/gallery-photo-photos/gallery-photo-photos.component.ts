@@ -8,6 +8,7 @@ import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-messa
 import { FullscreenOverlayContainer } from '../../../node_modules/@angular/cdk/overlay';
 import { Photo } from '../_classes/photo-classes';
 import { Observable, of } from 'rxjs';
+import { OVERLAY_KEYBOARD_DISPATCHER_PROVIDER_FACTORY } from '../../../node_modules/@angular/cdk/overlay/typings/keyboard/overlay-keyboard-dispatcher';
 
 Event
 
@@ -30,49 +31,43 @@ export class GalleryPhotoPhotosComponent implements OnInit {
 
   version = VERSION;
   curPhoto: Photo;
-  selectedPhoto: Observable<any>;
+  curThumbs: string[];
+//  selectedPhoto: Observable<any>;
 
-  constructor(private media: MediaService,
-              private route: ActivatedRoute,
+  constructor(private  media: MediaService,
+              private  route: ActivatedRoute,
               private router: Router, 
-              public dialog: MatDialog) { }
-
-/*
-// Note: No standard (yet) in browsers for this event, so listen to all of them...
-  @HostListener('document:fullscreenchange', []) // the standard ... will work someday
-  @HostListener('document:webkitfullscreenchange', []) // Chrome
-  @HostListener('document:mozfullscreenchange', []) // Firefox
-  @HostListener('document:msfullscreenchange', []) // IE
-  onFSChange() {// when minimizing back from full screen, nav back to albums
-    if (!(document.fullscreenElement || document.webkitFullscreenElement 
-        || document['mozFullScreenElement'] || document['msFullScreenElement'])){
-      let parent = this.media.curAlbum.path.split('/').slice(0,-1).join('/');
-      let url = 'albums' + this.router.createUrlTree([parent]).toString();
-      this.router.navigate([url]); 
-    } // This makes this component effectively live ONLY in full screen mode.
-  }
-*/
+              public  dialog: MatDialog) { }
 
   ngOnInit() {
+    // If called from gallery-photo-albums component then the
+    // media.curPhotoAlbum variable will already be set up. If not
+    // we were probably called by a browser typed link or refresh.
     if (this.media.curPhotoAlbum) {
-      this.curPhoto = this.media.curPhotoAlbum.photos[0];
+      this.setCurrentValues(this.media.curPhotoAlbum.photos);
     } else {// We need to load the curAlbum from the url sent.
       this.media.getPhotoAlbumByURL(this.route.url).subscribe(
-        (album) => {
-          this.media.curPhotoAlbum = album;
-          this.curPhoto = this.media.curPhotoAlbum.photos[0];
-        },
+        (album) => this.setCurrentValues(album.photos),
         (err) => this.errAlert('Problem getting albums!', err)
       );
-      }
+    }
+  }
+
+  private setCurrentValues(photos: number[]) {
+    this.media.getPhotoById(photos[0]).subscribe(
+      photo => this.curPhoto = photo
+    );
+    this.media.getThumbsByIdArray(photos).subscribe(
+      thumbs => this.curThumbs = thumbs
+    );
   }
 
   private changePhoto(photo: Photo) {
     this.curPhoto = photo;
   }
 
-  private highlightAndScroll(photo: Photo, e: Element) {
-    if (photo === this.curPhoto) {
+  private highlightAndScroll(photoId: number, e: Element) {
+    if (photoId === this.curPhoto._id) {
       e.scrollIntoView({behavior: "instant", block: "center", inline: "center"})
       return "selected"; // changes the id property of this element so css styles can outline it
     }
@@ -83,7 +78,7 @@ export class GalleryPhotoPhotosComponent implements OnInit {
   keyEvent(event: KeyboardEvent) {
     if (event.keyCode in KEY_CODE) {
       let nextIndex = 0;
-      const curIndex = Number(this.media.curPhotoAlbum.photos.indexOf(this.curPhoto));
+      const curIndex = Number(this.curPhoto._id);
       switch (event.keyCode) { // set nextIndex to where we are going next
         case KEY_CODE.RIGHT_ARROW:
             nextIndex = (curIndex === this.media.curPhotoAlbum.photos.length-1) ? 0: curIndex + 1;
@@ -104,8 +99,8 @@ export class GalleryPhotoPhotosComponent implements OnInit {
 //            console.log('Pressed PAGE_DOWN');
             break;
       }
-      this.curPhoto = this.media.curPhotoAlbum.photos[nextIndex];
-    }
+      this.media.getPhotoById(nextIndex).subscribe(photo => this.curPhoto = photo);
+      }
   }
  
   public makeFullscreen() {

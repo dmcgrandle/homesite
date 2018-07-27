@@ -17,7 +17,9 @@
     "mongodb": "^3.0.10",
     "morgan": "^1.9.0",
     "nodemailer": "^4.6.7",
-    "through2": "^2.0.3"
+    "sharp": "^0.20.5",
+    "through2": "^2.0.3",
+    "unique-filename": "^1.1.0"
   },
   "devDependencies": {
     "nodemon": "^1.17.5"

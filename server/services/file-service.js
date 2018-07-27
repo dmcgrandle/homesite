@@ -4,6 +4,7 @@
 // External Imports:
 const fs = require('fs-extra');
 const util = require('util');
+//const path = require('path');
 
 const klaw = require('klaw');
 const through2 = require('through2');
@@ -15,39 +16,44 @@ const cfg = require('../config').fileService;
 let fSvc = {};
 
 const filterExcludeIfNotPhoto = through2.obj(function (item, enc, next) {
-    if (item.stats.isFile() && isPhotoSuffix(item.path.substr(-4,4).toLowerCase())) { 
+    // Return true if file is a photo and not hidden or in a hidden dir
+    if (item.stats.isFile() && !isHidden(item.path) && isPhotoSuffix(item.path.substr(-4,4).toLowerCase())) { 
         this.push(item);
     }
     next();
 });
 
 const filterExcludeFiles = through2.obj(function (item, enc, next) {
-    if (item.stats.isDirectory()) {
+    if (item.stats.isDirectory() && !isHidden(item.path)) {
         this.push(item);
     }
-    next();
+    next(); 
 });
 
-fSvc.paths = function(path) {
+isHidden = function(path) { // Regex to test if there is a hidden directory or file in path
+    return (/(^|\/)\.[^\/\.]/g).test(path);
+};
+
+fSvc.photoDirs = function(topDir) {
     return new Promise( function(resolve, reject) {
         try {
             let items = [];
-            klaw('./protected/' + path)
+            klaw('.' + topDir)
                 .pipe(filterExcludeFiles)
-                .on('data', item => items.push(stripPath(item, path)))
+                .on('data', item => items.push(stripPath(item, topDir)))
                 .on('end', () => resolve(items))
         } catch(err) {
             reject(err);
         }
     });
 }
-fSvc.photoFiles = function(path) {
+fSvc.photoFiles = function(topDir) {
     return new Promise( function(resolve, reject) {
         try {
             let items = []; 
-            klaw('./protected/' + path)
+            klaw('.' + topDir)
                 .pipe(filterExcludeIfNotPhoto)
-                .on('data', item => items.push(stripPath(item, path)))
+                .on('data', item => items.push(stripPath(item, topDir)))
                 .on('end', () => resolve(items))
         } catch(err) {
             reject(err);
@@ -55,9 +61,11 @@ fSvc.photoFiles = function(path) {
     });
 }
 
-stripPath = function(item, path) {
-    // strip out everything in path up to and including the 'dir' sent.
-    return item.path.substr(item.path.search('protected/'+path)+11+path.length);
+stripPath = function(item, topDir) {
+    // strip out everything in path up to and including the 'topDir'.
+    // Note: search will return -1 on top level directory itself.
+    const s = item.path.search(topDir);
+    return (s > 0) ? item.path.substr(s + topDir.length) : '';
 }
 
 isPhotoSuffix = function(str) { //TODO: add more recognized picture formats

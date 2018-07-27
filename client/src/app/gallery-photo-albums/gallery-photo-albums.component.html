@@ -13,7 +13,7 @@
         <mat-card-subtitle>{{album.description}}</mat-card-subtitle>
       </mat-card-header>
       <div *ngIf='album.featuredPhoto.filename' fxFill fxLayout="center center">
-        <img mat-card-image [src]='(album.featuredPhoto.fullpath) | secure'>
+        <img mat-card-image [src]='(album.featuredPhoto.fullPath) | secure'>
       </div>
       <mat-card-footer>  
       </mat-card-footer>

@@ -1,8 +1,8 @@
-<div id="full-screen" *ngIf="curPhoto">
+<div id="full-screen" *ngIf="curPhoto && curThumbs">
   <div class="title" fxLayout="row">
     <h2><span>{{media.curPhotoAlbum.name}}:</span></h2>
     <span class="fill-space"></span>
-    <a [download]='curPhoto.filename' [href]='curPhoto.fullpath | secure'>
+    <a [download]='curPhoto.filename' [href]='curPhoto.fullPath | secure'>
       <mat-icon>vertical_align_bottom</mat-icon>
     </a>
   </div>
@@ -13,19 +13,19 @@
     <!-- large display picture -->
     <div fxHide.lt-sm fxLayout="column" fxLayoutAlign="none center">
       <mat-card (click)="makeFullscreen()" >
-        <img class="img-large" mat-card-image [src]='curPhoto.fullpath | secure'>
+        <img class="img-large" mat-card-image [src]='curPhoto.fullPath | secure'>
       </mat-card>
     </div>
     <!-- scrollable row of thumbnails -->
     <div id="thumbnails" fxLayout.gt-xs="row" fxLayout.xs="column" fxLayoutGap.gt-xs="6px" fxLayoutGap.xs="1px" fxLayoutAlign.gt-xs="none center" fxLayoutAlign.xs="none none">  
-      <div *ngFor="let photo of media.curPhotoAlbum.photos" (click)="changePhoto(photo)"
+      <div *ngFor="let photoId of media.curPhotoAlbum.photos; index as i" (click)="changePhoto(photoId)"
         fxFlex.xl="0 0 4.25%" fxFlex.lg="0 0 6.31%" fxFlex.md="0 0 7.8%" fxFlex.sm="0 0 11.75%" fxFlex.xs="0 0 98%">
-        <img #thumb fxFlexAlignSelf="center" class="img-thumbs" [id]="highlightAndScroll(photo, thumb)" [src]='photo.fullpath | secure'>
+        <img #thumbnail fxFlexAlignSelf="center" class="img-thumbs" [id]="highlightAndScroll(photoId, thumbnail)" [src]='curThumbs[i] | secure'>
       </div>
     </div>>
   </div>
 </div>
 
-<div *ngIf="!curPhoto">
+<div *ngIf="!(curPhoto && curThumbs)">
   <p>Waiting on server ...</p>
 </div>

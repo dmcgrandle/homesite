@@ -327,6 +327,18 @@ var MediaService = /** @class */ (function () {
         this.http = http;
     }
     ;
+    MediaService.prototype.getPhotoById = function (id) {
+        return this.http.get('/api/photos/photo-by-id/' + id);
+    };
+    ;
+    MediaService.prototype.getPhotosByIdArray = function (photos) {
+        return this.http.get('/api/photos/photos/(' + photos.join('+') + ')');
+    };
+    ;
+    MediaService.prototype.getThumbsByIdArray = function (thumbs) {
+        return this.http.get('/api/photos/thumbs/(' + thumbs.join('+') + ')');
+    };
+    ;
     MediaService.prototype.getPhotoAlbumById = function (id) {
         return this.http.get('/api/photos/album-by-id/' + id);
     };
@@ -338,7 +350,7 @@ var MediaService = /** @class */ (function () {
         return this.http.get('/api/photos/album-by-path/' + pathString);
     };
     ;
-    MediaService.prototype.getPhotoAlbums = function (albums) {
+    MediaService.prototype.getPhotoAlbumsByIdArray = function (albums) {
         var albumString = '(' + albums.join('+') + ')';
         return this.http.get('/api/photos/albums/' + albumString);
     };
@@ -346,9 +358,10 @@ var MediaService = /** @class */ (function () {
     MediaService.prototype.getPhotoAlbumByURL = function (url) {
         var _this = this;
         // This function takes in an UrlSegment array, joins those segments into a path,
-        // passes that path to getAlbumsByPath and returns an observable which resolves to
-        // the resulting album.
-        return url.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["flatMap"])(function (segments) { return _this.getPhotoAlbumByPath(segments.join('/')); }));
+        // passes that path to getAlbumsByPath.  When that resolves it saves the resulting
+        // album into curPhotoAlbum variable (class scope).  Ultimately this function 
+        // returns an observable which resolves to the album from getPhotoAlbumByPath.
+        return url.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["flatMap"])(function (segments) { return _this.getPhotoAlbumByPath(segments.join('/')); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])(function (album) { return _this.curPhotoAlbum = album; }));
     };
     ;
     MediaService.prototype.getPhotoAlbumsByURL = function (url) {
@@ -356,16 +369,13 @@ var MediaService = /** @class */ (function () {
         // This function effectively collapses three observables into one: It first takes 
         // in an observable of an UrlSegment array. When that resolves, it joins those 
         // segments into a path, and passes that path to getPhotoAlbumsByPath (the second 
-        // observable). Once that observable resolves into an album, it then saves the 
-        // result into the curPhotoAlbum variable (class scope) and finally calls getAlbums 
-        // (the third observable) with that album's album.albums array.  getPhotoAlbumsByURL
+        // observable). Once that observable resolves into an album, it then saves the result
+        // into the curPhotoAlbum variable (class scope) and finally calls getPhotoAlbums 
+        // (the third observable) with that album's album.albums array.  This entire method
         // ultimately returns an observable that resolves to the resulting array of album 
-        // objects from getPhotoAlbums.  Whew - that's a lot for just a few lines of code!  :)
-        return url.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["flatMap"])(function (segments) { return _this.getPhotoAlbumByPath(segments.join('/'))
-            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["flatMap"])(function (album) {
-            _this.curPhotoAlbum = album; // save current album before next step
-            return _this.getPhotoAlbums(album.albums);
-        })); }));
+        // objects from getPhotoAlbumsByIdArray.  
+        // Whew - that's a lot for just a few lines of code!  :)
+        return url.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])(function (segments) { return _this.getPhotoAlbumByPath(segments.join('/')); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])(function (album) { return _this.curPhotoAlbum = album; }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])(function (album) { return _this.getPhotoAlbumsByIdArray(album.albums); }));
     };
     ;
     MediaService = __decorate([
@@ -1242,7 +1252,7 @@ var ForgotDialogComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"displayAlbums\">\n  <h2>{{media.curPhotoAlbum.name}}:</h2>\n  <div class=\"container\"\n    fxLayout=\"row wrap\"\n    fxLayoutGap=\"4px\"\n    fxLayoutAlign.gt-xs=\"space-evenly stretch\">\n    <mat-card *ngFor=\"let album of displayAlbums\" (click)=\"updateDisplayAlbumOrNavToPhotos(album)\"\n      fxFlex.xl=\"16.2%\" fxFlex.lg=\"24.5%\" fxFlex.md=\"32.5%\" fxFlex.sm=\"49%\" fxFlex.xs=\"98%\">\n      <mat-card-header>\n        <mat-card-title>\n          <h3 fxFlexAlign>{{album.name}}</h3>\n        </mat-card-title>\n        <mat-card-subtitle>{{album.description}}</mat-card-subtitle>\n      </mat-card-header>\n      <div *ngIf='album.featuredPhoto.filename' fxFill fxLayout=\"center center\">\n        <img mat-card-image [src]='(album.featuredPhoto.fullpath) | secure'>\n      </div>\n      <mat-card-footer>  \n      </mat-card-footer>\n    </mat-card>\n  </div>\n</div>\n\n<div *ngIf=\"!displayAlbums\">\n  <p>Waiting on server ...</p>\n</div>\n\n"
+module.exports = "<div *ngIf=\"displayAlbums\">\n  <h2>{{media.curPhotoAlbum.name}}:</h2>\n  <div class=\"container\"\n    fxLayout=\"row wrap\"\n    fxLayoutGap=\"4px\"\n    fxLayoutAlign.gt-xs=\"space-evenly stretch\">\n    <mat-card *ngFor=\"let album of displayAlbums\" (click)=\"updateDisplayAlbumOrNavToPhotos(album)\"\n      fxFlex.xl=\"16.2%\" fxFlex.lg=\"24.5%\" fxFlex.md=\"32.5%\" fxFlex.sm=\"49%\" fxFlex.xs=\"98%\">\n      <mat-card-header>\n        <mat-card-title>\n          <h3 fxFlexAlign>{{album.name}}</h3>\n        </mat-card-title>\n        <mat-card-subtitle>{{album.description}}</mat-card-subtitle>\n      </mat-card-header>\n      <div *ngIf='album.featuredPhoto.filename' fxFill fxLayout=\"center center\">\n        <img mat-card-image [src]='(album.featuredPhoto.fullPath) | secure'>\n      </div>\n      <mat-card-footer>  \n      </mat-card-footer>\n    </mat-card>\n  </div>\n</div>\n\n<div *ngIf=\"!displayAlbums\">\n  <p>Waiting on server ...</p>\n</div>\n\n"
 
 /***/ }),
 
@@ -1306,8 +1316,7 @@ var GalleryPhotoAlbumsComponent = /** @class */ (function () {
         var _this = this;
         this.media.curPhotoAlbum = album; // go down one level (directory).
         if (album.albums.length > 0) {
-            this.media.getPhotoAlbums(album.albums).subscribe(// get the albums array for this new album
-            function (albums) {
+            this.media.getPhotoAlbumsByIdArray(album.albums).subscribe(function (albums) {
                 _this.displayAlbums = albums; // set albums to display
                 var url = 'albums' + _this.router.createUrlTree([album.path]).toString();
                 _this.location.go(url); // Update the URL in the browser window without navigating.
@@ -1355,7 +1364,7 @@ var GalleryPhotoAlbumsComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"full-screen\" *ngIf=\"curPhoto\">\n  <div class=\"title\" fxLayout=\"row\">\n    <h2><span>{{media.curPhotoAlbum.name}}:</span></h2>\n    <span class=\"fill-space\"></span>\n    <a [download]='curPhoto.filename' [href]='curPhoto.fullpath | secure'>\n      <mat-icon>vertical_align_bottom</mat-icon>\n    </a>\n  </div>\n  <div class=\"container\"\n    fxLayout=\"column\"\n    fxLayoutGap=\"4px\"\n    fxLayoutAlign.gt-xs=\"space-evenly stretch\">\n    <!-- large display picture -->\n    <div fxHide.lt-sm fxLayout=\"column\" fxLayoutAlign=\"none center\">\n      <mat-card (click)=\"makeFullscreen()\" >\n        <img class=\"img-large\" mat-card-image [src]='curPhoto.fullpath | secure'>\n      </mat-card>\n    </div>\n    <!-- scrollable row of thumbnails -->\n    <div id=\"thumbnails\" fxLayout.gt-xs=\"row\" fxLayout.xs=\"column\" fxLayoutGap.gt-xs=\"6px\" fxLayoutGap.xs=\"1px\" fxLayoutAlign.gt-xs=\"none center\" fxLayoutAlign.xs=\"none none\">  \n      <div *ngFor=\"let photo of media.curPhotoAlbum.photos\" (click)=\"changePhoto(photo)\"\n        fxFlex.xl=\"0 0 4.25%\" fxFlex.lg=\"0 0 6.31%\" fxFlex.md=\"0 0 7.8%\" fxFlex.sm=\"0 0 11.75%\" fxFlex.xs=\"0 0 98%\">\n        <img #thumb fxFlexAlignSelf=\"center\" class=\"img-thumbs\" [id]=\"highlightAndScroll(photo, thumb)\" [src]='photo.fullpath | secure'>\n      </div>\n    </div>>\n  </div>\n</div>\n\n<div *ngIf=\"!curPhoto\">\n  <p>Waiting on server ...</p>\n</div>\n"
+module.exports = "<div id=\"full-screen\" *ngIf=\"curPhoto && curThumbs\">\n  <div class=\"title\" fxLayout=\"row\">\n    <h2><span>{{media.curPhotoAlbum.name}}:</span></h2>\n    <span class=\"fill-space\"></span>\n    <a [download]='curPhoto.filename' [href]='curPhoto.fullPath | secure'>\n      <mat-icon>vertical_align_bottom</mat-icon>\n    </a>\n  </div>\n  <div class=\"container\"\n    fxLayout=\"column\"\n    fxLayoutGap=\"4px\"\n    fxLayoutAlign.gt-xs=\"space-evenly stretch\">\n    <!-- large display picture -->\n    <div fxHide.lt-sm fxLayout=\"column\" fxLayoutAlign=\"none center\">\n      <mat-card (click)=\"makeFullscreen()\" >\n        <img class=\"img-large\" mat-card-image [src]='curPhoto.fullPath | secure'>\n      </mat-card>\n    </div>\n    <!-- scrollable row of thumbnails -->\n    <div id=\"thumbnails\" fxLayout.gt-xs=\"row\" fxLayout.xs=\"column\" fxLayoutGap.gt-xs=\"6px\" fxLayoutGap.xs=\"1px\" fxLayoutAlign.gt-xs=\"none center\" fxLayoutAlign.xs=\"none none\">  \n      <div *ngFor=\"let photoId of media.curPhotoAlbum.photos; index as i\" (click)=\"changePhoto(photoId)\"\n        fxFlex.xl=\"0 0 4.25%\" fxFlex.lg=\"0 0 6.31%\" fxFlex.md=\"0 0 7.8%\" fxFlex.sm=\"0 0 11.75%\" fxFlex.xs=\"0 0 98%\">\n        <img #thumbnail fxFlexAlignSelf=\"center\" class=\"img-thumbs\" [id]=\"highlightAndScroll(photoId, thumbnail)\" [src]='curThumbs[i] | secure'>\n      </div>\n    </div>>\n  </div>\n</div>\n\n<div *ngIf=\"!(curPhoto && curThumbs)\">\n  <p>Waiting on server ...</p>\n</div>\n"
 
 /***/ }),
 
@@ -1413,6 +1422,7 @@ var KEY_CODE;
 })(KEY_CODE || (KEY_CODE = {}));
 ;
 var GalleryPhotoPhotosComponent = /** @class */ (function () {
+    //  selectedPhoto: Observable<any>;
     function GalleryPhotoPhotosComponent(media, route, router, dialog) {
         this.media = media;
         this.route = route;
@@ -1420,47 +1430,38 @@ var GalleryPhotoPhotosComponent = /** @class */ (function () {
         this.dialog = dialog;
         this.version = _angular_material__WEBPACK_IMPORTED_MODULE_1__["VERSION"];
     }
-    /*
-    // Note: No standard (yet) in browsers for this event, so listen to all of them...
-      @HostListener('document:fullscreenchange', []) // the standard ... will work someday
-      @HostListener('document:webkitfullscreenchange', []) // Chrome
-      @HostListener('document:mozfullscreenchange', []) // Firefox
-      @HostListener('document:msfullscreenchange', []) // IE
-      onFSChange() {// when minimizing back from full screen, nav back to albums
-        if (!(document.fullscreenElement || document.webkitFullscreenElement
-            || document['mozFullScreenElement'] || document['msFullScreenElement'])){
-          let parent = this.media.curAlbum.path.split('/').slice(0,-1).join('/');
-          let url = 'albums' + this.router.createUrlTree([parent]).toString();
-          this.router.navigate([url]);
-        } // This makes this component effectively live ONLY in full screen mode.
-      }
-    */
     GalleryPhotoPhotosComponent.prototype.ngOnInit = function () {
         var _this = this;
+        // If called from gallery-photo-albums component then the
+        // media.curPhotoAlbum variable will already be set up. If not
+        // we were probably called by a browser typed link or refresh.
         if (this.media.curPhotoAlbum) {
-            this.curPhoto = this.media.curPhotoAlbum.photos[0];
+            this.setCurrentValues(this.media.curPhotoAlbum.photos);
         }
         else {
-            this.media.getPhotoAlbumByURL(this.route.url).subscribe(function (album) {
-                _this.media.curPhotoAlbum = album;
-                _this.curPhoto = _this.media.curPhotoAlbum.photos[0];
-            }, function (err) { return _this.errAlert('Problem getting albums!', err); });
+            this.media.getPhotoAlbumByURL(this.route.url).subscribe(function (album) { return _this.setCurrentValues(album.photos); }, function (err) { return _this.errAlert('Problem getting albums!', err); });
         }
+    };
+    GalleryPhotoPhotosComponent.prototype.setCurrentValues = function (photos) {
+        var _this = this;
+        this.media.getPhotoById(photos[0]).subscribe(function (photo) { return _this.curPhoto = photo; });
+        this.media.getThumbsByIdArray(photos).subscribe(function (thumbs) { return _this.curThumbs = thumbs; });
     };
     GalleryPhotoPhotosComponent.prototype.changePhoto = function (photo) {
         this.curPhoto = photo;
     };
-    GalleryPhotoPhotosComponent.prototype.highlightAndScroll = function (photo, e) {
-        if (photo === this.curPhoto) {
+    GalleryPhotoPhotosComponent.prototype.highlightAndScroll = function (photoId, e) {
+        if (photoId === this.curPhoto._id) {
             e.scrollIntoView({ behavior: "instant", block: "center", inline: "center" });
             return "selected"; // changes the id property of this element so css styles can outline it
         }
         return null;
     };
     GalleryPhotoPhotosComponent.prototype.keyEvent = function (event) {
+        var _this = this;
         if (event.keyCode in KEY_CODE) {
             var nextIndex = 0;
-            var curIndex = Number(this.media.curPhotoAlbum.photos.indexOf(this.curPhoto));
+            var curIndex = Number(this.curPhoto._id);
             switch (event.keyCode) {
                 case KEY_CODE.RIGHT_ARROW:
                     nextIndex = (curIndex === this.media.curPhotoAlbum.photos.length - 1) ? 0 : curIndex + 1;
@@ -1481,7 +1482,7 @@ var GalleryPhotoPhotosComponent = /** @class */ (function () {
                     //            console.log('Pressed PAGE_DOWN');
                     break;
             }
-            this.curPhoto = this.media.curPhotoAlbum.photos[nextIndex];
+            this.media.getPhotoById(nextIndex).subscribe(function (photo) { return _this.curPhoto = photo; });
         }
     };
     GalleryPhotoPhotosComponent.prototype.makeFullscreen = function () {

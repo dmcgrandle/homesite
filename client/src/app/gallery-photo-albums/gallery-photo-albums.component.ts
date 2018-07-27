@@ -16,10 +16,10 @@ export class GalleryPhotoAlbumsComponent implements OnInit {
 
   displayAlbums : Array<Album>;
 
-  constructor(private media: MediaService,
-              private route: ActivatedRoute,
-              private router: Router, 
-              public  dialog: MatDialog,
+  constructor(private    media: MediaService,
+              private    route: ActivatedRoute,
+              private   router: Router, 
+              public    dialog: MatDialog,
               private location: Location) { }
 
   ngOnInit() {
@@ -33,15 +33,15 @@ export class GalleryPhotoAlbumsComponent implements OnInit {
   public updateDisplayAlbumOrNavToPhotos(album: Album) {
     this.media.curPhotoAlbum = album; // go down one level (directory).
     if (album.albums.length > 0) {// means this album contains other albums
-      this.media.getPhotoAlbums(album.albums).subscribe( // get the albums array for this new album
-        (albums) => {
+      this.media.getPhotoAlbumsByIdArray(album.albums).subscribe( 
+        (albums) => { // get the albums array for this new album
           this.displayAlbums = albums; // set albums to display
           const url = 'albums' + this.router.createUrlTree([album.path]).toString();
           this.location.go(url); // Update the URL in the browser window without navigating.
         },
         (err) => this.errAlert('Problem getting albums!', err)
       );
-    } else { // not an album of albums!  Display photos
+    } else { // Not an album of albums!  So nav to photos ...
       this.router.navigate(['/photos/' + album.path]); 
     } 
   };

@@ -37,7 +37,17 @@ cfg.fileService = {
 
 // config for photo-service
 cfg.photoService = {
-
+    PHOTO_DIR : {
+        PATH: '/protected/images/',
+        CACHE_DIR: '.cache'
+    },
+    THUMBS: {
+        WIDTH: 400,
+        FORMAT: 'jpeg',
+        PREFIX: 'thumb',
+        SUFFIX: '.jpg',
+        MAX_CREATE_AT_ONCE: 50
+    }
 }
 
 // config for video-service
