@@ -11,7 +11,7 @@
           <h3 fxFlexAlign>Picture Gallery</h3>
         </mat-card-title>
       </mat-card-header>
-      <img mat-card-image [routerLink]="['/albums']" [src]="CFG.settings.gallery.featuredPhoto.filename | secure">
+      <img mat-card-image [routerLink]="['/albums']" [src]="CFG.const.gallery.featuredPhoto.filename | secure">
     </mat-card>
     <mat-card fxFlex="33">
       <mat-card-header fxLayoutAlign="center center">
@@ -19,7 +19,7 @@
           <h3>Video Gallery</h3>
         </mat-card-title>
       </mat-card-header>
-      <img mat-card-image [routerLink]="['/videos']" [src]="CFG.settings.gallery.featuredVideo.filename | secure">
+      <img mat-card-image [routerLink]="['/videos']" [src]="CFG.const.gallery.featuredVideo.filename | secure">
     </mat-card>
   </div>
 </div>

@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NG_VALIDATORS } from '@angular/forms';
 import { OverlayModule, OverlayContainer, FullscreenOverlayContainer } from '@angular/cdk/overlay';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -23,7 +23,7 @@ import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { LoginComponent } from './login/login.component';
 import { AlertMessageDialogComponent } from './alert-message-dialog/alert-message-dialog.component';
-import { RegisterComponent } from './register/register.component';
+import { RegisterComponent, EqualDirective } from './register/register.component';
 import { ForgotDialogComponent } from './forgot-dialog/forgot-dialog.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { GalleryComponent } from './gallery/gallery.component';
@@ -50,6 +50,7 @@ import { SecurePipe } from './_helpers/secure.pipe';
     LoginComponent,
     AlertMessageDialogComponent,
     RegisterComponent,
+    EqualDirective,
     ForgotDialogComponent,
     ChangePasswordComponent,
     GalleryComponent,
@@ -88,7 +89,8 @@ import { SecurePipe } from './_helpers/secure.pipe';
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,
       multi: true
-  }],
+    }
+  ],
   entryComponents: [
     RegisterComponent, ForgotDialogComponent, AlertMessageDialogComponent
   ],

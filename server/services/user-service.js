@@ -13,6 +13,8 @@ const fs = require('fs-extra');
 const assert = require('assert'); 
 const nodemailer = require('nodemailer');
 const util = require('util');
+const bcrypt = require('bcrypt');
+const cryptoTS = require('crypto-ts');
 
 // Project Imports:
 const cfg = require('../config').userService;
@@ -24,13 +26,26 @@ let db; // module scope needed, these variables are used throughout the module.
   try { // if errors then crash
     db = await require('./db-service');
     if (0 === await db.collection('users').find({_id : 0}).limit(1).count()) {
-      console.log(Date(Date.now()) + ' : created new "user" document in db.');
       const defUsers = JSON.parse(await fs.readFile(cfg.default_users, 'utf8'));
+      console.log('default users before modification:');
+      console.log(defUsers);
+      // Set up promise array to iterate through all defUsers and hash the passwords
+      let pArray = [];
+      for (let i=0;i<defUsers.length;i++) {
+        pArray[i] = bcrypt.hash(defUsers[i].password, cfg.SALT_ROUNDS);
+      }
+      let hashArray = await Promise.all(pArray);
+      for (let i=0;i<hashArray.length;i++) {
+        defUsers[i].password = hashArray[i];
+      }
+      console.log('default users after modification:');
+      console.log(defUsers);
       const res = await db.collection('users').insertMany(defUsers);
       assert.equal(defUsers.length, res.insertedCount); // checking creation was successful   
+      console.log(Date(Date.now()) + ' : created new "user" document in db.');
     }
   }
-  catch(err) {errAndExit(err, 1)};
+  catch(err) {errAndExit(err, 1)}; 
 })(); // IIFE 
 
 
@@ -64,19 +79,15 @@ exports.getListSansPasswords = async function() {
 
 exports.isValidLevel = async function(user, level) {
   const userReturned = await exports.getUser(user);
-  if (userReturned.level == 0) throw new Error('401 User Deleted');
-  if (userReturned.level == 1) throw new Error('401 User is not activated yet, please try again in a few hours.');
-  for (let i=2;i<4;i++) {
-    if ((userReturned.level == i) && (level > i)) {
-      throw new Error('403 User ' + user.username + ' is not high enough level.')
-    }
-  }
+  if (userReturned.level === 0) throw new Error('401 User Deleted');
+  if (userReturned.level === 1) throw new Error('401 User is not activated yet, please try again in a few hours.');
+  if (userReturned.level < level) throw new Error('403 User ' + user.username + ' is not high enough level.');
   return true; // no errors thrown
 };
 
 exports.isValidPassword = async function(user) {
-  const userReturned = await exports.getUser(user);
-  if (user.password != userReturned.password) {
+  const dbUser = await exports.getUser(user);
+  if (!(await bcrypt.compare(decryptPw(user.password), dbUser.password))) {
     throw new Error('401 Password incorrect, please try again.  If problem persists, please click the "forgot password" link.');
   }
   return true;
@@ -93,12 +104,13 @@ exports.isUnique = async function(user) {
 exports.create = async function(user) {
   if (await isValidData(user)) {
     user.level = 1; // Users are created inactive
+    user.password = await bcrypt.hash(decryptPw(user.password), cfg.SALT_ROUNDS);
     let userReturned = await db.collection('users').findOne({level : 0});
     if (!userReturned) { // no deleted users, so create a new one
       let lastU = await db.collection('users').find().sort({_id: -1}).limit(1).next();
       user._id = lastU._id + 1;
       console.log('user to be inserted is ' + JSON.stringify(user));
-      let r = await db.collection('users').insertOne(user);
+      let r = await db.collection('users').insertOne(user); 
     }
     else { //update the existing deleted user with new info
       user._id = userReturned._id;
@@ -122,6 +134,7 @@ exports.delete = async function(user) {
 };
 
 exports.changePassword = async function(user) {
+  user.password = await bcrypt.hash(decryptPw(user.password), cfg.SALT_ROUNDS);
   const result = await db.collection('users').findOneAndUpdate(
     {username : user.username},
     {$set: {password: user.password}}
@@ -151,6 +164,10 @@ exports.emailReset = async function(user) {
 };
 
 // Internal functions:
+
+decryptPw = function(pw) { // decrypt password sent from client, return plain text string
+  return cryptoTS.AES.decrypt(pw, cfg.PW_SECRET).toString(cryptoTS.enc.Utf8);
+}
 
 isValidData = async function(user) {
 // TODO: implement more complex validations

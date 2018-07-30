@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import { Router } from '@angular/router';
 
+import { AppConfig } from '../app.config';
+import { User } from '../_classes/user-classes';
 import { AuthService } from '../_services/auth.service';
 import { RegisterComponent } from '../register/register.component';
 import { ForgotDialogComponent } from '../forgot-dialog/forgot-dialog.component';
@@ -16,12 +18,13 @@ export class LoginComponent implements OnInit {
 
   hide: boolean = true;
 
-  constructor(private auth: AuthService,
-              public dialog: MatDialog,
+  constructor(public     CFG: AppConfig,
+              private   auth: AuthService,
+              public  dialog: MatDialog,
               private router: Router) { }
 
   ngOnInit() {
-    this.auth.user = {};
+    this.auth.user = new User;
     if ((this.auth.hasLoggedInBefore()) && (!this.auth.isLoginExpired())) {
       // Someone has logged in before and still has an unexpired token, so
       // go ahead and auto-login with those saved credentials.
@@ -33,7 +36,10 @@ export class LoginComponent implements OnInit {
     }
   };
 
-  onLogin() {
+  onLogin(password: string) {
+    // Note: I stopped binding password to auth.user.password since the auth service 
+    // changes that value outside the form.  Keeping it unbound keeps the UI clean.
+    this.auth.user.password = password;
     this.auth.authLogin().subscribe(
       () => {
         console.log("User " + this.auth.user['username'] + " is logged in");
@@ -78,6 +84,7 @@ export class LoginComponent implements OnInit {
 
   openRegisterDialog(): void {
     const dialogRef = this.dialog.open(RegisterComponent, {
+//      width: '600px',
       data: {name: this.auth.user['username']}
     });
   }

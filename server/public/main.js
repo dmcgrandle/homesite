@@ -23,6 +23,36 @@ webpackEmptyAsyncContext.id = "./src/$$_lazy_route_resource lazy recursive";
 
 /***/ }),
 
+/***/ "./src/app/_classes/user-classes.ts":
+/*!******************************************!*\
+  !*** ./src/app/_classes/user-classes.ts ***!
+  \******************************************/
+/*! exports provided: User */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "User", function() { return User; });
+// user-classes.ts - Declaration of User class
+// Note - I have the constructors setting initial values so all instances
+// are set up with fields in the same order every time.
+var User = /** @class */ (function () {
+    function User() {
+        this._id = -1;
+        this.name = '';
+        this.username = '';
+        this.password = '';
+        this.email = '';
+        this.level = 0;
+    }
+    return User;
+}());
+
+;
+
+
+/***/ }),
+
 /***/ "./src/app/_helpers/jwt-interceptor.ts":
 /*!*********************************************!*\
   !*** ./src/app/_helpers/jwt-interceptor.ts ***!
@@ -205,6 +235,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm5/operators/index.js");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
+/* harmony import */ var crypto_ts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! crypto-ts */ "./node_modules/crypto-ts/esm5/crypto-ts.js");
+/* harmony import */ var _app_config__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../app.config */ "./src/app/app.config.ts");
+/* harmony import */ var _classes_user_classes__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_classes/user-classes */ "./src/app/_classes/user-classes.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -217,12 +250,14 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
+
+
+
 var AuthService = /** @class */ (function () {
-    function AuthService(http) {
+    function AuthService(http, CFG) {
         this.http = http;
+        this.CFG = CFG;
         this._authenticated = false;
-        //  private _authenticated: BehaviorSubject<boolean> = new BehaviorSubject(false);
-        this.user = {};
         // set up default starting values
         localStorage.setItem('userId', "-1"); //no user logged in to start with
     }
@@ -236,15 +271,19 @@ var AuthService = /** @class */ (function () {
     };
     AuthService.prototype.authLogin = function () {
         var _this = this;
+        // before transmitting user object to server for authentication, encrypt pw
+        this.user.password = this.encryptPass(this.user.password);
         return this.http.post('/api/users/login', this.user).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])(function (res) { return _this.storeUserResponse(res); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])(function () { return _this.setAuthenticated(true); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["shareReplay"])());
     };
     AuthService.prototype.authRegister = function () {
+        this.user.password = this.encryptPass(this.user.password);
         return this.http.post('/api/users/create', this.user).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["shareReplay"])());
     };
     AuthService.prototype.authForgot = function () {
         return this.http.post('/api/users/forgot', this.user).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["shareReplay"])());
     };
     AuthService.prototype.authChangePassword = function (token) {
+        this.user.password = this.encryptPass(this.user.password);
         var body = this.user; // http body to send will be the user and the token
         body['token'] = token;
         return this.http.post('/api/users/changepassword', body).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["shareReplay"])());
@@ -271,7 +310,10 @@ var AuthService = /** @class */ (function () {
         localStorage.removeItem('level');
         localStorage.removeItem('expiresAt');
         this.setAuthenticated(false);
-        this.user = {};
+        this.user = new _classes_user_classes__WEBPACK_IMPORTED_MODULE_5__["User"];
+    };
+    AuthService.prototype.encryptPass = function (password) {
+        return crypto_ts__WEBPACK_IMPORTED_MODULE_3__["AES"].encrypt(password, this.CFG.const.auth.password_secret).toString();
     };
     AuthService.prototype.storeUserResponse = function (res) {
         localStorage.setItem('username', this.user['username']);
@@ -288,7 +330,8 @@ var AuthService = /** @class */ (function () {
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])({
             providedIn: 'root'
         }),
-        __metadata("design:paramtypes", [_angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"]])
+        __metadata("design:paramtypes", [_angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"],
+            _app_config__WEBPACK_IMPORTED_MODULE_4__["AppConfig"]])
     ], AuthService);
     return AuthService;
 }());
@@ -754,7 +797,7 @@ var AppConfig = /** @class */ (function () {
         var jsonFile = "assets/config/config." + _environments_environment__WEBPACK_IMPORTED_MODULE_2__["environment"].confName + ".json";
         return new Promise(function (resolve, reject) {
             _this.http.get(jsonFile).subscribe(function (res) {
-                _this.settings = res;
+                _this.const = res;
                 resolve();
             }, function (err) { return reject('Could not load file ' + jsonFile + ': ' + JSON.stringify(err)); });
         });
@@ -859,6 +902,7 @@ var AppModule = /** @class */ (function () {
                 _login_login_component__WEBPACK_IMPORTED_MODULE_14__["LoginComponent"],
                 _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_15__["AlertMessageDialogComponent"],
                 _register_register_component__WEBPACK_IMPORTED_MODULE_16__["RegisterComponent"],
+                _register_register_component__WEBPACK_IMPORTED_MODULE_16__["EqualDirective"],
                 _forgot_dialog_forgot_dialog_component__WEBPACK_IMPORTED_MODULE_17__["ForgotDialogComponent"],
                 _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_18__["ChangePasswordComponent"],
                 _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_19__["GalleryComponent"],
@@ -922,7 +966,7 @@ function loadConfigDuringInit(appConfig) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"!auth.isAuthenticated()\">\n  <!-- <video autoplay muted loop id=\"BackImage\">\n    <source src=\"assets/video/Piano480p.mp4\" type=\"video/mp4\">\n  </video> -->\n  <img src=\"assets/images/Mountain.jpg\" id=\"BackImage\" fxFlexFill>\n  <div class=\"change-password-container\" fxLayoutAlign=\"center center\">\n        <!-- fxLayout=\"row\"\n        fxLayout.sm=\"column\"\n        fxLayout.xs=\"column\" -->\n      <form novalidate #changePasswordForm=\"ngForm\" class=\"change-password-form\" fxLayout=\"column\">\n        <mat-toolbar class=\"toolbar\">\n          <h3 align=\"center\">Change your password</h3>\n        </mat-toolbar>\n        <p>Changing password for user: {{ auth.user.username }}</p>\n        <mat-form-field>\n          <input matInput maxlength=\"30\" placeholder=\"Password\" [type]=\"hidePassword ? 'password' : 'text'\"\n            [(ngModel)]=\"auth.user.password\" #password=\"ngModel\" name=\"password\" required>\n          <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n          <mat-icon matSuffix (click)=\"hidePassword = !hidePassword\">{{hidePassword ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"password.pristine\">\n              <span [hidden]=\"!password.errors?.required\">** Password is required **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <mat-form-field>\n          <input matInput maxlength=\"30\" placeholder=\"Re-Enter your password\" [type]=\"hidePassCheck ? 'password' : 'text'\"\n             [(ngModel)]=\"auth.user.passcheck\"\n             name=\"passcheck\" #passcheck=\"ngModel\" required>\n          <mat-icon matSuffix (click)=\"hidePassCheck = !hidePassCheck\">{{hidePassCheck ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"passcheck.pristine\">\n              <span [hidden]=\"!passcheck.errors?.required\">** Password Check is required **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <div fxLayout=\"row\">\n          <span class=\"fill-space\"></span>\n          <button mat-raised-button type=\"submit\"\n             color=\"primary\" [disabled]=\"(auth.user.password != auth.user.passcheck)\" (click)=\"onChangePassword()\">Change Password</button>\n        </div>\n      </form>\n  </div>\n\n</div>\n"
+module.exports = "<div *ngIf=\"!auth.isAuthenticated()\">\n  <!-- <video autoplay muted loop id=\"BackImage\">\n    <source src=\"assets/video/Piano480p.mp4\" type=\"video/mp4\">\n  </video> -->\n  <img src=\"assets/images/Mountain.jpg\" id=\"BackImage\" fxFlexFill>\n  <div class=\"change-password-container\" fxLayoutAlign=\"center center\">\n        <!-- fxLayout=\"row\"\n        fxLayout.sm=\"column\"\n        fxLayout.xs=\"column\" -->\n      <form novalidate #changePasswordForm=\"ngForm\" class=\"change-password-form\" fxLayout=\"column\">\n        <mat-toolbar class=\"toolbar\">\n          <h3 align=\"center\">Change your password</h3>\n        </mat-toolbar>\n        <p>Changing password for user: {{ auth.user.username }}</p>\n        <mat-form-field>\n          <input matInput maxlength=\"30\" placeholder=\"New password\" [type]=\"hidePassword ? 'password' : 'text'\" ngModel #password=\"ngModel\" name=\"password\" required>\n          <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n          <mat-icon matSuffix (click)=\"hidePassword = !hidePassword\">{{hidePassword ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"password.pristine\">\n              <span [hidden]=\"!password.errors?.required\">** Password is required **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <mat-form-field>\n          <input matInput maxlength=\"30\" placeholder=\"Re-Enter your new password\" [type]=\"hidePassCheck ? 'password' : 'text'\" ngModel name=\"passcheck\" #passcheck=\"ngModel\" required>\n          <mat-icon matSuffix (click)=\"hidePassCheck = !hidePassCheck\">{{hidePassCheck ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"passcheck.pristine\">\n              <span [hidden]=\"password.value === passcheck.value\">** Passwords are not the same **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <div fxLayout=\"row\">\n          <span class=\"fill-space\"></span>\n          <button mat-raised-button type=\"submit\"\n             color=\"primary\" [disabled]=\"password.value !== passcheck.value\" (click)=\"onChangePassword(password.value)\">Change Password</button>\n        </div>\n      </form>\n  </div>\n\n</div>\n"
 
 /***/ }),
 
@@ -950,8 +994,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
 /* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
-/* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
-/* harmony import */ var _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../alert-message-dialog/alert-message-dialog.component */ "./src/app/alert-message-dialog/alert-message-dialog.component.ts");
+/* harmony import */ var _classes_user_classes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_classes/user-classes */ "./src/app/_classes/user-classes.ts");
+/* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
+/* harmony import */ var _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../alert-message-dialog/alert-message-dialog.component */ "./src/app/alert-message-dialog/alert-message-dialog.component.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -961,6 +1006,7 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 var __metadata = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 
 
 
@@ -976,16 +1022,16 @@ var ChangePasswordComponent = /** @class */ (function () {
         this.hidePassCheck = true;
     }
     ChangePasswordComponent.prototype.ngOnInit = function () {
-        this.auth.user = {}; // first clear out any old user info
-        this.auth.user['username'] = this.route.snapshot.paramMap.get('username');
+        this.auth.user = new _classes_user_classes__WEBPACK_IMPORTED_MODULE_3__["User"]; // first clear out any old user info
+        this.auth.user.username = this.route.snapshot.paramMap.get('username');
         this.token = this.route.snapshot.paramMap.get('token');
     };
-    ChangePasswordComponent.prototype.onChangePassword = function () {
+    ChangePasswordComponent.prototype.onChangePassword = function (password) {
         var _this = this;
+        this.auth.user.password = password;
         this.auth.authChangePassword(this.token).subscribe(function (result) {
-            _this.alertMessage = 'Password changed for "' + _this.auth.user['username'] + '"';
-            var dialogRef = _this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_4__["AlertMessageDialogComponent"], {
-                data: { alertMessage: _this.alertMessage }
+            var dialogRef = _this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_5__["AlertMessageDialogComponent"], {
+                data: { alertMessage: 'Password changed for "' + _this.auth.user['username'] + '"' }
             });
             dialogRef.afterClosed().subscribe(function (result) { });
             console.log("Password changed for user: " + _this.auth.user['username']);
@@ -998,7 +1044,7 @@ var ChangePasswordComponent = /** @class */ (function () {
             template: __webpack_require__(/*! ./change-password.component.html */ "./src/app/change-password/change-password.component.html"),
             styles: [__webpack_require__(/*! ./change-password.component.scss */ "./src/app/change-password/change-password.component.scss")]
         }),
-        __metadata("design:paramtypes", [_services_auth_service__WEBPACK_IMPORTED_MODULE_3__["AuthService"],
+        __metadata("design:paramtypes", [_services_auth_service__WEBPACK_IMPORTED_MODULE_4__["AuthService"],
             _angular_router__WEBPACK_IMPORTED_MODULE_1__["ActivatedRoute"],
             _angular_router__WEBPACK_IMPORTED_MODULE_1__["Router"],
             _angular_material__WEBPACK_IMPORTED_MODULE_2__["MatDialog"]])
@@ -1080,7 +1126,7 @@ var DownloadsComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <mat-toolbar class=\"toolbar\" fxLayout=\"column\" fxLayoutGap=\"0px\" fxLayoutAlign=\"center center\">\n      <h2>{{CFG.settings.footer.title}}</h2>\n      <p>Contact <a href=\"mailto:{{CFG.settings.footer.email}}\">{{CFG.settings.footer.email}}</a> with any issues.</p>\n  </mat-toolbar>\n</div>\n"
+module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <mat-toolbar class=\"toolbar\" fxLayout=\"column\" fxLayoutGap=\"0px\" fxLayoutAlign=\"center center\">\n      <h2>{{CFG.const.footer.title}}</h2>\n      <p>Contact <a href=\"mailto:{{CFG.const.footer.email}}\">{{CFG.const.footer.email}}</a> with any issues.</p>\n  </mat-toolbar>\n</div>\n"
 
 /***/ }),
 
@@ -1364,7 +1410,7 @@ var GalleryPhotoAlbumsComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"full-screen\" *ngIf=\"curPhoto && curThumbs\">\n  <div class=\"title\" fxLayout=\"row\">\n    <h2><span>{{media.curPhotoAlbum.name}}:</span></h2>\n    <span class=\"fill-space\"></span>\n    <a [download]='curPhoto.filename' [href]='curPhoto.fullPath | secure'>\n      <mat-icon>vertical_align_bottom</mat-icon>\n    </a>\n  </div>\n  <div class=\"container\"\n    fxLayout=\"column\"\n    fxLayoutGap=\"4px\"\n    fxLayoutAlign.gt-xs=\"space-evenly stretch\">\n    <!-- large display picture -->\n    <div fxHide.lt-sm fxLayout=\"column\" fxLayoutAlign=\"none center\">\n      <mat-card (click)=\"makeFullscreen()\" >\n        <img class=\"img-large\" mat-card-image [src]='curPhoto.fullPath | secure'>\n      </mat-card>\n    </div>\n    <!-- scrollable row of thumbnails -->\n    <div id=\"thumbnails\" fxLayout.gt-xs=\"row\" fxLayout.xs=\"column\" fxLayoutGap.gt-xs=\"6px\" fxLayoutGap.xs=\"1px\" fxLayoutAlign.gt-xs=\"none center\" fxLayoutAlign.xs=\"none none\">  \n      <div *ngFor=\"let photoId of media.curPhotoAlbum.photos; index as i\" (click)=\"changePhoto(photoId)\"\n        fxFlex.xl=\"0 0 4.25%\" fxFlex.lg=\"0 0 6.31%\" fxFlex.md=\"0 0 7.8%\" fxFlex.sm=\"0 0 11.75%\" fxFlex.xs=\"0 0 98%\">\n        <img #thumbnail fxFlexAlignSelf=\"center\" class=\"img-thumbs\" [id]=\"highlightAndScroll(photoId, thumbnail)\" [src]='curThumbs[i] | secure'>\n      </div>\n    </div>>\n  </div>\n</div>\n\n<div *ngIf=\"!(curPhoto && curThumbs)\">\n  <p>Waiting on server ...</p>\n</div>\n"
+module.exports = "<div id=\"full-screen\" *ngIf=\"curPhoto && curThumbs\">\n  <div class=\"title\" fxLayout=\"row\">\n    <h2><span>{{media.curPhotoAlbum.name}}:</span></h2>\n    <span class=\"fill-space\"></span>\n    <a [download]='curPhoto.filename' [href]='curPhoto.fullPath | secure'>\n      <mat-icon>vertical_align_bottom</mat-icon>\n    </a>\n  </div>\n  <div class=\"container\"\n    fxLayout=\"column\"\n    fxLayoutGap=\"4px\"\n    fxLayoutAlign.gt-xs=\"space-evenly stretch\">\n    <!-- large display picture -->\n    <div fxHide.lt-sm fxLayout=\"column\" fxLayoutAlign=\"none center\">\n      <mat-card (click)=\"makeFullscreen()\" >\n        <img class=\"img-large\" mat-card-image [src]='curPhoto.fullPath | secure'>\n      </mat-card>\n    </div>\n    <!-- scrollable row of thumbnails -->\n    <div id=\"thumbnails\" fxLayout.gt-xs=\"row\" fxLayout.xs=\"column\" fxLayoutGap.gt-xs=\"6px\" fxLayoutGap.xs=\"1px\" fxLayoutAlign.gt-xs=\"none center\" fxLayoutAlign.xs=\"none none\">  \n      <div *ngFor=\"let photoId of media.curPhotoAlbum.photos; index as i\" (click)=\"changePhoto(photoId)\"\n        fxFlex.xl=\"0 0 4.25%\" fxFlex.lg=\"0 0 6.31%\" fxFlex.md=\"0 0 7.8%\" fxFlex.sm=\"0 0 11.75%\" fxFlex.xs=\"1 1 auto\">\n        <img #thumbnail fxFlexAlignSelf=\"center\" class=\"img-thumbs\" [id]=\"highlightAndScroll(photoId, thumbnail)\" [src]='curThumbs[i] | secure'>\n      </div>\n    </div>>\n  </div>\n</div>\n\n<div *ngIf=\"!(curPhoto && curThumbs)\">\n  <p>Waiting on server ...</p>\n</div>\n"
 
 /***/ }),
 
@@ -1375,7 +1421,7 @@ module.exports = "<div id=\"full-screen\" *ngIf=\"curPhoto && curThumbs\">\n  <d
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".mat-card-image {\n  border-radius: 6px;\n  border: 3px;\n  border-color: black;\n  border-style: ridge; }\n\n.img-large {\n  max-height: 60vh;\n  width: auto;\n  max-width: 95vw; }\n\n.title {\n  margin: 0 0 5px 0;\n  padding-top: 5px;\n  color: floralwhite; }\n\n.title h2 {\n    margin: 0;\n    padding: 5px; }\n\n.title a {\n    color: floralwhite; }\n\n.title a .mat-icon {\n      padding: 5px;\n      margin-right: 5px; }\n\n.mat-card {\n  cursor: pointer;\n  background-color: black; }\n\n#thumbnails {\n  overflow: scroll; }\n\n.img-thumbs {\n  cursor: pointer;\n  border-radius: 6px;\n  border: 3px;\n  border-color: black;\n  border-style: ridge;\n  max-width: 100%; }\n\n#selected {\n  border-color: white; }\n\n#full-screen {\n  background-color: black;\n  border-radius: 6px; }\n"
+module.exports = ".mat-card-image {\n  border-radius: 6px;\n  border: 3px;\n  border-color: black;\n  border-style: ridge; }\n\n.img-large {\n  max-height: 60vh;\n  width: auto;\n  max-width: 95vw; }\n\n.title {\n  margin: 0 0 5px 0;\n  padding-top: 5px;\n  color: floralwhite; }\n\n.title h2 {\n    margin: 0;\n    padding: 5px; }\n\n.title a {\n    color: floralwhite; }\n\n.title a .mat-icon {\n      padding: 5px;\n      margin-right: 5px; }\n\n.mat-card {\n  cursor: pointer;\n  background-color: black; }\n\n#thumbnails {\n  overflow: scroll; }\n\n.img-thumbs {\n  cursor: pointer;\n  border-radius: 6px;\n  border: 3px;\n  border-color: black;\n  border-style: ridge;\n  width: 100%; }\n\n#selected {\n  border-color: white; }\n\n#full-screen {\n  background-color: black;\n  border-radius: 6px; }\n"
 
 /***/ }),
 
@@ -1605,7 +1651,7 @@ var GalleryVideoAlbumsComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <h2>Select which gallery you'd like to view:</h2>\n  <div class=\"container\"\n     fxLayout=\"row\"\n     fxLayout.xs=\"column\"\n     fxLayoutAlign.gt-xs=\"space-evenly center\"\n     fxLayoutGap=\"10px\">\n    <mat-card fxFlex=\"33\">\n      <mat-card-header fxLayoutAlign=\"center center\">\n        <mat-card-title>\n          <h3 fxFlexAlign>Picture Gallery</h3>\n        </mat-card-title>\n      </mat-card-header>\n      <img mat-card-image [routerLink]=\"['/albums']\" [src]=\"CFG.settings.gallery.featuredPhoto.filename | secure\">\n    </mat-card>\n    <mat-card fxFlex=\"33\">\n      <mat-card-header fxLayoutAlign=\"center center\">\n        <mat-card-title>\n          <h3>Video Gallery</h3>\n        </mat-card-title>\n      </mat-card-header>\n      <img mat-card-image [routerLink]=\"['/videos']\" [src]=\"CFG.settings.gallery.featuredVideo.filename | secure\">\n    </mat-card>\n  </div>\n</div>\n"
+module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <h2>Select which gallery you'd like to view:</h2>\n  <div class=\"container\"\n     fxLayout=\"row\"\n     fxLayout.xs=\"column\"\n     fxLayoutAlign.gt-xs=\"space-evenly center\"\n     fxLayoutGap=\"10px\">\n    <mat-card fxFlex=\"33\">\n      <mat-card-header fxLayoutAlign=\"center center\">\n        <mat-card-title>\n          <h3 fxFlexAlign>Picture Gallery</h3>\n        </mat-card-title>\n      </mat-card-header>\n      <img mat-card-image [routerLink]=\"['/albums']\" [src]=\"CFG.const.gallery.featuredPhoto.filename | secure\">\n    </mat-card>\n    <mat-card fxFlex=\"33\">\n      <mat-card-header fxLayoutAlign=\"center center\">\n        <mat-card-title>\n          <h3>Video Gallery</h3>\n        </mat-card-title>\n      </mat-card-header>\n      <img mat-card-image [routerLink]=\"['/videos']\" [src]=\"CFG.const.gallery.featuredVideo.filename | secure\">\n    </mat-card>\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -1692,7 +1738,7 @@ var GalleryComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <mat-toolbar class=\"toolbar\" fxFlex>\n      <span>{{CFG.settings.header.title}}</span>\n      <a mat-button routerLink=\"/gallery\" routerLinkActive=\"active\" fxFlexOffset=\"1\" >Home</a>\n      <a mat-button routerLink=\"/downloads\" routerLinkActive=\"active\">Downloads</a>\n      <button mat-button [matMenuTriggerFor]=\"galleryMenu\">Gallery Menu</button>\n      <mat-menu #galleryMenu=\"matMenu\">\n        <button mat-menu-item routerLink=\"/\" >Gallery Home</button>\n        <hr>\n        <button mat-menu-item routerLink=\"/videos\" >Video Gallery</button>\n        <button mat-menu-item routerLink=\"/pictures\">Picture Gallery</button>\n      </mat-menu>\n      <a mat-button routerLink=\"/about\" routerLinkActive=\"active\">About</a>\n      <span class=\"fill-space\"></span>\n      <a mat-button routerLink=\"/\" routerLinkActive=\"active\" (click)=\"auth.authLogout()\">Logout</a>\n  </mat-toolbar>\n</div>\n"
+module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <mat-toolbar class=\"toolbar\" fxFlex>\n      <span>{{CFG.const.header.title}}</span>\n      <a mat-button routerLink=\"/gallery\" routerLinkActive=\"active\" fxFlexOffset=\"1\" >Home</a>\n      <a mat-button routerLink=\"/downloads\" routerLinkActive=\"active\">Downloads</a>\n      <button mat-button [matMenuTriggerFor]=\"galleryMenu\">Gallery Menu</button>\n      <mat-menu #galleryMenu=\"matMenu\">\n        <button mat-menu-item routerLink=\"/\" >Gallery Home</button>\n        <hr>\n        <button mat-menu-item routerLink=\"/videos\" >Video Gallery</button>\n        <button mat-menu-item routerLink=\"/pictures\">Picture Gallery</button>\n      </mat-menu>\n      <a mat-button routerLink=\"/about\" routerLinkActive=\"active\">About</a>\n      <span class=\"fill-space\"></span>\n      <a mat-button routerLink=\"/\" routerLinkActive=\"active\" (click)=\"auth.authLogout()\">Logout</a>\n  </mat-toolbar>\n</div>\n"
 
 /***/ }),
 
@@ -1761,7 +1807,7 @@ var HeaderComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"!auth.isAuthenticated()\">\n  <video *ngIf=\"auth.hasLoggedInBefore()\" autoplay muted loop class=\"BackImage\">\n    <source src=\"assets/video/Beach_Waves_Sunset-480p.mp4\" type=\"video/mp4\">\n  </video>\n  <img *ngIf=\"!auth.hasLoggedInBefore()\" src=\"assets/images/Mountain.jpg\" class=\"BackImage\" fxFlexFill>\n  <div class=\"login-container\" fxLayoutAlign=\"center center\">\n        <!-- fxLayout=\"row\"\n        fxLayout.sm=\"column\"\n        fxLayout.xs=\"column\" -->\n      <form novalidate #loginForm=\"ngForm\" class=\"login-form\" fxLayout=\"column\">\n        <mat-toolbar class=\"toolbar\">\n          <h3 align=\"center\">Login to www.McGrandle.com</h3>\n        </mat-toolbar>\n        <mat-form-field>\n          <input matInput maxlength=\"20\" placeholder=\"Username\" type=\"text\" [(ngModel)]=\"auth.user.username\" #username=\"ngModel\" name=\"username\" required>\n          <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n          <mat-hint>\n            <span [hidden]=\"username.pristine\">\n              <span [hidden]=\"!username.errors?.required\">** Username is required **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <mat-form-field>\n          <input matInput maxlength=\"30\" placeholder=\"Password\" [type]=\"hide ? 'password' : 'text'\"\n             [(ngModel)]=\"auth.user.password\" name=\"password\" #password=\"ngModel\" required>\n          <mat-icon matSuffix (click)=\"hide = !hide\">{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"password.pristine\">\n              <span [hidden]=\"!password.errors?.required\">** Password is required **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <div fxLayout=\"row\">\n          <button mat-raised-button color=\"primary\" type=\"button\" (click)=\"openRegisterDialog()\">Register New User</button>\n          <span class=\"fill-space\"></span>\n          <button mat-raised-button type=\"submit\"\n             color=\"primary\" [disabled]=\"loginForm.form.invalid\" (click)=\"onLogin()\" cdkFocusInitial>Login</button>\n        </div>\n        <a id=\"forgotCredentials\" align=\"center\" (click)=\"openForgotDialog()\">Forgot username or password</a>\n      </form>\n  </div>\n\n</div>\n"
+module.exports = "<div *ngIf=\"!auth.isAuthenticated()\">\n  <video *ngIf=\"auth.hasLoggedInBefore()\" autoplay muted loop class=\"BackImage\">\n    <source src=\"assets/video/Beach_Waves_Sunset-480p.mp4\" type=\"video/mp4\">\n  </video>\n  <img *ngIf=\"!auth.hasLoggedInBefore()\" src=\"assets/images/Mountain.jpg\" class=\"BackImage\" fxFlexFill>\n  <div class=\"login-container\" fxLayoutAlign=\"center center\">\n        <!-- fxLayout=\"row\"\n        fxLayout.sm=\"column\"\n        fxLayout.xs=\"column\" -->\n      <form novalidate #loginForm=\"ngForm\" class=\"login-form\" fxLayout=\"column\">\n        <mat-toolbar class=\"toolbar\">\n          <h3 align=\"center\">Login to {{CFG.const.login.title}}</h3>\n        </mat-toolbar>\n        <mat-form-field>\n          <input matInput maxlength=\"20\" placeholder=\"Username\" type=\"text\" [(ngModel)]=\"auth.user.username\" #username=\"ngModel\" name=\"username\" required>\n          <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n          <mat-hint>\n            <span [hidden]=\"username.pristine\">\n              <span [hidden]=\"!username.errors?.required\">** Username is required **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <mat-form-field>\n          <input matInput maxlength=\"30\" placeholder=\"Password\" [type]=\"hide ? 'password' : 'text'\" ngModel name=\"password\" #password=\"ngModel\" required>\n          <mat-icon matSuffix (click)=\"hide = !hide\">{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"password.pristine\">\n              <span [hidden]=\"!password.errors?.required\">** Password is required **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <div fxLayout=\"row\">\n          <button mat-raised-button color=\"primary\" type=\"button\" (click)=\"openRegisterDialog()\">Register New User</button>\n          <span class=\"fill-space\"></span>\n          <button mat-raised-button type=\"submit\"\n             color=\"primary\" [disabled]=\"loginForm.form.invalid\" (click)=\"onLogin(password.value)\" cdkFocusInitial>Login</button>\n        </div>\n        <a id=\"forgotCredentials\" align=\"center\" (click)=\"openForgotDialog()\">Forgot username or password</a>\n      </form>\n  </div>\n\n</div>\n"
 
 /***/ }),
 
@@ -1789,10 +1835,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
-/* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
-/* harmony import */ var _register_register_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../register/register.component */ "./src/app/register/register.component.ts");
-/* harmony import */ var _forgot_dialog_forgot_dialog_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../forgot-dialog/forgot-dialog.component */ "./src/app/forgot-dialog/forgot-dialog.component.ts");
-/* harmony import */ var _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../alert-message-dialog/alert-message-dialog.component */ "./src/app/alert-message-dialog/alert-message-dialog.component.ts");
+/* harmony import */ var _app_config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../app.config */ "./src/app/app.config.ts");
+/* harmony import */ var _classes_user_classes__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../_classes/user-classes */ "./src/app/_classes/user-classes.ts");
+/* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
+/* harmony import */ var _register_register_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../register/register.component */ "./src/app/register/register.component.ts");
+/* harmony import */ var _forgot_dialog_forgot_dialog_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../forgot-dialog/forgot-dialog.component */ "./src/app/forgot-dialog/forgot-dialog.component.ts");
+/* harmony import */ var _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../alert-message-dialog/alert-message-dialog.component */ "./src/app/alert-message-dialog/alert-message-dialog.component.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1809,15 +1857,18 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
+
+
 var LoginComponent = /** @class */ (function () {
-    function LoginComponent(auth, dialog, router) {
+    function LoginComponent(CFG, auth, dialog, router) {
+        this.CFG = CFG;
         this.auth = auth;
         this.dialog = dialog;
         this.router = router;
         this.hide = true;
     }
     LoginComponent.prototype.ngOnInit = function () {
-        this.auth.user = {};
+        this.auth.user = new _classes_user_classes__WEBPACK_IMPORTED_MODULE_4__["User"];
         if ((this.auth.hasLoggedInBefore()) && (!this.auth.isLoginExpired())) {
             // Someone has logged in before and still has an unexpired token, so
             // go ahead and auto-login with those saved credentials.
@@ -1829,14 +1880,17 @@ var LoginComponent = /** @class */ (function () {
         }
     };
     ;
-    LoginComponent.prototype.onLogin = function () {
+    LoginComponent.prototype.onLogin = function (password) {
         var _this = this;
+        // Note: I stopped binding password to auth.user.password since the auth service 
+        // changes that value outside the form.  Keeping it unbound keeps the UI clean.
+        this.auth.user.password = password;
         this.auth.authLogin().subscribe(function () {
             console.log("User " + _this.auth.user['username'] + " is logged in");
             _this.router.navigate(['/gallery']);
         }, function (err) {
             var alertMessage = 'Problem logging on: ' + err.error;
-            var dialogRef = _this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_6__["AlertMessageDialogComponent"], {
+            var dialogRef = _this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_8__["AlertMessageDialogComponent"], {
                 width: '400px',
                 data: { alertMessage: alertMessage }
             });
@@ -1851,26 +1905,27 @@ var LoginComponent = /** @class */ (function () {
         this.auth.authForgot().subscribe(function (userReturned) {
             var alertMessage = 'Email "' + userReturned['email'] + '" was sent reset email. ' +
                 "If you don't see it in a few minutes please check your SPAM folder.";
-            var dialogRef = _this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_6__["AlertMessageDialogComponent"], {
+            var dialogRef = _this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_8__["AlertMessageDialogComponent"], {
                 width: '400px',
                 data: { alertMessage: alertMessage }
             });
             dialogRef.afterClosed().subscribe(function (result) { });
         }, function (err) {
             var alertMessage = 'Email "' + _this.auth.user['email'] + '" was not found!';
-            var dialogRef = _this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_6__["AlertMessageDialogComponent"], {
+            var dialogRef = _this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_8__["AlertMessageDialogComponent"], {
                 data: { alertMessage: alertMessage }
             });
             dialogRef.afterClosed().subscribe(function (result) { });
         }, function () { });
     };
     LoginComponent.prototype.openRegisterDialog = function () {
-        var dialogRef = this.dialog.open(_register_register_component__WEBPACK_IMPORTED_MODULE_4__["RegisterComponent"], {
+        var dialogRef = this.dialog.open(_register_register_component__WEBPACK_IMPORTED_MODULE_6__["RegisterComponent"], {
+            //      width: '600px',
             data: { name: this.auth.user['username'] }
         });
     };
     LoginComponent.prototype.openForgotDialog = function () {
-        var dialogRef = this.dialog.open(_forgot_dialog_forgot_dialog_component__WEBPACK_IMPORTED_MODULE_5__["ForgotDialogComponent"], {
+        var dialogRef = this.dialog.open(_forgot_dialog_forgot_dialog_component__WEBPACK_IMPORTED_MODULE_7__["ForgotDialogComponent"], {
             data: { name: this.auth.user['email'] }
         });
     };
@@ -1880,7 +1935,8 @@ var LoginComponent = /** @class */ (function () {
             template: __webpack_require__(/*! ./login.component.html */ "./src/app/login/login.component.html"),
             styles: [__webpack_require__(/*! ./login.component.scss */ "./src/app/login/login.component.scss")]
         }),
-        __metadata("design:paramtypes", [_services_auth_service__WEBPACK_IMPORTED_MODULE_3__["AuthService"],
+        __metadata("design:paramtypes", [_app_config__WEBPACK_IMPORTED_MODULE_3__["AppConfig"],
+            _services_auth_service__WEBPACK_IMPORTED_MODULE_5__["AuthService"],
             _angular_material__WEBPACK_IMPORTED_MODULE_1__["MatDialog"],
             _angular_router__WEBPACK_IMPORTED_MODULE_2__["Router"]])
     ], LoginComponent);
@@ -1961,7 +2017,7 @@ var PageNotFoundComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"register-container\" fxLayoutAlign=\"center center\">\n      <!-- fxLayout=\"row\"\n      fxLayout.sm=\"column\"\n      fxLayout.xs=\"column\" -->\n    <form novalidate #registerForm=\"ngForm\" class=\"register-form\" fxLayout=\"column\" (ngSubmit)=\"onRegisterClick()\">\n      <mat-toolbar class=\"toolbar\">\n        <h3 align=\"center\">Register a new user</h3>\n      </mat-toolbar>\n      <mat-form-field>\n        <input matInput maxlength=\"30\" placeholder=\"Full Name\" type=\"text\" [(ngModel)]=\"auth.user.name\" #name=\"ngModel\" name=\"name\" required>\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n        <mat-hint>\n          <span [hidden]=\"name.pristine\">\n            <span [hidden]=\"!name.errors?.required\">** Full Name is required **</span>\n          </span>\n        </mat-hint>\n      </mat-form-field>\n      <mat-form-field>\n        <input matInput maxlength=\"20\" placeholder=\"Choose a username\" type=\"text\" [(ngModel)]=\"auth.user.username\" #username=\"ngModel\" name=\"username\" required>\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n        <mat-hint>\n          <span [hidden]=\"username.pristine\">\n            <span [hidden]=\"!username.errors?.required\">** Username is required **</span>\n          </span>\n        </mat-hint>\n      </mat-form-field>\n      <mat-form-field>\n        <input matInput maxlength=\"30\" placeholder=\"Choose a password\" [type]=\"hidePass ? 'password' : 'text'\"\n           [(ngModel)]=\"auth.user.password\" name=\"password\" #password=\"ngModel\" required>\n        <mat-icon matSuffix (click)=\"hidePass = !hidePass\">{{hidePass ? 'visibility' : 'visibility_off'}}</mat-icon>\n        <mat-hint>\n          <span [hidden]=\"password.pristine\">\n            <span [hidden]=\"!password.errors?.required\">** Password is required **</span>\n          </span>\n        </mat-hint>\n      </mat-form-field>\n      <mat-form-field>\n        <input matInput maxlength=\"40\" placeholder=\"Email\" type=\"email\" [(ngModel)]=\"auth.user.email\" #email=\"ngModel\" name=\"email\" required>\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n        <mat-hint>\n          <span [hidden]=\"email.pristine\">\n            <span [hidden]=\"!email.errors?.required\">** email is required **</span>\n          </span>\n        </mat-hint>\n      </mat-form-field>\n      <div fxLayout=\"row\">\n        <button mat-button mat-dialog-close>Cancel</button>\n        <span class=\"fill-space\"></span>\n        <button mat-raised-button routerLink=\"/gallery\" routerLinkActive=\"active\" type=\"submit\" color=\"primary\" [disabled]=\"registerForm.form.invalid\">Register</button>\n      </div>\n    </form>\n</div>\n"
+module.exports = "<div class=\"register-container\" fxLayoutAlign=\"center center\">\n      <!-- fxLayout=\"row\"\n      fxLayout.sm=\"column\"\n      fxLayout.xs=\"column\" -->\n    <form novalidate #registerForm=\"ngForm\" class=\"register-form\" fxLayout=\"column\" (ngSubmit)=\"onRegisterClick()\">\n      <mat-toolbar class=\"toolbar\">\n        <h3 align=\"center\">Register a new user</h3>\n      </mat-toolbar>\n      <mat-form-field>\n        <input matInput maxlength=\"30\" placeholder=\"Full Name\" type=\"text\" [(ngModel)]=\"auth.user.name\" #name=\"ngModel\" name=\"name\" required>\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n        <mat-hint>\n          <span [hidden]=\"name.pristine\">\n            <span [hidden]=\"!name.errors?.required\">** Full Name is required **</span>\n          </span>\n        </mat-hint>\n      </mat-form-field>\n      <mat-form-field>\n        <input matInput maxlength=\"20\" placeholder=\"Choose a username\" type=\"text\" [(ngModel)]=\"auth.user.username\" #username=\"ngModel\" name=\"username\" required>\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n        <mat-hint>\n          <span [hidden]=\"username.pristine\">\n            <span [hidden]=\"!username.errors?.required\">** Username is required **</span>\n          </span>\n        </mat-hint>\n      </mat-form-field>\n      <div fxLayout=\"column\" ngModelGroup=\"passGroup\" equal>  <!-- This div encloses a formGroup - making collection of two inputs \"password\" and \"retry\" -->\n        <mat-form-field>\n          <input matInput minlength=\"5\" maxlength=\"30\" placeholder=\"Choose a password\" [type]=\"hidePass ? 'password' : 'text'\"\n             [(ngModel)]=\"auth.user.password\" name=\"password\" #password=\"ngModel\" required>\n          <mat-icon matSuffix (click)=\"hidePass = !hidePass\">{{hidePass ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"password.pristine\">\n              <span [hidden]=\"!password.errors?.required\">** Password is required **</span>\n              <span [hidden]=\"!password.errors?.minlength\">** Minimum length is 5 characters **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <mat-form-field>\n          <input matInput minlength=\"5\" maxlength=\"30\" placeholder=\"Verify the password\" [type]=\"hideRetype ? 'password' : 'text'\"\n             ngModel name=\"retype\" #retype=\"ngModel\" required>\n          <mat-icon matSuffix (click)=\"hideRetype = !hideRetype\">{{hideRetype ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"retype.pristine\">\n              <span [hidden]=\"!retype.errors?.required\">** Verification of the password is required **</span>\n              <span [hidden]=\"!retype.errors?.minlength\">** Minimum length is 5 characters **</span>\n              <span [hidden]=\"!registerForm.form.hasError('equal', 'passGroup')\"> - Passwords do not match</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n      </div>\n      <mat-form-field>\n        <input matInput minlength=\"5\" maxlength=\"40\" placeholder=\"Email\" type=\"email\" [(ngModel)]=\"auth.user.email\" #email=\"ngModel\" name=\"email\" required>\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n        <mat-hint>\n          <span [hidden]=\"email.pristine\">\n            <span [hidden]=\"!email.errors?.required\">** email is required **</span>\n            <span [hidden]=\"!email.errors?.minlength\">** Minimum length is 5 characters **</span>\n          </span>\n        </mat-hint>\n      </mat-form-field>\n      <div fxLayout=\"row\">\n        <button mat-button mat-dialog-close>Cancel</button>\n        <span class=\"fill-space\"></span>\n        <button mat-raised-button type=\"submit\" color=\"primary\" [disabled]=\"registerForm.form.invalid\">Register</button>\n      </div>\n    </form>\n</div>\n"
 
 /***/ }),
 
@@ -1980,15 +2036,18 @@ module.exports = ".register-form {\n  min-width: 200px;\n  background-color: whi
 /*!************************************************!*\
   !*** ./src/app/register/register.component.ts ***!
   \************************************************/
-/*! exports provided: RegisterComponent */
+/*! exports provided: RegisterComponent, EqualDirective */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RegisterComponent", function() { return RegisterComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EqualDirective", function() { return EqualDirective; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
-/* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
+/* harmony import */ var _classes_user_classes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_classes/user-classes */ "./src/app/_classes/user-classes.ts");
+/* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -2004,13 +2063,19 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 
+
+
 var RegisterComponent = /** @class */ (function () {
     function RegisterComponent(auth, dialogRef, data) {
         this.auth = auth;
         this.dialogRef = dialogRef;
         this.data = data;
         this.hidePass = true;
+        this.hideRetype = true;
     }
+    RegisterComponent.prototype.ngOnInit = function () {
+        this.auth.user = new _classes_user_classes__WEBPACK_IMPORTED_MODULE_2__["User"];
+    };
     RegisterComponent.prototype.onRegisterClick = function () {
         var _this = this;
         this.auth.authRegister().subscribe(function (data) {
@@ -2025,12 +2090,52 @@ var RegisterComponent = /** @class */ (function () {
             styles: [__webpack_require__(/*! ./register.component.scss */ "./src/app/register/register.component.scss")]
         }),
         __param(2, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(_angular_material__WEBPACK_IMPORTED_MODULE_1__["MAT_DIALOG_DATA"])),
-        __metadata("design:paramtypes", [_services_auth_service__WEBPACK_IMPORTED_MODULE_2__["AuthService"],
+        __metadata("design:paramtypes", [_services_auth_service__WEBPACK_IMPORTED_MODULE_3__["AuthService"],
             _angular_material__WEBPACK_IMPORTED_MODULE_1__["MatDialogRef"], Object])
     ], RegisterComponent);
     return RegisterComponent;
 }());
 
+// Set up the directive for a custom form validation - "password" and "retype" password.
+// Using template driven forms, so need a custom @Directive to create a selector for use
+// in the form.  Note: this selector is applied as an attribute in the form GROUP 
+// (note the ngModelGroup="passGroup" in the template).  That way all the formGroup input
+// fields will be sent in the FormControl object injected into the function within the 
+// factory - yeah, the syntax is a bit confusing for this...
+var EqualDirective = /** @class */ (function () {
+    function EqualDirective() {
+        this.validator = validateEqualFactory();
+    }
+    EqualDirective_1 = EqualDirective;
+    EqualDirective.prototype.validate = function (c) {
+        return this.validator(c);
+    };
+    EqualDirective = EqualDirective_1 = __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Directive"])({
+            selector: '[equal]',
+            providers: [{ provide: _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NG_VALIDATORS"], useExisting: EqualDirective_1, multi: true }]
+        })
+        // This class has one property, a constructor that sets that property, and the required
+        // validate() function (required by the Validator interface).
+        ,
+        __metadata("design:paramtypes", [])
+    ], EqualDirective);
+    return EqualDirective;
+    var EqualDirective_1;
+}());
+
+// This factory function simply returns a function.  The inner function is the one that
+// has the FormGroup object injected into it - note it is a FormGroup object because we
+// need both the password AND the retry passed to us (these are the only two elements in
+// the ngModelGroup="passGroup") in order to compare them.  This can be used generically
+// though, so I mapped password to first and retry to second.
+function validateEqualFactory() {
+    return function (c) {
+        var _a = Object.keys(c.value || {}), first = _a[0], second = _a[1]; // Deconstruct array syntax
+        var valid = (c.value[first] === c.value[second]);
+        return (valid) ? null : { equal: { valid: false } };
+    };
+}
 
 
 /***/ }),

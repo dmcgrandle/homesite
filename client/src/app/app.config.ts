@@ -6,7 +6,7 @@ import { IAppConfig } from './app.config.model';
 @Injectable()
 export class AppConfig {
 
-    public settings :IAppConfig;
+    public const :IAppConfig;
 
     constructor(private http: HttpClient) {}
 
@@ -15,7 +15,7 @@ export class AppConfig {
         return new Promise<void>((resolve, reject) => { 
             this.http.get(jsonFile).subscribe(
                 (res) => {
-                    this.settings = <IAppConfig>res;
+                    this.const = <IAppConfig>res;
                     resolve();
                 },
                 (err) => reject('Could not load file ' + jsonFile + ': ' + JSON.stringify(err))

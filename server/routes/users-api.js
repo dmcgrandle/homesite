@@ -49,7 +49,7 @@ router.post('/create', function(req, res, next) {
     userSvc.isUnique(req.body)
     .then(() => userSvc.create(req.body))
     .then(newUser => res.status(201).json(newUser))
-    .catch(err => processError(err, res));
+    .catch(err => processError(err, res)); 
 });
 
 /* POST /forgot to reset password for a user. */
@@ -62,11 +62,9 @@ router.post('/forgot', function(req, res, next) {
 
 /* GET /forgot to use token sent via email to change password */
 router.post('/changepassword', function(req, res, next) {
-    console.log('changepassword called - body is : ' + JSON.stringify(req.body));
     tokenSvc.isValidEmailToken(req.body.token)
     .then(() => userSvc.changePassword(req.body))
-    .then(emailedUser => res.status(201).json('Password Changed - new user' +
-      JSON.stringify(emailedUser)))
+    .then(user => res.status(201).json('Password changed for user: ' + user.username))
     .catch(err => processError(err, res));
 });
 

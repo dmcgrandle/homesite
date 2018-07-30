@@ -16,5 +16,12 @@ export interface IAppConfig {
         featuredVideo: {
             filename: string;
         }
+    };
+    login: {
+        title: string;
+    };
+    auth: {
+        password_secret: string;
     }
+
 }

@@ -54,7 +54,9 @@
     border: 3px;
     border-color: black;
     border-style: ridge;
-    max-width: 100%;
+    width: 100%;
+//    object-fit: fill;
+//    align-self: stretch;
 }
 
 #selected {

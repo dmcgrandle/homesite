@@ -1,6 +1,6 @@
 <div *ngIf="auth.isAuthenticated()">
   <mat-toolbar class="toolbar" fxFlex>
-      <span>{{CFG.settings.header.title}}</span>
+      <span>{{CFG.const.header.title}}</span>
       <a mat-button routerLink="/gallery" routerLinkActive="active" fxFlexOffset="1" >Home</a>
       <a mat-button routerLink="/downloads" routerLinkActive="active">Downloads</a>
       <button mat-button [matMenuTriggerFor]="galleryMenu">Gallery Menu</button>

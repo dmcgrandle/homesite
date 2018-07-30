@@ -16,5 +16,12 @@
         "featuredVideo": {
             "filename": "protected/images/2018-05-23PianoRecital0356.jpg"
         }
+    },
+    "login": {
+        "title": "My Awesome Site"
+    },
+    "auth": {
+        "password_secret": "SuperSecret"
     }
+
 }

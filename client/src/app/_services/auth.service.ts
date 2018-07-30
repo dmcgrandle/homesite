@@ -2,8 +2,11 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, pipe, of } from 'rxjs';
 import { tap, map, shareReplay } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AES, enc } from 'crypto-ts';
 
+import { AppConfig } from '../app.config';
 import { Album, Photo } from '../_classes/photo-classes';
+import { User } from '../_classes/user-classes';
 
 @Injectable({
   providedIn: 'root'
@@ -12,9 +15,10 @@ export class AuthService {
 
   private _authenticated: boolean = false;
 //  private _authenticated: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  user = {};
+  user: User;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              public   CFG: AppConfig) {
   // set up default starting values
     localStorage.setItem('userId', "-1"); //no user logged in to start with
   }
@@ -30,6 +34,8 @@ export class AuthService {
   }
 
   public authLogin(): Observable<Object> {
+    // before transmitting user object to server for authentication, encrypt pw
+    this.user.password = this.encryptPass(this.user.password);
     return this.http.post('/api/users/login', this.user).pipe(
       tap(res => this.storeUserResponse(res)),
       tap(() => this.setAuthenticated(true)),
@@ -38,6 +44,7 @@ export class AuthService {
   }
 
   public authRegister(): Observable<Object> {
+    this.user.password = this.encryptPass(this.user.password);
     return this.http.post('/api/users/create', this.user).pipe(
       shareReplay()
     );
@@ -50,6 +57,7 @@ export class AuthService {
   }
 
   public authChangePassword(token: string): Observable<Object> {
+    this.user.password = this.encryptPass(this.user.password);
     let body = this.user; // http body to send will be the user and the token
     body['token'] = token;
     return this.http.post('/api/users/changepassword', body).pipe(
@@ -84,7 +92,11 @@ export class AuthService {
     localStorage.removeItem('level');
     localStorage.removeItem('expiresAt');
     this.setAuthenticated(false);
-    this.user = {};
+    this.user = new User;
+  }
+
+  private encryptPass(password) {
+    return AES.encrypt(password, this.CFG.const.auth.password_secret).toString();
   }
 
   private storeUserResponse(res) {
