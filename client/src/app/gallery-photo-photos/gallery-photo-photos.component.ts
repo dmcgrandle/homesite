@@ -7,8 +7,6 @@ import { MediaService } from '../_services/media.service';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
 import { FullscreenOverlayContainer } from '../../../node_modules/@angular/cdk/overlay';
 import { Photo } from '../_classes/photo-classes';
-import { Observable, of } from 'rxjs';
-import { OVERLAY_KEYBOARD_DISPATCHER_PROVIDER_FACTORY } from '../../../node_modules/@angular/cdk/overlay/typings/keyboard/overlay-keyboard-dispatcher';
 
 Event
 
@@ -29,10 +27,9 @@ export enum KEY_CODE {
 
 export class GalleryPhotoPhotosComponent implements OnInit {
 
-  version = VERSION;
+//  version = VERSION;
   curPhoto: Photo;
   curThumbs: string[];
-//  selectedPhoto: Observable<any>;
 
   constructor(private  media: MediaService,
               private  route: ActivatedRoute,
@@ -54,21 +51,28 @@ export class GalleryPhotoPhotosComponent implements OnInit {
   }
 
   private setCurrentValues(photos: number[]) {
-    this.media.getPhotoById(photos[0]).subscribe(
-      photo => this.curPhoto = photo
-    );
-    this.media.getThumbsByIdArray(photos).subscribe(
-      thumbs => this.curThumbs = thumbs
-    );
+    this.media.getPhotoById(photos[0]).subscribe(photo => this.curPhoto = photo);
+    this.media.getThumbsByIdArray(photos).subscribe(thumbs => this.curThumbs = thumbs);
   }
 
-  private changePhoto(photo: Photo) {
-    this.curPhoto = photo;
+  private changePhoto(photoId: number) {
+    this.media.getPhotoById(photoId).subscribe(photo => this.curPhoto = photo);
   }
 
-  private highlightAndScroll(photoId: number, e: Element) {
+  private highlightAndScroll(photoId: number, thumbE: Element, thumbsE: Element) {
+    // Only property we can scroll with is scrollLeft which is in PIXELS, so need
+    // to calculate how many thumbs in the current window and where the center
+    // is, then convert all that to pixels to calculate the amount to scroll.
+    // Originally tried to use scrollIntoView, but that scrolled vertically as
+    // well which messed up the screen depending on client browser window size.
     if (photoId === this.curPhoto._id) {
-      e.scrollIntoView({behavior: "instant", block: "center", inline: "center"})
+      const thumbIndex = this.media.curPhotoAlbum.photos.indexOf(photoId);
+      const thumbWidth = thumbE.scrollWidth + 6; // 6 is the border width
+      const windowWidth = thumbsE.clientWidth; // visible thumbnails window
+      const numThumbsDisplayed = windowWidth/thumbWidth - 1;
+      const numThumbsToLeftOfCenter = thumbIndex - numThumbsDisplayed/2;
+      thumbsE.scrollLeft = numThumbsToLeftOfCenter*thumbWidth;
+//      thumbE.scrollIntoView({behavior: "instant", block: "center", inline: "center"})
       return "selected"; // changes the id property of this element so css styles can outline it
     }
     return null;
@@ -78,7 +82,7 @@ export class GalleryPhotoPhotosComponent implements OnInit {
   keyEvent(event: KeyboardEvent) {
     if (event.keyCode in KEY_CODE) {
       let nextIndex = 0;
-      const curIndex = Number(this.curPhoto._id);
+      const curIndex = this.media.curPhotoAlbum.photos.indexOf(this.curPhoto._id);
       switch (event.keyCode) { // set nextIndex to where we are going next
         case KEY_CODE.RIGHT_ARROW:
             nextIndex = (curIndex === this.media.curPhotoAlbum.photos.length-1) ? 0: curIndex + 1;
@@ -99,8 +103,9 @@ export class GalleryPhotoPhotosComponent implements OnInit {
 //            console.log('Pressed PAGE_DOWN');
             break;
       }
-      this.media.getPhotoById(nextIndex).subscribe(photo => this.curPhoto = photo);
-      }
+      this.media.getPhotoById(this.media.curPhotoAlbum.photos[nextIndex])
+        .subscribe(photo => this.curPhoto = photo);
+    }
   }
  
   public makeFullscreen() {

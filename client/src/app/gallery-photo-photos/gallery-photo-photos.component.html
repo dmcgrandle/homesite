@@ -2,7 +2,7 @@
   <div class="title" fxLayout="row">
     <h2><span>{{media.curPhotoAlbum.name}}:</span></h2>
     <span class="fill-space"></span>
-    <a [download]='curPhoto.filename' [href]='curPhoto.fullPath | secure'>
+    <a fxHide.xs [download]='curPhoto.filename' [href]='curPhoto.fullPath | secure'>
       <mat-icon>vertical_align_bottom</mat-icon>
     </a>
   </div>
@@ -17,10 +17,10 @@
       </mat-card>
     </div>
     <!-- scrollable row of thumbnails -->
-    <div id="thumbnails" fxLayout.gt-xs="row" fxLayout.xs="column" fxLayoutGap.gt-xs="6px" fxLayoutGap.xs="1px" fxLayoutAlign.gt-xs="none center" fxLayoutAlign.xs="none none">  
+    <div id="thumbnails" #thumbnails fxLayout.gt-xs="row" fxLayout.xs="column" fxLayoutGap.gt-xs="6px" fxLayoutGap.xs="1px" fxLayoutAlign.gt-xs="none center" fxLayoutAlign.xs="none none">  
       <div *ngFor="let photoId of media.curPhotoAlbum.photos; index as i" (click)="changePhoto(photoId)"
         fxFlex.xl="0 0 4.25%" fxFlex.lg="0 0 6.31%" fxFlex.md="0 0 7.8%" fxFlex.sm="0 0 11.75%" fxFlex.xs="1 1 auto">
-        <img #thumbnail fxFlexAlignSelf="center" class="img-thumbs" [id]="highlightAndScroll(photoId, thumbnail)" [src]='curThumbs[i] | secure'>
+        <img #thumbnail fxFlexAlignSelf="center" class="img-thumbs" [id]="highlightAndScroll(photoId, thumbnail, thumbnails)" [src]='curThumbs[i] | secure'>
       </div>
     </div>>
   </div>

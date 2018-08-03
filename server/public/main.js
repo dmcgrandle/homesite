@@ -503,7 +503,7 @@ var MediaService = /** @class */ (function () {
         // ultimately returns an observable that resolves to the resulting array of album 
         // objects from getPhotoAlbumsByIdArray.  
         // Whew - that's a lot for just a few lines of code!  :)
-        return url.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])(function (segments) { return _this.getPhotoAlbumByPath(segments.join('/')); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])(function (album) { return _this.curPhotoAlbum = album; }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])(function (album) { return _this.getPhotoAlbumsByIdArray(album.albums); }));
+        return url.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])(function (segments) { return _this.getPhotoAlbumByPath(segments.join('/')); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])(function (album) { return _this.curPhotoAlbum = album; }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])(function (album) { return _this.getPhotoAlbumsByIdArray(album.albums); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])(function (albums) { return console.log(albums); }));
     };
     ;
     MediaService = __decorate([
@@ -1656,7 +1656,7 @@ var GalleryPhotoAlbumsComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"full-screen\" *ngIf=\"curPhoto && curThumbs\">\n  <div class=\"title\" fxLayout=\"row\">\n    <h2><span>{{media.curPhotoAlbum.name}}:</span></h2>\n    <span class=\"fill-space\"></span>\n    <a [download]='curPhoto.filename' [href]='curPhoto.fullPath | secure'>\n      <mat-icon>vertical_align_bottom</mat-icon>\n    </a>\n  </div>\n  <div class=\"container\"\n    fxLayout=\"column\"\n    fxLayoutGap=\"4px\"\n    fxLayoutAlign.gt-xs=\"space-evenly stretch\">\n    <!-- large display picture -->\n    <div fxHide.lt-sm fxLayout=\"column\" fxLayoutAlign=\"none center\">\n      <mat-card (click)=\"makeFullscreen()\" >\n        <img class=\"img-large\" mat-card-image [src]='curPhoto.fullPath | secure'>\n      </mat-card>\n    </div>\n    <!-- scrollable row of thumbnails -->\n    <div id=\"thumbnails\" fxLayout.gt-xs=\"row\" fxLayout.xs=\"column\" fxLayoutGap.gt-xs=\"6px\" fxLayoutGap.xs=\"1px\" fxLayoutAlign.gt-xs=\"none center\" fxLayoutAlign.xs=\"none none\">  \n      <div *ngFor=\"let photoId of media.curPhotoAlbum.photos; index as i\" (click)=\"changePhoto(photoId)\"\n        fxFlex.xl=\"0 0 4.25%\" fxFlex.lg=\"0 0 6.31%\" fxFlex.md=\"0 0 7.8%\" fxFlex.sm=\"0 0 11.75%\" fxFlex.xs=\"1 1 auto\">\n        <img #thumbnail fxFlexAlignSelf=\"center\" class=\"img-thumbs\" [id]=\"highlightAndScroll(photoId, thumbnail)\" [src]='curThumbs[i] | secure'>\n      </div>\n    </div>>\n  </div>\n</div>\n\n<div *ngIf=\"!(curPhoto && curThumbs)\">\n  <p>Waiting on server ...</p>\n</div>\n"
+module.exports = "<div id=\"full-screen\" *ngIf=\"curPhoto && curThumbs\">\n  <div class=\"title\" fxLayout=\"row\">\n    <h2><span>{{media.curPhotoAlbum.name}}:</span></h2>\n    <span class=\"fill-space\"></span>\n    <a fxHide.xs [download]='curPhoto.filename' [href]='curPhoto.fullPath | secure'>\n      <mat-icon>vertical_align_bottom</mat-icon>\n    </a>\n  </div>\n  <div class=\"container\"\n    fxLayout=\"column\"\n    fxLayoutGap=\"4px\"\n    fxLayoutAlign.gt-xs=\"space-evenly stretch\">\n    <!-- large display picture -->\n    <div fxHide.lt-sm fxLayout=\"column\" fxLayoutAlign=\"none center\">\n      <mat-card (click)=\"makeFullscreen()\" >\n        <img class=\"img-large\" mat-card-image [src]='curPhoto.fullPath | secure'>\n      </mat-card>\n    </div>\n    <!-- scrollable row of thumbnails -->\n    <div id=\"thumbnails\" #thumbnails fxLayout.gt-xs=\"row\" fxLayout.xs=\"column\" fxLayoutGap.gt-xs=\"6px\" fxLayoutGap.xs=\"1px\" fxLayoutAlign.gt-xs=\"none center\" fxLayoutAlign.xs=\"none none\">  \n      <div *ngFor=\"let photoId of media.curPhotoAlbum.photos; index as i\" (click)=\"changePhoto(photoId)\"\n        fxFlex.xl=\"0 0 4.25%\" fxFlex.lg=\"0 0 6.31%\" fxFlex.md=\"0 0 7.8%\" fxFlex.sm=\"0 0 11.75%\" fxFlex.xs=\"1 1 auto\">\n        <img #thumbnail fxFlexAlignSelf=\"center\" class=\"img-thumbs\" [id]=\"highlightAndScroll(photoId, thumbnail, thumbnails)\" [src]='curThumbs[i] | secure'>\n      </div>\n    </div>>\n  </div>\n</div>\n\n<div *ngIf=\"!(curPhoto && curThumbs)\">\n  <p>Waiting on server ...</p>\n</div>\n"
 
 /***/ }),
 
@@ -1701,7 +1701,6 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
-
 Event;
 var KEY_CODE;
 (function (KEY_CODE) {
@@ -1714,13 +1713,11 @@ var KEY_CODE;
 })(KEY_CODE || (KEY_CODE = {}));
 ;
 var GalleryPhotoPhotosComponent = /** @class */ (function () {
-    //  selectedPhoto: Observable<any>;
     function GalleryPhotoPhotosComponent(media, route, router, dialog) {
         this.media = media;
         this.route = route;
         this.router = router;
         this.dialog = dialog;
-        this.version = _angular_material__WEBPACK_IMPORTED_MODULE_1__["VERSION"];
     }
     GalleryPhotoPhotosComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -1739,12 +1736,24 @@ var GalleryPhotoPhotosComponent = /** @class */ (function () {
         this.media.getPhotoById(photos[0]).subscribe(function (photo) { return _this.curPhoto = photo; });
         this.media.getThumbsByIdArray(photos).subscribe(function (thumbs) { return _this.curThumbs = thumbs; });
     };
-    GalleryPhotoPhotosComponent.prototype.changePhoto = function (photo) {
-        this.curPhoto = photo;
+    GalleryPhotoPhotosComponent.prototype.changePhoto = function (photoId) {
+        var _this = this;
+        this.media.getPhotoById(photoId).subscribe(function (photo) { return _this.curPhoto = photo; });
     };
-    GalleryPhotoPhotosComponent.prototype.highlightAndScroll = function (photoId, e) {
+    GalleryPhotoPhotosComponent.prototype.highlightAndScroll = function (photoId, thumbE, thumbsE) {
+        // Only property we can scroll with is scrollLeft which is in PIXELS, so need
+        // to calculate how many thumbs in the current window and where the center
+        // is, then convert all that to pixels to calculate the amount to scroll.
+        // Originally tried to use scrollIntoView, but that scrolled vertically as
+        // well which messed up the screen depending on client browser window size.
         if (photoId === this.curPhoto._id) {
-            e.scrollIntoView({ behavior: "instant", block: "center", inline: "center" });
+            var thumbIndex = this.media.curPhotoAlbum.photos.indexOf(photoId);
+            var thumbWidth = thumbE.scrollWidth + 6; // 6 is the border width
+            var windowWidth = thumbsE.clientWidth; // visible thumbnails window
+            var numThumbsDisplayed = windowWidth / thumbWidth - 1;
+            var numThumbsToLeftOfCenter = thumbIndex - numThumbsDisplayed / 2;
+            thumbsE.scrollLeft = numThumbsToLeftOfCenter * thumbWidth;
+            //      thumbE.scrollIntoView({behavior: "instant", block: "center", inline: "center"})
             return "selected"; // changes the id property of this element so css styles can outline it
         }
         return null;
@@ -1753,7 +1762,7 @@ var GalleryPhotoPhotosComponent = /** @class */ (function () {
         var _this = this;
         if (event.keyCode in KEY_CODE) {
             var nextIndex = 0;
-            var curIndex = Number(this.curPhoto._id);
+            var curIndex = this.media.curPhotoAlbum.photos.indexOf(this.curPhoto._id);
             switch (event.keyCode) {
                 case KEY_CODE.RIGHT_ARROW:
                     nextIndex = (curIndex === this.media.curPhotoAlbum.photos.length - 1) ? 0 : curIndex + 1;
@@ -1774,7 +1783,8 @@ var GalleryPhotoPhotosComponent = /** @class */ (function () {
                     //            console.log('Pressed PAGE_DOWN');
                     break;
             }
-            this.media.getPhotoById(nextIndex).subscribe(function (photo) { return _this.curPhoto = photo; });
+            this.media.getPhotoById(this.media.curPhotoAlbum.photos[nextIndex])
+                .subscribe(function (photo) { return _this.curPhoto = photo; });
         }
     };
     GalleryPhotoPhotosComponent.prototype.makeFullscreen = function () {
@@ -1983,7 +1993,7 @@ var GalleryComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <mat-toolbar class=\"toolbar\" fxFlex>\n      <span>{{CFG.const.header.title}}</span>\n      <a mat-button routerLink=\"/gallery\" routerLinkActive=\"active\" fxFlexOffset=\"1\" >Home</a>\n      <a mat-button routerLink=\"/downloads\" routerLinkActive=\"active\">Downloads</a>\n      <button mat-button [matMenuTriggerFor]=\"galleryMenu\">Gallery Menu</button>\n      <mat-menu #galleryMenu=\"matMenu\">\n        <button mat-menu-item routerLink=\"/\" >Gallery Home</button>\n        <hr>\n        <button mat-menu-item routerLink=\"/videos\" >Video Gallery</button>\n        <button mat-menu-item routerLink=\"/albums\">Picture Gallery</button>\n      </mat-menu>\n      <a mat-button routerLink=\"/about\" routerLinkActive=\"active\">About</a>\n      <span class=\"fill-space\"></span>\n      <button mat-button [matMenuTriggerFor]=\"userMenu\">{{auth.user.username}}</button>\n      <mat-menu #userMenu=\"matMenu\">\n        <button mat-menu-item routerLink=\"/\" routerLinkActive=\"active\" (click)=\"auth.authLogout()\">Logout</button>\n        <hr>\n        <button mat-menu-item routerLink=\"/changepass\" >Change Password</button>\n        <button *ngIf=\"(auth.user.level > 3)\" mat-menu-item routerLink=\"/manage\">Manage Users</button>\n      </mat-menu>\n      <!-- <a mat-button routerLink=\"/\" routerLinkActive=\"active\" (click)=\"auth.authLogout()\">Logout</a> -->\n  </mat-toolbar>\n</div>\n"
+module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <mat-toolbar class=\"toolbar\" fxFlex>\n      <span>{{CFG.const.header.title}}</span>\n      <div fxShow fxHide.xs fxLayout='row'>\n          <a mat-button routerLink=\"/gallery\" routerLinkActive=\"active\" fxFlexOffset=\"1\" >Home</a>\n          <a mat-button routerLink=\"/downloads\" routerLinkActive=\"active\">Downloads</a>\n          <button mat-button [matMenuTriggerFor]=\"galleryMenu\">Gallery Menu</button>\n          <mat-menu #galleryMenu=\"matMenu\">\n            <button mat-menu-item routerLink=\"/\" >Gallery Home</button>\n            <hr>\n            <button mat-menu-item routerLink=\"/videos\" >Video Gallery</button>\n            <button mat-menu-item routerLink=\"/albums\">Picture Gallery</button>\n          </mat-menu>\n          <a mat-button routerLink=\"/about\" routerLinkActive=\"active\">About</a>\n          </div>\n      <span class=\"fill-space\"></span>\n      <button mat-button [matMenuTriggerFor]=\"userMenu\">{{auth.user.username}}</button>\n      <mat-menu #userMenu=\"matMenu\">\n        <button mat-menu-item routerLink=\"/\" routerLinkActive=\"active\" (click)=\"auth.authLogout()\">Logout</button>\n        <hr>\n        <button mat-menu-item routerLink=\"/changepass\" >Change Password</button>\n        <button *ngIf=\"(auth.user.level > 3)\" mat-menu-item routerLink=\"/manage\">Manage Users</button>\n      </mat-menu>\n      <button fxHide fxShow.xs mat-button [matMenuTriggerFor]=\"xsMenu\"><mat-icon>menu</mat-icon></button>\n      <mat-menu #xsMenu=\"matMenu\" fxLayout=\"column\">\n        <button mat-menu-item routerLink=\"/gallery\" routerLinkActive=\"active\">Home</button>\n        <hr>\n        <button mat-menu-item routerLink=\"/albums\" routerLinkActive=\"active\">Picture Gallery</button>\n        <button mat-menu-item routerLink=\"/videos\" routerLinkActive=\"active\">Video Gallery</button>\n        <button mat-menu-item routerLink=\"/downloads\" routerLinkActive=\"active\">Downloads</button>\n        <hr>\n        <button mat-menu-item routerLink=\"/about\" routerLinkActive=\"active\">About</button>\n      </mat-menu>\n  \n      <!-- <a mat-button routerLink=\"/\" routerLinkActive=\"active\" (click)=\"auth.authLogout()\">Logout</a> -->\n  </mat-toolbar>\n</div>\n"
 
 /***/ }),
 

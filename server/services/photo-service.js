@@ -141,10 +141,14 @@ buildAlbumsAndPhotos = function(paths, files) {
 //    const PREFIX = '/protected/images/'
     let albums = buildAlbumsArray(paths);
     let photos = buildPhotosArrays(albums, files);
-    // root album featuredPhoto is not set by above code, so set it manually: first photo in root album
-    albums[0].featuredPhoto = albums[0].photos[0];
+    // root album featuredPhoto is not set by above code, so set it manually to the first photo
+    albums[0].featuredPhoto = {
+        filename: photos[0].filename, 
+        fullPath: photos[0].fullPath,
+        caption: ''};
     albums[0].name = 'All Photo Albums';
     return { albums: albums, photos: photos};
+
 };
 
 buildAlbumsArray = function(paths) {
@@ -174,7 +178,7 @@ buildAlbumsArray = function(paths) {
         targetAlbumPath = path.slice(0,-(splitPaths[splitPaths.length-1].length+1));
         targetAlbumIndex = ((targetAlbumPath === prevTargetAlbumPath) ? prevTargetAlbumIndex : 
             albums.findIndex(album => album.path === targetAlbumPath));
-        albums[targetAlbumIndex].albums.push(aIndex); // add to proper albums array
+        if (aIndex > 0) albums[targetAlbumIndex].albums.push(aIndex); // add to proper albums array
         prevTargetAlbumPath = targetAlbumPath;
         prevTargetAlbumIndex = targetAlbumIndex;
         aIndex++;
@@ -195,9 +199,8 @@ buildPhotosArrays = function(albums, files) {
         photo._id = fIndex;                  // id of this Photo
         photo.filename = photoName;          // filename without path
         photo.fullPath = cfg.PHOTO_DIR.PATH + file;  // full path and filename of photo
+        // path and filename of thumbnail relative to root URL
         photo.thumbPath = getRelativeThumbPath(file);
-        //        photo.thumbPath = cfg.PHOTO_DIR.PATH + file; 
-        // full path and filename of thumbnail - initial test set this same as fullPath ...
         photo.caption = '';                  // optional caption for photo
         let targetAlbumPath = file.slice(0,-(photoName.length+1));
         if (targetAlbumPath === prevTargetAlbumPath) {
@@ -227,9 +230,10 @@ buildPhotosArrays = function(albums, files) {
             }// end for (walking up the parent tree)
         } // end set up featuredPhoto
         albums[targetAlbumIndex].photos.push(fIndex); // add photo id to photos array
+        photos.push(photo); // add photo to the photos array
+        // set up indexes for next iteration of loop:
         prevTargetAlbumPath = targetAlbumPath;
         prevTargetAlbumIndex = targetAlbumIndex;
-        photos.push(photo); // add photo to the photos array
         fIndex++;
     });
     return photos;
