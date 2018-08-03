@@ -30,7 +30,6 @@ export class LoginComponent implements OnInit {
       // go ahead and auto-login with those saved credentials.
       this.auth.user['username'] = this.auth.lastLoggedInUsername();
       this.auth.user['level'] = Number(this.auth.lastLoggedInUserLevel());
-      this.auth.setAuthenticated(true);
       this.router.navigate(['/gallery']);
       console.log('Auto-login for user ' + this.auth.user['username']);
     }

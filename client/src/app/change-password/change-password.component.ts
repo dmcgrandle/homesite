@@ -18,10 +18,13 @@ export interface DialogData {
 })
 export class ChangePasswordComponent implements OnInit {
 
-  hidePassword: boolean = true;
-  hidePassCheck: boolean = true;
+  hideExgPass: boolean = true; // hide existing password as dots instead of plain text
+  hideNewPass: boolean = true;
+  hideNewPassChk: boolean = true;
+  knowExisting: boolean = false;
+  existingPass : string;
+
   token: string;
-  alertMessage: string;
 
   constructor(private auth: AuthService,
               private route: ActivatedRoute,
@@ -29,25 +32,57 @@ export class ChangePasswordComponent implements OnInit {
               public dialog: MatDialog) { }
 
   ngOnInit() {
-    this.auth.user = new User;  // first clear out any old user info
-    this.auth.user.username = this.route.snapshot.paramMap.get('username');
+    // This component can be called two ways:
+    // 1. User clicks on link in forgot-password email sent.  Use the token
+    // sent to validate the password change on the server.
+    // 2. User clicks Change Password link in HeaderComponent navbar.  Use
+    // current password to validate the password change on the server.
+//  this.auth.user = new User;  // first clear out any old user info
     this.token = this.route.snapshot.paramMap.get('token');
+    if (this.token) {// method 1
+      this.knowExisting = false;
+      this.auth.user.username = this.route.snapshot.paramMap.get('username');
+    } else { // method 2
+      if (!this.auth.isAuthenticated()) { this.router.navigate(['/login']) }
+      this.knowExisting = true;
+    }
+
   }
 
-  onChangePassword(password: string) {
-    this.auth.user.password = password;
-    this.auth.authChangePassword(this.token).subscribe(
-      (result) => {
-        const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-          data: {alertMessage: 'Password changed for "' + this.auth.user['username'] + '"'}
-        });
-        dialogRef.afterClosed().subscribe(result => {});
-        console.log("Password changed for user: " + this.auth.user['username']);
-        this.router.navigate(['/login']);
-      },
-      (err)=>console.log(err),
-      () => {}
-    );
+  onChangePassword(newpass: string) {
+    if (this.knowExisting) {
+      this.auth.user.password = this.existingPass;
+      this.auth.authChangePasswordByPassword(newpass).subscribe( 
+        (result: User) => this.successfulChange(result),
+        (err) => this.errorChange(err)
+      );
+    } else {
+      this.auth.user.password = newpass;
+      this.auth.authChangePasswordByToken(this.token).subscribe(
+        (result: User) => this.successfulChange(result),
+        (err) => this.errorChange(err)
+      );
+    }
   }
 
+  successfulChange(user: User) {
+    console.log(user);
+    const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
+      data: {alertMessage: 'Password changed for "' + user.username + '"'}
+    });
+    dialogRef.afterClosed().subscribe(() => this.router.navigate(['/login']));
+    console.log("Password changed for user: " + user.username);
+  }
+
+  errorChange(err) {
+    console.log(err);
+    const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
+      data: {alertMessage: err.error}
+    });
+    dialogRef.afterClosed().subscribe(() => this.router.navigate(['/login']));
+  }
 }
+
+/* Note: this form is simple to validate without using the built in angular
+   form validity system because there are only two values on the entire form.
+   See the RegisterComponent for the complicated method. :) */

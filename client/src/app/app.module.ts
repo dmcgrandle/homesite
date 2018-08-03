@@ -1,29 +1,32 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule, NG_VALIDATORS } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { OverlayModule, OverlayContainer, FullscreenOverlayContainer } from '@angular/cdk/overlay';
-import { RouterModule, Routes } from '@angular/router';
+//import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 //for configuration file read during initialization:
 import { APP_INITIALIZER } from '@angular/core';
-import { AppConfig } from './app.config';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
-  MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule,
+  MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatPaginatorModule,
   MatSlideToggleModule, MatToolbarModule, MatListModule, MatGridListModule,
-  MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MatMenuModule } from '@angular/material';
+  MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MatMenuModule, MatTableModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import 'hammerjs';
 
+import { AppConfig } from './app.config';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { LoginComponent } from './login/login.component';
+import { ManageUsersComponent } from './manage-users/manage-users.component';
+import { EditUserDialogComponent } from './edit-user-dialog/edit-user-dialog.component';
 import { AlertMessageDialogComponent } from './alert-message-dialog/alert-message-dialog.component';
-import { RegisterComponent, EqualDirective } from './register/register.component';
+import { RegisterComponent } from './register/register.component';
+import { EqualDirective } from './_helpers/equal-validator';
 import { ForgotDialogComponent } from './forgot-dialog/forgot-dialog.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { GalleryComponent } from './gallery/gallery.component';
@@ -60,7 +63,9 @@ import { SecurePipe } from './_helpers/secure.pipe';
     PageNotFoundComponent,
     AboutComponent,
     DownloadsComponent,
-    SecurePipe
+    SecurePipe,
+    ManageUsersComponent,
+    EditUserDialogComponent
   ],
   imports: [
     AppRoutingModule,
@@ -69,10 +74,10 @@ import { SecurePipe } from './_helpers/secure.pipe';
     FormsModule,
     HttpClientModule,
     MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
-    MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule,
+    MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatTableModule, 
     MatSlideToggleModule, MatToolbarModule, MatListModule, MatGridListModule,
     MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule,
-    FlexLayoutModule, MatMenuModule
+    FlexLayoutModule, MatMenuModule, MatPaginatorModule, MatProgressSpinnerModule
   ],
   providers: [
     AppConfig, {
@@ -92,7 +97,7 @@ import { SecurePipe } from './_helpers/secure.pipe';
     }
   ],
   entryComponents: [
-    RegisterComponent, ForgotDialogComponent, AlertMessageDialogComponent
+    RegisterComponent, ForgotDialogComponent, AlertMessageDialogComponent, EditUserDialogComponent
   ],
   bootstrap: [AppComponent]
 })

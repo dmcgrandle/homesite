@@ -21,7 +21,7 @@ router.use(function timeLog (req, res, next) {
 // and to /users/forgot since they need to reset password to login again
 router.use(tokenSvc.middlewareCheck({
   path: ['/api/users/login', '/api/users/create', '/api/users/forgot',
-         '/api/users/changepassword']
+         '/api/users/changepw-by-token']
 }));
 router.use(bodyParser.json());
 
@@ -44,6 +44,7 @@ router.post('/login', function(req, res, next) {
     .catch((err) => processError(err, res));
   });
 
+
 /* POST /create to create new user. */
 router.post('/create', function(req, res, next) {
     userSvc.isUnique(req.body)
@@ -51,6 +52,15 @@ router.post('/create', function(req, res, next) {
     .then(newUser => res.status(201).json(newUser))
     .catch(err => processError(err, res)); 
 });
+
+/* PUT /update to update existing user data */
+router.put('/update', function(req, res, next) {
+  userSvc.isValidLevel(req.user, 4)
+  .then(() => userSvc.update(req.body))
+  .then(user => res.status(201).json(user))
+  .catch(err => processError(err, res));
+});
+
 
 /* POST /forgot to reset password for a user. */
 router.post('/forgot', function(req, res, next) {
@@ -60,12 +70,20 @@ router.post('/forgot', function(req, res, next) {
     .catch(err => processError(err, res));
 });
 
-/* GET /forgot to use token sent via email to change password */
-router.post('/changepassword', function(req, res, next) {
+/* change password using token sent via email */
+router.post('/changepw-by-token', function(req, res, next) {
     tokenSvc.isValidEmailToken(req.body.token)
-    .then(() => userSvc.changePassword(req.body))
+    .then(() => userSvc.changePassword(false, req.body))
     .then(user => res.status(201).json('Password changed for user: ' + user.username))
     .catch(err => processError(err, res));
+});
+
+/* change password using existing password */
+router.post('/changepw-by-pw', function(req, res, next) {
+  userSvc.isValidLevel(req.user, 2)
+  .then(() => userSvc.changePassword(true, req.body))
+  .then(user => res.status(201).json('Password changed for user: ' + user.username))
+  .catch(err => processError(err, res));
 });
 
 /* DELETE /one to delete a single user.  Needs level 4+ access */

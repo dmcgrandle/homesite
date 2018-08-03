@@ -53,6 +53,72 @@ var User = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./src/app/_helpers/equal-validator.ts":
+/*!*********************************************!*\
+  !*** ./src/app/_helpers/equal-validator.ts ***!
+  \*********************************************/
+/*! exports provided: EqualDirective */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EqualDirective", function() { return EqualDirective; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (undefined && undefined.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+// Set up the directive for a custom form validation - "password" and "retype" password.
+// Using template driven forms, so need a custom @Directive to create a selector for use
+// in the form.  Note: this selector is applied as an attribute in the form GROUP 
+// (note the ngModelGroup="passGroup" in the template).  That way all the formGroup input
+// fields will be sent in the FormControl object injected into the function within the 
+// factory - yeah, the syntax is a bit confusing for this...
+var EqualDirective = /** @class */ (function () {
+    function EqualDirective() {
+        this.validator = validateEqualFactory();
+    }
+    EqualDirective_1 = EqualDirective;
+    EqualDirective.prototype.validate = function (c) {
+        return this.validator(c);
+    };
+    EqualDirective = EqualDirective_1 = __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Directive"])({
+            selector: '[equal]',
+            providers: [{ provide: _angular_forms__WEBPACK_IMPORTED_MODULE_1__["NG_VALIDATORS"], useExisting: EqualDirective_1, multi: true }]
+        })
+        // This class has one property, a constructor that sets that property, and the required
+        // validate() function (required by the Validator interface).
+        ,
+        __metadata("design:paramtypes", [])
+    ], EqualDirective);
+    return EqualDirective;
+    var EqualDirective_1;
+}());
+
+// This factory function simply returns a function.  The inner function is the one that
+// has the FormGroup object injected into it - note it is a FormGroup object because we
+// need both the password AND the retry passed to us (these are the only two elements in
+// the ngModelGroup="passGroup") in order to compare them.  This can be used generically
+// though, so I map password -> "first" and retry -> "second".
+function validateEqualFactory() {
+    return function (c) {
+        var _a = Object.keys(c.value || {}), first = _a[0], second = _a[1]; // Deconstruct array syntax
+        return ((c.value[first] == c.value[second])) ? null : { equal: { valid: false } };
+    };
+}
+
+
+/***/ }),
+
 /***/ "./src/app/_helpers/jwt-interceptor.ts":
 /*!*********************************************!*\
   !*** ./src/app/_helpers/jwt-interceptor.ts ***!
@@ -257,23 +323,32 @@ var AuthService = /** @class */ (function () {
     function AuthService(http, CFG) {
         this.http = http;
         this.CFG = CFG;
-        this._authenticated = false;
         // set up default starting values
-        localStorage.setItem('userId', "-1"); //no user logged in to start with
+        //  this.user = new User;
+        if (!this.user && this.isAuthenticated()) {
+            this.user = new _classes_user_classes__WEBPACK_IMPORTED_MODULE_5__["User"];
+            this.user.username = this.lastLoggedInUsername();
+            this.user.level = this.lastLoggedInUserLevel();
+        }
     }
     AuthService.prototype.isAuthenticated = function () {
         //    return this._authenticated.value;
         return !this.isLoginExpired();
     };
-    AuthService.prototype.setAuthenticated = function (value) {
-        //    this._authenticated.next(value);
+    /*
+      public setAuthenticated (value: boolean) {
+    //    this._authenticated.next(value);
         this._authenticated = value;
-    };
+      }
+    */
     AuthService.prototype.authLogin = function () {
         var _this = this;
         // before transmitting user object to server for authentication, encrypt pw
         this.user.password = this.encryptPass(this.user.password);
-        return this.http.post('/api/users/login', this.user).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])(function (res) { return _this.storeUserResponse(res); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])(function () { return _this.setAuthenticated(true); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["shareReplay"])());
+        return this.http.post('/api/users/login', this.user).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])(function (res) {
+            _this.storeLoginResponse(res);
+            _this.user.level = res.level;
+        }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["shareReplay"])());
     };
     AuthService.prototype.authRegister = function () {
         this.user.password = this.encryptPass(this.user.password);
@@ -282,11 +357,26 @@ var AuthService = /** @class */ (function () {
     AuthService.prototype.authForgot = function () {
         return this.http.post('/api/users/forgot', this.user).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["shareReplay"])());
     };
-    AuthService.prototype.authChangePassword = function (token) {
+    AuthService.prototype.authChangePasswordByToken = function (token) {
         this.user.password = this.encryptPass(this.user.password);
-        var body = this.user; // http body to send will be the user and the token
-        body['token'] = token;
-        return this.http.post('/api/users/changepassword', body).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["shareReplay"])());
+        var body = this.user;
+        body['token'] = token; // Add token to the object to send to the server
+        return this.http.post('/api/users/changepw-by-token', body).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["shareReplay"])());
+    };
+    AuthService.prototype.authChangePasswordByPassword = function (newPassword) {
+        this.user.password = this.encryptPass(this.user.password);
+        var body = this.user;
+        body['newPassword'] = this.encryptPass(newPassword);
+        return this.http.post('/api/users/changepw-by-pw', body).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["shareReplay"])());
+    };
+    AuthService.prototype.authUpdateUser = function (user) {
+        if (user.password)
+            user.password = this.encryptPass(user.password);
+        var body = user;
+        return this.http.put('/api/users/update', body);
+    };
+    AuthService.prototype.authGetUsers = function () {
+        return this.http.get('/api/users/list');
     };
     AuthService.prototype.getToken = function () {
         return localStorage.getItem('jwtToken');
@@ -302,29 +392,24 @@ var AuthService = /** @class */ (function () {
         return localStorage.getItem('username');
     };
     AuthService.prototype.lastLoggedInUserLevel = function () {
-        return localStorage.getItem('level');
+        return Number(localStorage.getItem('level'));
     };
     AuthService.prototype.authLogout = function () {
         localStorage.removeItem('username');
         localStorage.removeItem('jwtToken');
         localStorage.removeItem('level');
         localStorage.removeItem('expiresAt');
-        this.setAuthenticated(false);
         this.user = new _classes_user_classes__WEBPACK_IMPORTED_MODULE_5__["User"];
     };
     AuthService.prototype.encryptPass = function (password) {
         return crypto_ts__WEBPACK_IMPORTED_MODULE_3__["AES"].encrypt(password, this.CFG.const.auth.password_secret).toString();
     };
-    AuthService.prototype.storeUserResponse = function (res) {
-        localStorage.setItem('username', this.user['username']);
+    AuthService.prototype.storeLoginResponse = function (res) {
+        localStorage.setItem('username', this.user.username);
         localStorage.setItem('jwtToken', res.jwtToken);
         localStorage.setItem('level', res.level);
         localStorage.setItem('expiresAt', res.expiresAt);
         localStorage.setItem('successfulLogin', 'true');
-        /*  console.log('userId: ' + localStorage.getItem('userId'));
-            console.log('jwtToken: ' + localStorage.getItem('jwtToken'));
-            console.log('level: ' + localStorage.getItem('level'));
-            console.log('expiresAt: ' + localStorage.getItem('expiresAt')); */
     };
     AuthService = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])({
@@ -404,7 +489,7 @@ var MediaService = /** @class */ (function () {
         // passes that path to getAlbumsByPath.  When that resolves it saves the resulting
         // album into curPhotoAlbum variable (class scope).  Ultimately this function 
         // returns an observable which resolves to the album from getPhotoAlbumByPath.
-        return url.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["flatMap"])(function (segments) { return _this.getPhotoAlbumByPath(segments.join('/')); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])(function (album) { return _this.curPhotoAlbum = album; }));
+        return url.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])(function (segments) { return _this.getPhotoAlbumByPath(segments.join('/')); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])(function (album) { return _this.curPhotoAlbum = album; }));
     };
     ;
     MediaService.prototype.getPhotoAlbumsByURL = function (url) {
@@ -644,13 +729,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
 /* harmony import */ var _login_login_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./login/login.component */ "./src/app/login/login.component.ts");
 /* harmony import */ var _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./change-password/change-password.component */ "./src/app/change-password/change-password.component.ts");
-/* harmony import */ var _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./gallery/gallery.component */ "./src/app/gallery/gallery.component.ts");
-/* harmony import */ var _gallery_video_albums_gallery_video_albums_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./gallery-video-albums/gallery-video-albums.component */ "./src/app/gallery-video-albums/gallery-video-albums.component.ts");
-/* harmony import */ var _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./gallery-photo-albums/gallery-photo-albums.component */ "./src/app/gallery-photo-albums/gallery-photo-albums.component.ts");
-/* harmony import */ var _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./page-not-found/page-not-found.component */ "./src/app/page-not-found/page-not-found.component.ts");
-/* harmony import */ var _about_about_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./about/about.component */ "./src/app/about/about.component.ts");
-/* harmony import */ var _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./downloads/downloads.component */ "./src/app/downloads/downloads.component.ts");
-/* harmony import */ var _gallery_photo_photos_gallery_photo_photos_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./gallery-photo-photos/gallery-photo-photos.component */ "./src/app/gallery-photo-photos/gallery-photo-photos.component.ts");
+/* harmony import */ var _manage_users_manage_users_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./manage-users/manage-users.component */ "./src/app/manage-users/manage-users.component.ts");
+/* harmony import */ var _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./gallery/gallery.component */ "./src/app/gallery/gallery.component.ts");
+/* harmony import */ var _gallery_video_albums_gallery_video_albums_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./gallery-video-albums/gallery-video-albums.component */ "./src/app/gallery-video-albums/gallery-video-albums.component.ts");
+/* harmony import */ var _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./gallery-photo-albums/gallery-photo-albums.component */ "./src/app/gallery-photo-albums/gallery-photo-albums.component.ts");
+/* harmony import */ var _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./page-not-found/page-not-found.component */ "./src/app/page-not-found/page-not-found.component.ts");
+/* harmony import */ var _about_about_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./about/about.component */ "./src/app/about/about.component.ts");
+/* harmony import */ var _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./downloads/downloads.component */ "./src/app/downloads/downloads.component.ts");
+/* harmony import */ var _gallery_photo_photos_gallery_photo_photos_component__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./gallery-photo-photos/gallery-photo-photos.component */ "./src/app/gallery-photo-photos/gallery-photo-photos.component.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -668,22 +754,25 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
+
 var appRoutes = [
-    { path: 'gallery', component: _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_4__["GalleryComponent"] },
-    { path: 'videos', component: _gallery_video_albums_gallery_video_albums_component__WEBPACK_IMPORTED_MODULE_5__["GalleryVideoAlbumsComponent"] },
-    { path: 'albums', component: _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_6__["GalleryPhotoAlbumsComponent"] },
+    { path: 'gallery', component: _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_5__["GalleryComponent"] },
+    { path: 'videos', component: _gallery_video_albums_gallery_video_albums_component__WEBPACK_IMPORTED_MODULE_6__["GalleryVideoAlbumsComponent"] },
+    { path: 'albums', component: _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_7__["GalleryPhotoAlbumsComponent"] },
     { path: 'albums', children: [
-            { path: '**', component: _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_6__["GalleryPhotoAlbumsComponent"] }
+            { path: '**', component: _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_7__["GalleryPhotoAlbumsComponent"] }
         ] },
     { path: 'photos', children: [
-            { path: '**', component: _gallery_photo_photos_gallery_photo_photos_component__WEBPACK_IMPORTED_MODULE_10__["GalleryPhotoPhotosComponent"] }
+            { path: '**', component: _gallery_photo_photos_gallery_photo_photos_component__WEBPACK_IMPORTED_MODULE_11__["GalleryPhotoPhotosComponent"] }
         ] },
-    { path: 'downloads', component: _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_9__["DownloadsComponent"] },
+    { path: 'downloads', component: _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_10__["DownloadsComponent"] },
     { path: 'changepass/:username/:token', component: _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_3__["ChangePasswordComponent"] },
-    { path: 'about', component: _about_about_component__WEBPACK_IMPORTED_MODULE_8__["AboutComponent"] },
+    { path: 'changepass', component: _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_3__["ChangePasswordComponent"] },
+    { path: 'manage', component: _manage_users_manage_users_component__WEBPACK_IMPORTED_MODULE_4__["ManageUsersComponent"] },
+    { path: 'about', component: _about_about_component__WEBPACK_IMPORTED_MODULE_9__["AboutComponent"] },
     { path: 'login', component: _login_login_component__WEBPACK_IMPORTED_MODULE_2__["LoginComponent"] },
     { path: '', redirectTo: 'login', pathMatch: 'full' },
-    { path: '**', component: _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_7__["PageNotFoundComponent"] }
+    { path: '**', component: _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_8__["PageNotFoundComponent"] }
 ];
 var AppRoutingModule = /** @class */ (function () {
     function AppRoutingModule() {
@@ -829,30 +918,33 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
 /* harmony import */ var _angular_cdk_overlay__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/cdk/overlay */ "./node_modules/@angular/cdk/esm5/overlay.es5.js");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
-/* harmony import */ var _app_config__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./app.config */ "./src/app/app.config.ts");
-/* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/platform-browser/animations */ "./node_modules/@angular/platform-browser/fesm5/animations.js");
-/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
-/* harmony import */ var _angular_flex_layout__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/flex-layout */ "./node_modules/@angular/flex-layout/esm5/flex-layout.es5.js");
-/* harmony import */ var hammerjs__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! hammerjs */ "./node_modules/hammerjs/hammer.js");
-/* harmony import */ var hammerjs__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(hammerjs__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/platform-browser/animations */ "./node_modules/@angular/platform-browser/fesm5/animations.js");
+/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
+/* harmony import */ var _angular_flex_layout__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/flex-layout */ "./node_modules/@angular/flex-layout/esm5/flex-layout.es5.js");
+/* harmony import */ var hammerjs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! hammerjs */ "./node_modules/hammerjs/hammer.js");
+/* harmony import */ var hammerjs__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(hammerjs__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _app_config__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./app.config */ "./src/app/app.config.ts");
 /* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
 /* harmony import */ var _app_routing_module__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./app-routing.module */ "./src/app/app-routing.module.ts");
 /* harmony import */ var _header_header_component__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./header/header.component */ "./src/app/header/header.component.ts");
 /* harmony import */ var _footer_footer_component__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./footer/footer.component */ "./src/app/footer/footer.component.ts");
 /* harmony import */ var _login_login_component__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./login/login.component */ "./src/app/login/login.component.ts");
-/* harmony import */ var _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./alert-message-dialog/alert-message-dialog.component */ "./src/app/alert-message-dialog/alert-message-dialog.component.ts");
-/* harmony import */ var _register_register_component__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./register/register.component */ "./src/app/register/register.component.ts");
-/* harmony import */ var _forgot_dialog_forgot_dialog_component__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./forgot-dialog/forgot-dialog.component */ "./src/app/forgot-dialog/forgot-dialog.component.ts");
-/* harmony import */ var _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./change-password/change-password.component */ "./src/app/change-password/change-password.component.ts");
-/* harmony import */ var _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./gallery/gallery.component */ "./src/app/gallery/gallery.component.ts");
-/* harmony import */ var _gallery_video_albums_gallery_video_albums_component__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./gallery-video-albums/gallery-video-albums.component */ "./src/app/gallery-video-albums/gallery-video-albums.component.ts");
-/* harmony import */ var _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./gallery-photo-albums/gallery-photo-albums.component */ "./src/app/gallery-photo-albums/gallery-photo-albums.component.ts");
-/* harmony import */ var _gallery_photo_photos_gallery_photo_photos_component__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./gallery-photo-photos/gallery-photo-photos.component */ "./src/app/gallery-photo-photos/gallery-photo-photos.component.ts");
-/* harmony import */ var _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./page-not-found/page-not-found.component */ "./src/app/page-not-found/page-not-found.component.ts");
-/* harmony import */ var _about_about_component__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./about/about.component */ "./src/app/about/about.component.ts");
-/* harmony import */ var _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./downloads/downloads.component */ "./src/app/downloads/downloads.component.ts");
-/* harmony import */ var _helpers_jwt_interceptor__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./_helpers/jwt-interceptor */ "./src/app/_helpers/jwt-interceptor.ts");
-/* harmony import */ var _helpers_secure_pipe__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./_helpers/secure.pipe */ "./src/app/_helpers/secure.pipe.ts");
+/* harmony import */ var _manage_users_manage_users_component__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./manage-users/manage-users.component */ "./src/app/manage-users/manage-users.component.ts");
+/* harmony import */ var _edit_user_dialog_edit_user_dialog_component__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./edit-user-dialog/edit-user-dialog.component */ "./src/app/edit-user-dialog/edit-user-dialog.component.ts");
+/* harmony import */ var _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./alert-message-dialog/alert-message-dialog.component */ "./src/app/alert-message-dialog/alert-message-dialog.component.ts");
+/* harmony import */ var _register_register_component__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./register/register.component */ "./src/app/register/register.component.ts");
+/* harmony import */ var _helpers_equal_validator__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./_helpers/equal-validator */ "./src/app/_helpers/equal-validator.ts");
+/* harmony import */ var _forgot_dialog_forgot_dialog_component__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./forgot-dialog/forgot-dialog.component */ "./src/app/forgot-dialog/forgot-dialog.component.ts");
+/* harmony import */ var _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./change-password/change-password.component */ "./src/app/change-password/change-password.component.ts");
+/* harmony import */ var _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./gallery/gallery.component */ "./src/app/gallery/gallery.component.ts");
+/* harmony import */ var _gallery_video_albums_gallery_video_albums_component__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./gallery-video-albums/gallery-video-albums.component */ "./src/app/gallery-video-albums/gallery-video-albums.component.ts");
+/* harmony import */ var _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./gallery-photo-albums/gallery-photo-albums.component */ "./src/app/gallery-photo-albums/gallery-photo-albums.component.ts");
+/* harmony import */ var _gallery_photo_photos_gallery_photo_photos_component__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./gallery-photo-photos/gallery-photo-photos.component */ "./src/app/gallery-photo-photos/gallery-photo-photos.component.ts");
+/* harmony import */ var _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./page-not-found/page-not-found.component */ "./src/app/page-not-found/page-not-found.component.ts");
+/* harmony import */ var _about_about_component__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./about/about.component */ "./src/app/about/about.component.ts");
+/* harmony import */ var _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./downloads/downloads.component */ "./src/app/downloads/downloads.component.ts");
+/* harmony import */ var _helpers_jwt_interceptor__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./_helpers/jwt-interceptor */ "./src/app/_helpers/jwt-interceptor.ts");
+/* harmony import */ var _helpers_secure_pipe__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./_helpers/secure.pipe */ "./src/app/_helpers/secure.pipe.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -863,9 +955,13 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
+//import { RouterModule, Routes } from '@angular/router';
 
 
 //for configuration file read during initialization:
+
+
+
 
 
 
@@ -900,37 +996,39 @@ var AppModule = /** @class */ (function () {
                 _header_header_component__WEBPACK_IMPORTED_MODULE_12__["HeaderComponent"],
                 _footer_footer_component__WEBPACK_IMPORTED_MODULE_13__["FooterComponent"],
                 _login_login_component__WEBPACK_IMPORTED_MODULE_14__["LoginComponent"],
-                _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_15__["AlertMessageDialogComponent"],
-                _register_register_component__WEBPACK_IMPORTED_MODULE_16__["RegisterComponent"],
-                _register_register_component__WEBPACK_IMPORTED_MODULE_16__["EqualDirective"],
-                _forgot_dialog_forgot_dialog_component__WEBPACK_IMPORTED_MODULE_17__["ForgotDialogComponent"],
-                _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_18__["ChangePasswordComponent"],
-                _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_19__["GalleryComponent"],
-                _gallery_video_albums_gallery_video_albums_component__WEBPACK_IMPORTED_MODULE_20__["GalleryVideoAlbumsComponent"],
-                _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_21__["GalleryPhotoAlbumsComponent"],
-                _gallery_photo_photos_gallery_photo_photos_component__WEBPACK_IMPORTED_MODULE_22__["GalleryPhotoPhotosComponent"],
-                _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_23__["PageNotFoundComponent"],
-                _about_about_component__WEBPACK_IMPORTED_MODULE_24__["AboutComponent"],
-                _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_25__["DownloadsComponent"],
-                _helpers_secure_pipe__WEBPACK_IMPORTED_MODULE_27__["SecurePipe"]
+                _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_17__["AlertMessageDialogComponent"],
+                _register_register_component__WEBPACK_IMPORTED_MODULE_18__["RegisterComponent"],
+                _helpers_equal_validator__WEBPACK_IMPORTED_MODULE_19__["EqualDirective"],
+                _forgot_dialog_forgot_dialog_component__WEBPACK_IMPORTED_MODULE_20__["ForgotDialogComponent"],
+                _change_password_change_password_component__WEBPACK_IMPORTED_MODULE_21__["ChangePasswordComponent"],
+                _gallery_gallery_component__WEBPACK_IMPORTED_MODULE_22__["GalleryComponent"],
+                _gallery_video_albums_gallery_video_albums_component__WEBPACK_IMPORTED_MODULE_23__["GalleryVideoAlbumsComponent"],
+                _gallery_photo_albums_gallery_photo_albums_component__WEBPACK_IMPORTED_MODULE_24__["GalleryPhotoAlbumsComponent"],
+                _gallery_photo_photos_gallery_photo_photos_component__WEBPACK_IMPORTED_MODULE_25__["GalleryPhotoPhotosComponent"],
+                _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_26__["PageNotFoundComponent"],
+                _about_about_component__WEBPACK_IMPORTED_MODULE_27__["AboutComponent"],
+                _downloads_downloads_component__WEBPACK_IMPORTED_MODULE_28__["DownloadsComponent"],
+                _helpers_secure_pipe__WEBPACK_IMPORTED_MODULE_30__["SecurePipe"],
+                _manage_users_manage_users_component__WEBPACK_IMPORTED_MODULE_15__["ManageUsersComponent"],
+                _edit_user_dialog_edit_user_dialog_component__WEBPACK_IMPORTED_MODULE_16__["EditUserDialogComponent"]
             ],
             imports: [
                 _app_routing_module__WEBPACK_IMPORTED_MODULE_11__["AppRoutingModule"],
                 _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
-                _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_6__["BrowserAnimationsModule"],
+                _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_5__["BrowserAnimationsModule"],
                 _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormsModule"],
                 _angular_common_http__WEBPACK_IMPORTED_MODULE_4__["HttpClientModule"],
-                _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatButtonModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatCheckboxModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatDatepickerModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatFormFieldModule"],
-                _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatInputModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatRadioModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatSelectModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatSliderModule"],
-                _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatSlideToggleModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatToolbarModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatListModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatGridListModule"],
-                _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatCardModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatIconModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatProgressSpinnerModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatDialogModule"],
-                _angular_flex_layout__WEBPACK_IMPORTED_MODULE_8__["FlexLayoutModule"], _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatMenuModule"]
+                _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatButtonModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatCheckboxModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatDatepickerModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatFormFieldModule"],
+                _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatInputModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatRadioModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatSelectModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatSliderModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatTableModule"],
+                _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatSlideToggleModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatToolbarModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatListModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatGridListModule"],
+                _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatCardModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatIconModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatProgressSpinnerModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatDialogModule"],
+                _angular_flex_layout__WEBPACK_IMPORTED_MODULE_7__["FlexLayoutModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatMenuModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatPaginatorModule"], _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatProgressSpinnerModule"]
             ],
             providers: [
-                _app_config__WEBPACK_IMPORTED_MODULE_5__["AppConfig"], {
+                _app_config__WEBPACK_IMPORTED_MODULE_9__["AppConfig"], {
                     provide: _angular_core__WEBPACK_IMPORTED_MODULE_1__["APP_INITIALIZER"],
                     useFactory: loadConfigDuringInit,
-                    deps: [_app_config__WEBPACK_IMPORTED_MODULE_5__["AppConfig"]],
+                    deps: [_app_config__WEBPACK_IMPORTED_MODULE_9__["AppConfig"]],
                     multi: true
                 },
                 {
@@ -939,12 +1037,12 @@ var AppModule = /** @class */ (function () {
                 },
                 {
                     provide: _angular_common_http__WEBPACK_IMPORTED_MODULE_4__["HTTP_INTERCEPTORS"],
-                    useClass: _helpers_jwt_interceptor__WEBPACK_IMPORTED_MODULE_26__["JwtInterceptor"],
+                    useClass: _helpers_jwt_interceptor__WEBPACK_IMPORTED_MODULE_29__["JwtInterceptor"],
                     multi: true
                 }
             ],
             entryComponents: [
-                _register_register_component__WEBPACK_IMPORTED_MODULE_16__["RegisterComponent"], _forgot_dialog_forgot_dialog_component__WEBPACK_IMPORTED_MODULE_17__["ForgotDialogComponent"], _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_15__["AlertMessageDialogComponent"]
+                _register_register_component__WEBPACK_IMPORTED_MODULE_18__["RegisterComponent"], _forgot_dialog_forgot_dialog_component__WEBPACK_IMPORTED_MODULE_20__["ForgotDialogComponent"], _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_17__["AlertMessageDialogComponent"], _edit_user_dialog_edit_user_dialog_component__WEBPACK_IMPORTED_MODULE_16__["EditUserDialogComponent"]
             ],
             bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_10__["AppComponent"]]
         })
@@ -966,7 +1064,7 @@ function loadConfigDuringInit(appConfig) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"!auth.isAuthenticated()\">\n  <!-- <video autoplay muted loop id=\"BackImage\">\n    <source src=\"assets/video/Piano480p.mp4\" type=\"video/mp4\">\n  </video> -->\n  <img src=\"assets/images/Mountain.jpg\" id=\"BackImage\" fxFlexFill>\n  <div class=\"change-password-container\" fxLayoutAlign=\"center center\">\n        <!-- fxLayout=\"row\"\n        fxLayout.sm=\"column\"\n        fxLayout.xs=\"column\" -->\n      <form novalidate #changePasswordForm=\"ngForm\" class=\"change-password-form\" fxLayout=\"column\">\n        <mat-toolbar class=\"toolbar\">\n          <h3 align=\"center\">Change your password</h3>\n        </mat-toolbar>\n        <p>Changing password for user: {{ auth.user.username }}</p>\n        <mat-form-field>\n          <input matInput maxlength=\"30\" placeholder=\"New password\" [type]=\"hidePassword ? 'password' : 'text'\" ngModel #password=\"ngModel\" name=\"password\" required>\n          <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n          <mat-icon matSuffix (click)=\"hidePassword = !hidePassword\">{{hidePassword ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"password.pristine\">\n              <span [hidden]=\"!password.errors?.required\">** Password is required **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <mat-form-field>\n          <input matInput maxlength=\"30\" placeholder=\"Re-Enter your new password\" [type]=\"hidePassCheck ? 'password' : 'text'\" ngModel name=\"passcheck\" #passcheck=\"ngModel\" required>\n          <mat-icon matSuffix (click)=\"hidePassCheck = !hidePassCheck\">{{hidePassCheck ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"passcheck.pristine\">\n              <span [hidden]=\"password.value === passcheck.value\">** Passwords are not the same **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <div fxLayout=\"row\">\n          <span class=\"fill-space\"></span>\n          <button mat-raised-button type=\"submit\"\n             color=\"primary\" [disabled]=\"password.value !== passcheck.value\" (click)=\"onChangePassword(password.value)\">Change Password</button>\n        </div>\n      </form>\n  </div>\n\n</div>\n"
+module.exports = "<!-- <div class=\"change-password-container\"> -->\n  <!-- <video autoplay muted loop id=\"BackImage\">\n    <source src=\"assets/video/Piano480p.mp4\" type=\"video/mp4\">\n  </video> -->\n  <img src=\"assets/images/Mountain.jpg\" id=\"BackImage\" fxFlexFill>\n  <div class=\"change-password-container\" fxLayoutAlign=\"center center\">\n        <!-- fxLayout=\"row\"\n        fxLayout.sm=\"column\"\n        fxLayout.xs=\"column\" -->\n      <form novalidate #changePasswordForm=\"ngForm\" class=\"change-password-form\" fxLayout=\"column\">\n        <mat-toolbar class=\"toolbar\">\n          <h3 align=\"center\">Change your password</h3>\n        </mat-toolbar>\n        <p>Changing password for user: {{ auth.user.username }}</p>\n        <mat-form-field *ngIf=\"knowExisting\"> <!-- Only add this to DOM if NOT sent here via forgotten password email -->\n          <input matInput maxlength=\"30\" placeholder=\"Existing password\" [type]=\"hideExgPass ? 'password' : 'text'\" [(ngModel)]=\"existingPass\" #exgpass=\"ngModel\" name=\"exgpass\" required>\n          <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n          <mat-icon matSuffix (click)=\"hideExgPass = !hideExgPass\">{{hideExgPass ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"exgpass.pristine\">\n              <span [hidden]=\"!exgpass.errors?.required\">** Existing Password is required **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <mat-form-field>\n          <input matInput maxlength=\"30\" placeholder=\"New password\" [type]=\"hideNewPass ? 'password' : 'text'\" ngModel #newpass=\"ngModel\" name=\"newpass\" required>\n          <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n          <mat-icon matSuffix (click)=\"hideNewPass = !hideNewPass\">{{hideNewPass ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"newpass.pristine\">\n              <span [hidden]=\"!newpass.errors?.required\">** New password is required **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <mat-form-field>\n          <input matInput maxlength=\"30\" placeholder=\"Re-Enter your new password\" [type]=\"hideNewPassChk ? 'password' : 'text'\" ngModel name=\"newpasschk\" #newpasschk=\"ngModel\" required>\n          <mat-icon matSuffix (click)=\"hideNewPassChk = !hideNewPassChk\">{{hideNewPassChk ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"newpasschk.pristine\">\n              <span [hidden]=\"newpass.value === newpasschk.value\">** Passwords are not the same **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <div fxLayout=\"row\">\n          <span class=\"fill-space\"></span>\n          <button mat-raised-button type=\"submit\"\n             color=\"primary\" [disabled]=\"newpass.value !== newpasschk.value\" (click)=\"onChangePassword(newpass.value)\">Change Password</button>\n        </div>\n      </form>\n  </div>\n\n<!-- </div> -->\n"
 
 /***/ }),
 
@@ -994,9 +1092,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
 /* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
-/* harmony import */ var _classes_user_classes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_classes/user-classes */ "./src/app/_classes/user-classes.ts");
-/* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
-/* harmony import */ var _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../alert-message-dialog/alert-message-dialog.component */ "./src/app/alert-message-dialog/alert-message-dialog.component.ts");
+/* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
+/* harmony import */ var _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../alert-message-dialog/alert-message-dialog.component */ "./src/app/alert-message-dialog/alert-message-dialog.component.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1011,32 +1108,63 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
-
 var ChangePasswordComponent = /** @class */ (function () {
     function ChangePasswordComponent(auth, route, router, dialog) {
         this.auth = auth;
         this.route = route;
         this.router = router;
         this.dialog = dialog;
-        this.hidePassword = true;
-        this.hidePassCheck = true;
+        this.hideExgPass = true; // hide existing password as dots instead of plain text
+        this.hideNewPass = true;
+        this.hideNewPassChk = true;
+        this.knowExisting = false;
     }
     ChangePasswordComponent.prototype.ngOnInit = function () {
-        this.auth.user = new _classes_user_classes__WEBPACK_IMPORTED_MODULE_3__["User"]; // first clear out any old user info
-        this.auth.user.username = this.route.snapshot.paramMap.get('username');
+        // This component can be called two ways:
+        // 1. User clicks on link in forgot-password email sent.  Use the token
+        // sent to validate the password change on the server.
+        // 2. User clicks Change Password link in HeaderComponent navbar.  Use
+        // current password to validate the password change on the server.
+        //  this.auth.user = new User;  // first clear out any old user info
         this.token = this.route.snapshot.paramMap.get('token');
+        if (this.token) {
+            this.knowExisting = false;
+            this.auth.user.username = this.route.snapshot.paramMap.get('username');
+        }
+        else {
+            if (!this.auth.isAuthenticated()) {
+                this.router.navigate(['/login']);
+            }
+            this.knowExisting = true;
+        }
     };
-    ChangePasswordComponent.prototype.onChangePassword = function (password) {
+    ChangePasswordComponent.prototype.onChangePassword = function (newpass) {
         var _this = this;
-        this.auth.user.password = password;
-        this.auth.authChangePassword(this.token).subscribe(function (result) {
-            var dialogRef = _this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_5__["AlertMessageDialogComponent"], {
-                data: { alertMessage: 'Password changed for "' + _this.auth.user['username'] + '"' }
-            });
-            dialogRef.afterClosed().subscribe(function (result) { });
-            console.log("Password changed for user: " + _this.auth.user['username']);
-            _this.router.navigate(['/login']);
-        }, function (err) { return console.log(err); }, function () { });
+        if (this.knowExisting) {
+            this.auth.user.password = this.existingPass;
+            this.auth.authChangePasswordByPassword(newpass).subscribe(function (result) { return _this.successfulChange(result); }, function (err) { return _this.errorChange(err); });
+        }
+        else {
+            this.auth.user.password = newpass;
+            this.auth.authChangePasswordByToken(this.token).subscribe(function (result) { return _this.successfulChange(result); }, function (err) { return _this.errorChange(err); });
+        }
+    };
+    ChangePasswordComponent.prototype.successfulChange = function (user) {
+        var _this = this;
+        console.log(user);
+        var dialogRef = this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_4__["AlertMessageDialogComponent"], {
+            data: { alertMessage: 'Password changed for "' + user.username + '"' }
+        });
+        dialogRef.afterClosed().subscribe(function () { return _this.router.navigate(['/login']); });
+        console.log("Password changed for user: " + user.username);
+    };
+    ChangePasswordComponent.prototype.errorChange = function (err) {
+        var _this = this;
+        console.log(err);
+        var dialogRef = this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_4__["AlertMessageDialogComponent"], {
+            data: { alertMessage: err.error }
+        });
+        dialogRef.afterClosed().subscribe(function () { return _this.router.navigate(['/login']); });
     };
     ChangePasswordComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
@@ -1044,7 +1172,7 @@ var ChangePasswordComponent = /** @class */ (function () {
             template: __webpack_require__(/*! ./change-password.component.html */ "./src/app/change-password/change-password.component.html"),
             styles: [__webpack_require__(/*! ./change-password.component.scss */ "./src/app/change-password/change-password.component.scss")]
         }),
-        __metadata("design:paramtypes", [_services_auth_service__WEBPACK_IMPORTED_MODULE_4__["AuthService"],
+        __metadata("design:paramtypes", [_services_auth_service__WEBPACK_IMPORTED_MODULE_3__["AuthService"],
             _angular_router__WEBPACK_IMPORTED_MODULE_1__["ActivatedRoute"],
             _angular_router__WEBPACK_IMPORTED_MODULE_1__["Router"],
             _angular_material__WEBPACK_IMPORTED_MODULE_2__["MatDialog"]])
@@ -1052,6 +1180,9 @@ var ChangePasswordComponent = /** @class */ (function () {
     return ChangePasswordComponent;
 }());
 
+/* Note: this form is simple to validate without using the built in angular
+   form validity system because there are only two values on the entire form.
+   See the RegisterComponent for the complicated method. :) */
 
 
 /***/ }),
@@ -1113,6 +1244,112 @@ var DownloadsComponent = /** @class */ (function () {
         __metadata("design:paramtypes", [])
     ], DownloadsComponent);
     return DownloadsComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/edit-user-dialog/edit-user-dialog.component.html":
+/*!******************************************************************!*\
+  !*** ./src/app/edit-user-dialog/edit-user-dialog.component.html ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "  <div class=\"edit-user-container\">\n      <!-- fxLayout=\"row\"\n      fxLayout.sm=\"column\"\n      fxLayout.xs=\"column\" -->\n    <form #userForm=\"ngForm\" class=\"user-form\" fxLayout=\"column\" (ngSubmit)=\"onSaveClick(password.value)\">\n      <mat-toolbar class=\"toolbar\" align=\"center\">\n        <h3>Edit User</h3>\n      </mat-toolbar>\n      <p>Id: {{data.user._id}}</p>\n      <mat-form-field>\n        <input matInput minlength=\"5\" maxlength=\"30\" placeholder=\"Full Name\" type=\"text\" [(ngModel)]=\"data.user.name\" #name=\"ngModel\" name=\"name\">\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n      </mat-form-field>\n      <mat-form-field>\n        <input matInput minlength=\"5\" maxlength=\"20\" placeholder=\"Username\" type=\"text\" [(ngModel)]=\"data.user.username\" #username=\"ngModel\" name=\"username\">\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n      </mat-form-field>\n      <mat-form-field>\n        <input matInput minlength=\"5\" maxlength=\"40\" placeholder=\"Email\" type=\"email\" [(ngModel)]=\"data.user.email\" #email=\"ngModel\" name=\"email\">\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n        <mat-hint>\n          <span [hidden]=\"email.pristine\">\n            <span [hidden]=\"!email.errors?.minlength\">** Minimum length is 5 characters **</span>\n          </span>\n        </mat-hint>\n      </mat-form-field>\n      <mat-form-field>\n          <mat-select [(ngModel)]=\"tempLevel\" placeholder=\"Level\" #level=\"ngModel\" name=\"level\">\n          <mat-option value=\"0\">0 - Delete This User</mat-option>\n          <mat-option value=\"1\">1 - Not Activated</mat-option>\n          <mat-option value=\"2\">2 - Normal User Level</mat-option>\n          <mat-option value=\"3\">3 - Uploader</mat-option>\n          <mat-option value=\"4\">4 - Site Admin</mat-option>\n        </mat-select>\n      </mat-form-field>\n      <fieldset fxLayout=\"column\" class=\"password-group\" ngModelGroup=\"passGroup\" equal>\n        <legend>Change User's Password</legend>\n        <mat-form-field>\n          <input matInput minlength=\"5\" maxlength=\"30\" placeholder=\"New password\" [type]=\"hidePass ? 'password' : 'text'\"\n              ngModel name=\"password\" #password=\"ngModel\">\n          <mat-icon matSuffix (click)=\"hidePass = !hidePass\">{{hidePass ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"password.pristine\">\n              <span [hidden]=\"!password.errors?.minlength\">** Minimum length is 5 characters **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <mat-form-field>\n          <input matInput minlength=\"5\" maxlength=\"30\" placeholder=\"Verify the new password\" [type]=\"hideRetype ? 'password' : 'text'\"\n              ngModel name=\"retype\" #retype=\"ngModel\" [required]=\"password.value ? true : false\">\n          <mat-icon matSuffix (click)=\"hideRetype = !hideRetype\">{{hideRetype ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"password.pristine\">\n                <span [hidden]=\"!retype.errors?.required\">** Verification of the password is required **</span>\n            </span>\n            <span [hidden]=\"retype.pristine\">\n              <span [hidden]=\"!retype.errors?.minlength\">** Minimum length 5 ** </span>\n              <span [hidden]=\"!userForm.form.hasError('equal', 'passGroup')\">** Passwords don't match **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n      </fieldset>\n      <div fxLayout=\"row\">\n        <button mat-button mat-dialog-close>Cancel</button>\n        <span class=\"fill-space\"></span>\n        <button mat-raised-button type=\"submit\" color=\"primary\" [disabled]=\"userForm.form.invalid || userForm.form.pristine\" cdkFocusInitial>Save</button>\n        <!-- <button mat-raised-button type=\"submit\" color=\"primary\" cdkFocusInitial>Save</button> -->\n      </div>\n    </form>\n</div>\n"
+
+/***/ }),
+
+/***/ "./src/app/edit-user-dialog/edit-user-dialog.component.scss":
+/*!******************************************************************!*\
+  !*** ./src/app/edit-user-dialog/edit-user-dialog.component.scss ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = ".mat-dialog-container {\n  padding: 3px; }\n\n.edit-user-container {\n  background-color: white;\n  border-radius: 5px;\n  border: 1px;\n  border-color: black;\n  border-style: ridge;\n  padding: 10px 10px 22px 10px; }\n\nh3 {\n  font-size: 25px;\n  flex: 1 1 auto; }\n\n.password-group {\n  margin: 0 5px 20px 5px;\n  border: 1px solid #660000;\n  border-radius: 2px;\n  padding: 10px; }\n"
+
+/***/ }),
+
+/***/ "./src/app/edit-user-dialog/edit-user-dialog.component.ts":
+/*!****************************************************************!*\
+  !*** ./src/app/edit-user-dialog/edit-user-dialog.component.ts ***!
+  \****************************************************************/
+/*! exports provided: EditUserDialogComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EditUserDialogComponent", function() { return EditUserDialogComponent; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
+/* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
+/* harmony import */ var _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../alert-message-dialog/alert-message-dialog.component */ "./src/app/alert-message-dialog/alert-message-dialog.component.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (undefined && undefined.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (undefined && undefined.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+
+
+var EditUserDialogComponent = /** @class */ (function () {
+    //  levelControl: FormControl;
+    function EditUserDialogComponent(dialogRef, data, auth, dialog) {
+        this.dialogRef = dialogRef;
+        this.data = data;
+        this.auth = auth;
+        this.dialog = dialog;
+    }
+    EditUserDialogComponent.prototype.ngOnInit = function () {
+        this.hidePass = this.hideRetype = true;
+        this.tempLevel = this.data.user.level.toString();
+        //    this.levelControl = new FormControl(this.tempLevel, [Validators.required]);
+    };
+    EditUserDialogComponent.prototype.onSaveClick = function (password) {
+        var _this = this;
+        if (password)
+            this.data.user.password = password;
+        if (Number(this.tempLevel) !== this.data.user.level) {
+            this.data.user.level = Number(this.tempLevel);
+        }
+        this.auth.authUpdateUser(this.data.user).subscribe(function (userReturned) {
+            var alertMessage = 'User "' + userReturned.name + '" has been successfully updated.';
+            var dialogRef = _this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_3__["AlertMessageDialogComponent"], {
+                width: '350px',
+                data: { alertMessage: alertMessage }
+            });
+            dialogRef.afterClosed().subscribe(function (result) { });
+        }, function (err) {
+            var alertMessage = 'Error updating user!';
+            var dialogRef = _this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_3__["AlertMessageDialogComponent"], {
+                data: { alertMessage: alertMessage }
+            });
+            dialogRef.afterClosed().subscribe(function (result) { });
+        }, function () { });
+        this.dialogRef.close();
+    };
+    EditUserDialogComponent = __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
+            selector: 'app-edit-user-dialog',
+            template: __webpack_require__(/*! ./edit-user-dialog.component.html */ "./src/app/edit-user-dialog/edit-user-dialog.component.html"),
+            styles: [__webpack_require__(/*! ./edit-user-dialog.component.scss */ "./src/app/edit-user-dialog/edit-user-dialog.component.scss")],
+            encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewEncapsulation"].None // Had to turn off to CSS style fieldset ... ?
+        }),
+        __param(1, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(_angular_material__WEBPACK_IMPORTED_MODULE_1__["MAT_DIALOG_DATA"])),
+        __metadata("design:paramtypes", [_angular_material__WEBPACK_IMPORTED_MODULE_1__["MatDialogRef"], Object, _services_auth_service__WEBPACK_IMPORTED_MODULE_2__["AuthService"],
+            _angular_material__WEBPACK_IMPORTED_MODULE_1__["MatDialog"]])
+    ], EditUserDialogComponent);
+    return EditUserDialogComponent;
 }());
 
 
@@ -1704,10 +1941,9 @@ var GalleryComponent = /** @class */ (function () {
             if ((this.auth.hasLoggedInBefore()) && (!this.auth.isLoginExpired())) {
                 // Someone has logged in before and still has an unexpired token, so
                 // go ahead and auto-login with those saved credentials.
-                this.auth.user['username'] = this.auth.lastLoggedInUsername();
-                this.auth.user['level'] = Number(this.auth.lastLoggedInUserLevel());
-                this.auth.setAuthenticated(true);
-                console.log('Auto-login for user ' + this.auth.user['username']);
+                this.auth.user.username = this.auth.lastLoggedInUsername();
+                this.auth.user.level = this.auth.lastLoggedInUserLevel();
+                console.log('Auto-login for user ' + this.auth.user.username);
             }
             else {
                 this.router.navigate(['/login']);
@@ -1738,7 +1974,7 @@ var GalleryComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <mat-toolbar class=\"toolbar\" fxFlex>\n      <span>{{CFG.const.header.title}}</span>\n      <a mat-button routerLink=\"/gallery\" routerLinkActive=\"active\" fxFlexOffset=\"1\" >Home</a>\n      <a mat-button routerLink=\"/downloads\" routerLinkActive=\"active\">Downloads</a>\n      <button mat-button [matMenuTriggerFor]=\"galleryMenu\">Gallery Menu</button>\n      <mat-menu #galleryMenu=\"matMenu\">\n        <button mat-menu-item routerLink=\"/\" >Gallery Home</button>\n        <hr>\n        <button mat-menu-item routerLink=\"/videos\" >Video Gallery</button>\n        <button mat-menu-item routerLink=\"/pictures\">Picture Gallery</button>\n      </mat-menu>\n      <a mat-button routerLink=\"/about\" routerLinkActive=\"active\">About</a>\n      <span class=\"fill-space\"></span>\n      <a mat-button routerLink=\"/\" routerLinkActive=\"active\" (click)=\"auth.authLogout()\">Logout</a>\n  </mat-toolbar>\n</div>\n"
+module.exports = "<div *ngIf=\"auth.isAuthenticated()\">\n  <mat-toolbar class=\"toolbar\" fxFlex>\n      <span>{{CFG.const.header.title}}</span>\n      <a mat-button routerLink=\"/gallery\" routerLinkActive=\"active\" fxFlexOffset=\"1\" >Home</a>\n      <a mat-button routerLink=\"/downloads\" routerLinkActive=\"active\">Downloads</a>\n      <button mat-button [matMenuTriggerFor]=\"galleryMenu\">Gallery Menu</button>\n      <mat-menu #galleryMenu=\"matMenu\">\n        <button mat-menu-item routerLink=\"/\" >Gallery Home</button>\n        <hr>\n        <button mat-menu-item routerLink=\"/videos\" >Video Gallery</button>\n        <button mat-menu-item routerLink=\"/albums\">Picture Gallery</button>\n      </mat-menu>\n      <a mat-button routerLink=\"/about\" routerLinkActive=\"active\">About</a>\n      <span class=\"fill-space\"></span>\n      <button mat-button [matMenuTriggerFor]=\"userMenu\">{{auth.user.username}}</button>\n      <mat-menu #userMenu=\"matMenu\">\n        <button mat-menu-item routerLink=\"/\" routerLinkActive=\"active\" (click)=\"auth.authLogout()\">Logout</button>\n        <hr>\n        <button mat-menu-item routerLink=\"/changepass\" >Change Password</button>\n        <button *ngIf=\"(auth.user.level > 3)\" mat-menu-item routerLink=\"/manage\">Manage Users</button>\n      </mat-menu>\n      <!-- <a mat-button routerLink=\"/\" routerLinkActive=\"active\" (click)=\"auth.authLogout()\">Logout</a> -->\n  </mat-toolbar>\n</div>\n"
 
 /***/ }),
 
@@ -1874,7 +2110,6 @@ var LoginComponent = /** @class */ (function () {
             // go ahead and auto-login with those saved credentials.
             this.auth.user['username'] = this.auth.lastLoggedInUsername();
             this.auth.user['level'] = Number(this.auth.lastLoggedInUserLevel());
-            this.auth.setAuthenticated(true);
             this.router.navigate(['/gallery']);
             console.log('Auto-login for user ' + this.auth.user['username']);
         }
@@ -1941,6 +2176,102 @@ var LoginComponent = /** @class */ (function () {
             _angular_router__WEBPACK_IMPORTED_MODULE_2__["Router"]])
     ], LoginComponent);
     return LoginComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/manage-users/manage-users.component.html":
+/*!**********************************************************!*\
+  !*** ./src/app/manage-users/manage-users.component.html ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"spinner\" *ngIf=\"loading$ | async\">\n    <mat-spinner></mat-spinner>\n</div>\n\n<div class=\"manage-container\" [hidden]=\"loading$ | async\">\n    <h2>Manage Users:</h2>\n\n    <mat-form-field>\n        <input matInput (keyup)=\"applyFilter($event.target.value)\" placeholder=\"Filter\">\n    </mat-form-field>\n      \n    <div class=\"mat-elevation-z8\">\n      <table mat-table [dataSource]=\"dataSource\" class=\"mat-elevation-z8\">\n      \n        <!-- User ID Column -->\n        <ng-container matColumnDef=\"userId\">\n          <th mat-header-cell *matHeaderCellDef> User ID </th>\n          <td mat-cell *matCellDef=\"let user\"> {{user._id}} </td>\n        </ng-container>\n      \n        <!-- Name Column -->\n        <ng-container matColumnDef=\"name\">\n          <th mat-header-cell *matHeaderCellDef> Name </th>\n          <td mat-cell *matCellDef=\"let user\"> {{user.name}} </td>\n        </ng-container>\n      \n        <!-- Username Column -->\n        <ng-container matColumnDef=\"username\">\n          <th mat-header-cell *matHeaderCellDef> Username </th>\n          <td mat-cell *matCellDef=\"let user\"> {{user.username}} </td>\n        </ng-container>\n      \n        <!-- Email Column -->\n        <ng-container matColumnDef=\"email\">\n          <th mat-header-cell *matHeaderCellDef> E-Mail </th>\n          <td mat-cell *matCellDef=\"let user\"> {{user.email}} </td>\n        </ng-container>\n    \n        <!-- Level Column -->\n        <ng-container matColumnDef=\"level\">\n            <th mat-header-cell *matHeaderCellDef> Level </th>\n            <td mat-cell *matCellDef=\"let user\"> {{user.level}} </td>\n        </ng-container>\n          \n        \n        <tr mat-header-row *matHeaderRowDef=\"displayedColumns\"></tr>\n        <tr mat-row *matRowDef=\"let row; columns: displayedColumns;\" (click)=\"onRowClicked(row)\"></tr>\n      </table>\n      <mat-paginator [pageSize]=\"8\" [pageSizeOptions]=\"[5, 8, 15, 20]\" showFirstLastButtons></mat-paginator>\n    </div>\n    \n</div>\n"
+
+/***/ }),
+
+/***/ "./src/app/manage-users/manage-users.component.scss":
+/*!**********************************************************!*\
+  !*** ./src/app/manage-users/manage-users.component.scss ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "/* Structure */\ntable {\n  width: 100%; }\ntr {\n  cursor: pointer; }\n"
+
+/***/ }),
+
+/***/ "./src/app/manage-users/manage-users.component.ts":
+/*!********************************************************!*\
+  !*** ./src/app/manage-users/manage-users.component.ts ***!
+  \********************************************************/
+/*! exports provided: ManageUsersComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ManageUsersComponent", function() { return ManageUsersComponent; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm5/index.js");
+/* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
+/* harmony import */ var _edit_user_dialog_edit_user_dialog_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../edit-user-dialog/edit-user-dialog.component */ "./src/app/edit-user-dialog/edit-user-dialog.component.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (undefined && undefined.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+
+
+var ManageUsersComponent = /** @class */ (function () {
+    function ManageUsersComponent(auth, dialog) {
+        this.auth = auth;
+        this.dialog = dialog;
+        this.loading$ = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](true); // will be getting initial table
+        this.displayedColumns = ['userId', 'name', 'username', 'email', 'level'];
+        this.dataSource = new _angular_material__WEBPACK_IMPORTED_MODULE_1__["MatTableDataSource"]();
+    }
+    ManageUsersComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.dataSource.paginator = this.paginator;
+        this.auth.authGetUsers()
+            .subscribe(function (users) {
+            _this.dataSource.data = users;
+            _this.loading$.next(false);
+        });
+    };
+    ManageUsersComponent.prototype.applyFilter = function (filterValue) {
+        this.dataSource.filter = filterValue.trim().toLowerCase();
+    };
+    ManageUsersComponent.prototype.onRowClicked = function (row) {
+        var dialogRef = this.dialog.open(_edit_user_dialog_edit_user_dialog_component__WEBPACK_IMPORTED_MODULE_4__["EditUserDialogComponent"], {
+            width: '350px',
+            data: { user: row }
+        });
+    };
+    __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChild"])(_angular_material__WEBPACK_IMPORTED_MODULE_1__["MatPaginator"]),
+        __metadata("design:type", _angular_material__WEBPACK_IMPORTED_MODULE_1__["MatPaginator"])
+    ], ManageUsersComponent.prototype, "paginator", void 0);
+    ManageUsersComponent = __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
+            selector: 'app-manage-users',
+            template: __webpack_require__(/*! ./manage-users.component.html */ "./src/app/manage-users/manage-users.component.html"),
+            styles: [__webpack_require__(/*! ./manage-users.component.scss */ "./src/app/manage-users/manage-users.component.scss")]
+        }),
+        __metadata("design:paramtypes", [_services_auth_service__WEBPACK_IMPORTED_MODULE_3__["AuthService"], _angular_material__WEBPACK_IMPORTED_MODULE_1__["MatDialog"]])
+    ], ManageUsersComponent);
+    return ManageUsersComponent;
 }());
 
 
@@ -2036,18 +2367,16 @@ module.exports = ".register-form {\n  min-width: 200px;\n  background-color: whi
 /*!************************************************!*\
   !*** ./src/app/register/register.component.ts ***!
   \************************************************/
-/*! exports provided: RegisterComponent, EqualDirective */
+/*! exports provided: RegisterComponent */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RegisterComponent", function() { return RegisterComponent; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EqualDirective", function() { return EqualDirective; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
 /* harmony import */ var _classes_user_classes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_classes/user-classes */ "./src/app/_classes/user-classes.ts");
 /* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
-/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -2060,7 +2389,6 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 var __param = (undefined && undefined.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-
 
 
 
@@ -2096,46 +2424,6 @@ var RegisterComponent = /** @class */ (function () {
     return RegisterComponent;
 }());
 
-// Set up the directive for a custom form validation - "password" and "retype" password.
-// Using template driven forms, so need a custom @Directive to create a selector for use
-// in the form.  Note: this selector is applied as an attribute in the form GROUP 
-// (note the ngModelGroup="passGroup" in the template).  That way all the formGroup input
-// fields will be sent in the FormControl object injected into the function within the 
-// factory - yeah, the syntax is a bit confusing for this...
-var EqualDirective = /** @class */ (function () {
-    function EqualDirective() {
-        this.validator = validateEqualFactory();
-    }
-    EqualDirective_1 = EqualDirective;
-    EqualDirective.prototype.validate = function (c) {
-        return this.validator(c);
-    };
-    EqualDirective = EqualDirective_1 = __decorate([
-        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Directive"])({
-            selector: '[equal]',
-            providers: [{ provide: _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NG_VALIDATORS"], useExisting: EqualDirective_1, multi: true }]
-        })
-        // This class has one property, a constructor that sets that property, and the required
-        // validate() function (required by the Validator interface).
-        ,
-        __metadata("design:paramtypes", [])
-    ], EqualDirective);
-    return EqualDirective;
-    var EqualDirective_1;
-}());
-
-// This factory function simply returns a function.  The inner function is the one that
-// has the FormGroup object injected into it - note it is a FormGroup object because we
-// need both the password AND the retry passed to us (these are the only two elements in
-// the ngModelGroup="passGroup") in order to compare them.  This can be used generically
-// though, so I mapped password to first and retry to second.
-function validateEqualFactory() {
-    return function (c) {
-        var _a = Object.keys(c.value || {}), first = _a[0], second = _a[1]; // Deconstruct array syntax
-        var valid = (c.value[first] === c.value[second]);
-        return (valid) ? null : { equal: { valid: false } };
-    };
-}
 
 
 /***/ }),

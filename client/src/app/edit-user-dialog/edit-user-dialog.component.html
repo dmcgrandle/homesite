@@ -1,0 +1,70 @@
+  <div class="edit-user-container">
+      <!-- fxLayout="row"
+      fxLayout.sm="column"
+      fxLayout.xs="column" -->
+    <form #userForm="ngForm" class="user-form" fxLayout="column" (ngSubmit)="onSaveClick(password.value)">
+      <mat-toolbar class="toolbar" align="center">
+        <h3>Edit User</h3>
+      </mat-toolbar>
+      <p>Id: {{data.user._id}}</p>
+      <mat-form-field>
+        <input matInput minlength="5" maxlength="30" placeholder="Full Name" type="text" [(ngModel)]="data.user.name" #name="ngModel" name="name">
+        <!-- <mat-hint align="end">{{input.value?.length || 0}}/20</mat-hint> -->
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput minlength="5" maxlength="20" placeholder="Username" type="text" [(ngModel)]="data.user.username" #username="ngModel" name="username">
+        <!-- <mat-hint align="end">{{input.value?.length || 0}}/20</mat-hint> -->
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput minlength="5" maxlength="40" placeholder="Email" type="email" [(ngModel)]="data.user.email" #email="ngModel" name="email">
+        <!-- <mat-hint align="end">{{input.value?.length || 0}}/20</mat-hint> -->
+        <mat-hint>
+          <span [hidden]="email.pristine">
+            <span [hidden]="!email.errors?.minlength">** Minimum length is 5 characters **</span>
+          </span>
+        </mat-hint>
+      </mat-form-field>
+      <mat-form-field>
+          <mat-select [(ngModel)]="tempLevel" placeholder="Level" #level="ngModel" name="level">
+          <mat-option value="0">0 - Delete This User</mat-option>
+          <mat-option value="1">1 - Not Activated</mat-option>
+          <mat-option value="2">2 - Normal User Level</mat-option>
+          <mat-option value="3">3 - Uploader</mat-option>
+          <mat-option value="4">4 - Site Admin</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <fieldset fxLayout="column" class="password-group" ngModelGroup="passGroup" equal>
+        <legend>Change User's Password</legend>
+        <mat-form-field>
+          <input matInput minlength="5" maxlength="30" placeholder="New password" [type]="hidePass ? 'password' : 'text'"
+              ngModel name="password" #password="ngModel">
+          <mat-icon matSuffix (click)="hidePass = !hidePass">{{hidePass ? 'visibility' : 'visibility_off'}}</mat-icon>
+          <mat-hint>
+            <span [hidden]="password.pristine">
+              <span [hidden]="!password.errors?.minlength">** Minimum length is 5 characters **</span>
+            </span>
+          </mat-hint>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput minlength="5" maxlength="30" placeholder="Verify the new password" [type]="hideRetype ? 'password' : 'text'"
+              ngModel name="retype" #retype="ngModel" [required]="password.value ? true : false">
+          <mat-icon matSuffix (click)="hideRetype = !hideRetype">{{hideRetype ? 'visibility' : 'visibility_off'}}</mat-icon>
+          <mat-hint>
+            <span [hidden]="password.pristine">
+                <span [hidden]="!retype.errors?.required">** Verification of the password is required **</span>
+            </span>
+            <span [hidden]="retype.pristine">
+              <span [hidden]="!retype.errors?.minlength">** Minimum length 5 ** </span>
+              <span [hidden]="!userForm.form.hasError('equal', 'passGroup')">** Passwords don't match **</span>
+            </span>
+          </mat-hint>
+        </mat-form-field>
+      </fieldset>
+      <div fxLayout="row">
+        <button mat-button mat-dialog-close>Cancel</button>
+        <span class="fill-space"></span>
+        <button mat-raised-button type="submit" color="primary" [disabled]="userForm.form.invalid || userForm.form.pristine" cdkFocusInitial>Save</button>
+        <!-- <button mat-raised-button type="submit" color="primary" cdkFocusInitial>Save</button> -->
+      </div>
+    </form>
+</div>

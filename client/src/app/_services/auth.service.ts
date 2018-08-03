@@ -2,25 +2,30 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, pipe, of } from 'rxjs';
 import { tap, map, shareReplay } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AES, enc } from 'crypto-ts';
+import { AES } from 'crypto-ts';
 
 import { AppConfig } from '../app.config';
 import { Album, Photo } from '../_classes/photo-classes';
 import { User } from '../_classes/user-classes';
+import { LoginResponse } from '../_classes/server-response-classes';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private _authenticated: boolean = false;
 //  private _authenticated: BehaviorSubject<boolean> = new BehaviorSubject(false);
   user: User;
 
   constructor(private http: HttpClient,
               public   CFG: AppConfig) {
   // set up default starting values
-    localStorage.setItem('userId', "-1"); //no user logged in to start with
+//  this.user = new User;
+    if (!this.user && this.isAuthenticated()) {// user must have refreshed, so reset user
+      this.user = new User;
+      this.user.username = this.lastLoggedInUsername();
+      this.user.level = this.lastLoggedInUserLevel();
+    }
   }
 
   public isAuthenticated(): boolean {
@@ -28,41 +33,56 @@ export class AuthService {
     return !this.isLoginExpired();
   }
 
+/*
   public setAuthenticated (value: boolean) {
 //    this._authenticated.next(value);
     this._authenticated = value;
   }
+*/
 
-  public authLogin(): Observable<Object> {
+  public authLogin(): Observable<LoginResponse> {
     // before transmitting user object to server for authentication, encrypt pw
     this.user.password = this.encryptPass(this.user.password);
-    return this.http.post('/api/users/login', this.user).pipe(
-      tap(res => this.storeUserResponse(res)),
-      tap(() => this.setAuthenticated(true)),
+    return <Observable<LoginResponse>>this.http.post('/api/users/login', this.user).pipe(
+      tap((res : LoginResponse) => {
+        this.storeLoginResponse(res);
+        this.user.level = res.level;
+      }),
       shareReplay()
     );
   }
 
   public authRegister(): Observable<Object> {
     this.user.password = this.encryptPass(this.user.password);
-    return this.http.post('/api/users/create', this.user).pipe(
-      shareReplay()
-    );
+    return this.http.post('/api/users/create', this.user).pipe(shareReplay());
   }
 
   public authForgot(): Observable<Object> {
-    return this.http.post('/api/users/forgot', this.user).pipe(
-      shareReplay()
-    );
+    return this.http.post('/api/users/forgot', this.user).pipe(shareReplay());
   }
 
-  public authChangePassword(token: string): Observable<Object> {
+  public authChangePasswordByToken(token: string): Observable<User> {
     this.user.password = this.encryptPass(this.user.password);
-    let body = this.user; // http body to send will be the user and the token
-    body['token'] = token;
-    return this.http.post('/api/users/changepassword', body).pipe(
-      shareReplay()
-    );
+    let body = this.user;
+    body['token'] = token; // Add token to the object to send to the server
+    return <Observable<User>>this.http.post('/api/users/changepw-by-token', body).pipe(shareReplay());
+  }
+
+  public authChangePasswordByPassword(newPassword: string): Observable<User> {
+    this.user.password = this.encryptPass(this.user.password);
+    let body = this.user;
+    body['newPassword'] = this.encryptPass(newPassword);
+    return <Observable<User>>this.http.post('/api/users/changepw-by-pw', body).pipe(shareReplay());
+  }
+
+  public authUpdateUser(user: User): Observable<User> {
+    if (user.password) user.password = this.encryptPass(user.password);
+    let body = user;
+    return this.http.put<User>('/api/users/update', body);
+  }
+
+  public authGetUsers(): Observable<User[]> {
+    return this.http.get<User[]>('/api/users/list');
   }
 
   public getToken(): string {
@@ -82,8 +102,8 @@ export class AuthService {
     return localStorage.getItem('username');
   }
 
-  public lastLoggedInUserLevel(): string {
-    return localStorage.getItem('level');
+  public lastLoggedInUserLevel(): number {
+    return Number(localStorage.getItem('level'));
   }
 
   public authLogout() {
@@ -91,7 +111,6 @@ export class AuthService {
     localStorage.removeItem('jwtToken');
     localStorage.removeItem('level');
     localStorage.removeItem('expiresAt');
-    this.setAuthenticated(false);
     this.user = new User;
   }
 
@@ -99,16 +118,12 @@ export class AuthService {
     return AES.encrypt(password, this.CFG.const.auth.password_secret).toString();
   }
 
-  private storeUserResponse(res) {
-    localStorage.setItem('username', this.user['username']);
+  private storeLoginResponse(res) {
+    localStorage.setItem('username', this.user.username);
     localStorage.setItem('jwtToken', res.jwtToken);
     localStorage.setItem('level', res.level);
     localStorage.setItem('expiresAt', res.expiresAt);
     localStorage.setItem('successfulLogin', 'true');
-/*  console.log('userId: ' + localStorage.getItem('userId'));
-    console.log('jwtToken: ' + localStorage.getItem('jwtToken'));
-    console.log('level: ' + localStorage.getItem('level'));
-    console.log('expiresAt: ' + localStorage.getItem('expiresAt')); */
   }
 
 }

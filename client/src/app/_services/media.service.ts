@@ -48,7 +48,7 @@ export class MediaService {
   // album into curPhotoAlbum variable (class scope).  Ultimately this function 
   // returns an observable which resolves to the album from getPhotoAlbumByPath.
     return url.pipe(
-      flatMap(segments => this.getPhotoAlbumByPath(segments.join('/'))),
+      switchMap(segments => this.getPhotoAlbumByPath(segments.join('/'))),
       tap(album => this.curPhotoAlbum = album)
     );
   };

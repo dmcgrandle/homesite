@@ -27,8 +27,6 @@ let db; // module scope needed, these variables are used throughout the module.
     db = await require('./db-service');
     if (0 === await db.collection('users').find({_id : 0}).limit(1).count()) {
       const defUsers = JSON.parse(await fs.readFile(cfg.default_users, 'utf8'));
-      console.log('default users before modification:');
-      console.log(defUsers);
       // Set up promise array to iterate through all defUsers and hash the passwords
       let pArray = [];
       for (let i=0;i<defUsers.length;i++) {
@@ -38,8 +36,6 @@ let db; // module scope needed, these variables are used throughout the module.
       for (let i=0;i<hashArray.length;i++) {
         defUsers[i].password = hashArray[i];
       }
-      console.log('default users after modification:');
-      console.log(defUsers);
       const res = await db.collection('users').insertMany(defUsers);
       assert.equal(defUsers.length, res.insertedCount); // checking creation was successful   
       console.log(Date(Date.now()) + ' : created new "user" document in db.');
@@ -49,11 +45,18 @@ let db; // module scope needed, these variables are used throughout the module.
 })(); // IIFE 
 
 
-exports.getUser = async function(user) {
-  const userReturned = await db.collection('users').findOne({username : user.username});
+exports.getUser = async function(username) {
+  const userReturned = await db.collection('users').findOne({username : username});
   if (!userReturned) throw new Error('404 Unknown User.  Please try another username or register a new user.');
   return userReturned;
 };
+
+exports.getUserById = async function(id) {
+  const userReturned = await db.collection('users').findOne({_id : id});
+  if (!userReturned) throw new Error('404 Unknown User.  Please try another username or register a new user.');
+  return userReturned;
+};
+
 
 exports.getUserByEmail = async function(user) {
   const userReturned = await db.collection('users').findOne({email : user.email});
@@ -62,12 +65,12 @@ exports.getUserByEmail = async function(user) {
 };
 
 exports.getId = async function(user) {
-  const userReturned = await exports.getUser(user);
+  const userReturned = await exports.getUser(user.username);
   return userReturned._id;
 };
 
 exports.getLevel = async function(user) {
-  const userReturned = await exports.getUser(user);
+  const userReturned = await exports.getUser(user.username);
   return userReturned.level;
 };
 
@@ -78,7 +81,7 @@ exports.getListSansPasswords = async function() {
 };
 
 exports.isValidLevel = async function(user, level) {
-  const userReturned = await exports.getUser(user);
+  const userReturned = await exports.getUser(user.username);
   if (userReturned.level === 0) throw new Error('401 User Deleted');
   if (userReturned.level === 1) throw new Error('401 User is not activated yet, please try again in a few hours.');
   if (userReturned.level < level) throw new Error('403 User ' + user.username + ' is not high enough level.');
@@ -86,7 +89,7 @@ exports.isValidLevel = async function(user, level) {
 };
 
 exports.isValidPassword = async function(user) {
-  const dbUser = await exports.getUser(user);
+  const dbUser = await exports.getUser(user.username);
   if (!(await bcrypt.compare(decryptPw(user.password), dbUser.password))) {
     throw new Error('401 Password incorrect, please try again.  If problem persists, please click the "forgot password" link.');
   }
@@ -109,12 +112,11 @@ exports.create = async function(user) {
     if (!userReturned) { // no deleted users, so create a new one
       let lastU = await db.collection('users').find().sort({_id: -1}).limit(1).next();
       user._id = lastU._id + 1;
-      console.log('user to be inserted is ' + JSON.stringify(user));
-      let r = await db.collection('users').insertOne(user); 
+      await db.collection('users').insertOne(user); 
     }
     else { //update the existing deleted user with new info
       user._id = userReturned._id;
-      let r = await db.collection('users').replaceOne({_id: user._id}, user);
+      await db.collection('users').replaceOne({_id: user._id}, user);
     }
   }
   delete user.password; // Delete password property so it isn't sent back
@@ -133,8 +135,28 @@ exports.delete = async function(user) {
   return result.value;
 };
 
-exports.changePassword = async function(user) {
-  user.password = await bcrypt.hash(decryptPw(user.password), cfg.SALT_ROUNDS);
+exports.update = async function(user) {// user._id is the only uneditable field ...
+  if (await isValidData(user)) {
+    const userReturned = await exports.getUserById(user._id); // because the username may change ...
+    if (user.password){// if password object exists then use new password sent
+      user.password = await bcrypt.hash(decryptPw(user.password), cfg.SALT_ROUNDS);
+    } else {// keep the password the same
+      user.password = userReturned.password;
+    }
+    await db.collection('users').replaceOne({_id: user._id}, checkAndArrangeUserObject(user));
+  }
+  delete user.password; // Delete password property so it isn't sent back
+  return user;
+};
+
+
+exports.changePassword = async function(changeByExisting, user) {
+  if (changeByExisting && (await exports.isValidPassword(user))) {// user object must have newPassword property
+      user.password = await bcrypt.hash(decryptPw(user.newPassword), cfg.SALT_ROUNDS);
+  }
+  else { // if changing by token then user.password has the new password in it.
+    user.password = await bcrypt.hash(decryptPw(user.password), cfg.SALT_ROUNDS);
+  }
   const result = await db.collection('users').findOneAndUpdate(
     {username : user.username},
     {$set: {password: user.password}}
@@ -142,7 +164,7 @@ exports.changePassword = async function(user) {
   if (result.lastErrorObject.n != 1) {
     throw new Error('404 Unknown User.  Please try another username or register a new user.');
   }
-  return result.value;
+  return result.value;  
 };
 
 exports.emailReset = async function(user) {
@@ -183,6 +205,26 @@ isValidData = async function(user) {
   }
   return true;
 };
+
+checkAndArrangeUserObject = function(user) {
+  // The purpose of this function is to make sure all the keys and values in
+  // the user object appear in the correct order - we could be sent the values
+  // in any order, so this arranges them properly.
+  let newUser = {};
+  if (user._id < 0) throw new Error('404 Unknown UserId: ' + user._id);
+  if (!user.name) throw new Error('404 Unknown Name: ' + user.name);
+  if (!user.username) throw new Error('404 Unknown Username: ' + user.username);
+  if (!user.password) throw new Error('404 Password must be present');
+  if (!user.email) throw new Error('404 Email must be present');
+  if ((user.level < 0) || (user.level > 4)) throw new Error('404 Level not valid: ' + user.level);
+  newUser._id = user._id;
+  newUser.name = user.name;
+  newUser.username = user.username;
+  newUser.password = user.password;
+  newUser.email = user.email;
+  newUser.level = user.level;
+  return newUser;
+}
 
 errAndExit = function(err, code) {
 //  throw new Error('001 Error connecting to database');

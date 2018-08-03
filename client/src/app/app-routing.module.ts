@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { LoginComponent } from './login/login.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
+import { ManageUsersComponent } from './manage-users/manage-users.component';
 import { GalleryComponent } from './gallery/gallery.component';
 import { GalleryVideoAlbumsComponent } from './gallery-video-albums/gallery-video-albums.component';
 import { GalleryPhotoAlbumsComponent } from './gallery-photo-albums/gallery-photo-albums.component';
@@ -23,6 +24,8 @@ const appRoutes: Routes = [
     ]},
     { path: 'downloads', component: DownloadsComponent },
     { path: 'changepass/:username/:token', component: ChangePasswordComponent },
+    { path: 'changepass', component: ChangePasswordComponent },
+    { path: 'manage', component: ManageUsersComponent },
     { path: 'about', component: AboutComponent },
     { path: 'login', component: LoginComponent },
     { path: '', redirectTo: 'login', pathMatch: 'full' },

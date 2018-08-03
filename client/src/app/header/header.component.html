@@ -8,10 +8,17 @@
         <button mat-menu-item routerLink="/" >Gallery Home</button>
         <hr>
         <button mat-menu-item routerLink="/videos" >Video Gallery</button>
-        <button mat-menu-item routerLink="/pictures">Picture Gallery</button>
+        <button mat-menu-item routerLink="/albums">Picture Gallery</button>
       </mat-menu>
       <a mat-button routerLink="/about" routerLinkActive="active">About</a>
       <span class="fill-space"></span>
-      <a mat-button routerLink="/" routerLinkActive="active" (click)="auth.authLogout()">Logout</a>
+      <button mat-button [matMenuTriggerFor]="userMenu">{{auth.user.username}}</button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item routerLink="/" routerLinkActive="active" (click)="auth.authLogout()">Logout</button>
+        <hr>
+        <button mat-menu-item routerLink="/changepass" >Change Password</button>
+        <button *ngIf="(auth.user.level > 3)" mat-menu-item routerLink="/manage">Manage Users</button>
+      </mat-menu>
+      <!-- <a mat-button routerLink="/" routerLinkActive="active" (click)="auth.authLogout()">Logout</a> -->
   </mat-toolbar>
 </div>
