@@ -5,9 +5,10 @@ import { NG_VALIDATORS, Validator, FormGroup, AbstractControl, ValidatorFn, Form
 import { User } from '../_classes/user-classes';
 import { AuthService } from '../_services/auth.service';
 import { EqualDirective } from '../_helpers/equal-validator';
+import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
 
 export interface DialogData {
-  username: string;
+  alertMessage: string;
 }
 
 @Component({
@@ -20,9 +21,9 @@ export class RegisterComponent implements OnInit {
   hidePass: boolean = true;
   hideRetype: boolean = true;
 
-  constructor(
-    private auth: AuthService,
-    public dialogRef: MatDialogRef<RegisterComponent>,
+  constructor( private auth: AuthService,
+               public dialogRef: MatDialogRef<RegisterComponent>,
+               public dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: DialogData) { }
 
   ngOnInit() {
@@ -30,14 +31,25 @@ export class RegisterComponent implements OnInit {
   }
 
   onRegisterClick() {
-    this.auth.authRegister().subscribe(
-      (data) => {
-        console.log("User " + this.auth.user['username'] + " was created successfully");
-      },
-      (err)=>console.log(err),
-      () => {}
-    );
-    this.dialogRef.close();
-  }
+    this.auth.authRegister()
+      .subscribe(user => {
+          const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
+            width: '350px',
+            data: {alertMessage: 'User "' + user.username + '" was registered.\n' 
+              + 'Please allow a few days for the website administrator to activate this account.' }
+          });
+          dialogRef.afterClosed().subscribe(() => this.dialogRef.close());
+        },
+        (err)=> {
+          const alertMessage = 'Error: ' + err.error;
+          const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
+            data: {alertMessage: alertMessage}
+          });
+          dialogRef.afterClosed().subscribe(() => {
+            this.auth.user = new User; // start fresh after error
+            this.dialogRef.close();
+          });
+        }
+      );
+    }
 }
-

@@ -66,7 +66,6 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   successfulChange(user: User) {
-    console.log(user);
     const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
       data: {alertMessage: 'Password changed for "' + user.username + '"'}
     });

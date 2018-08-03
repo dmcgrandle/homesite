@@ -52,9 +52,9 @@ export class AuthService {
     );
   }
 
-  public authRegister(): Observable<Object> {
+  public authRegister(): Observable<User> {
     this.user.password = this.encryptPass(this.user.password);
-    return this.http.post('/api/users/create', this.user).pipe(shareReplay());
+    return this.http.post<User>('/api/users/create', this.user).pipe(shareReplay());
   }
 
   public authForgot(): Observable<Object> {

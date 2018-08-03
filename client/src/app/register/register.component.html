@@ -7,7 +7,7 @@
         <h3 align="center">Register a new user</h3>
       </mat-toolbar>
       <mat-form-field>
-        <input matInput maxlength="30" placeholder="Full Name" type="text" [(ngModel)]="auth.user.name" #name="ngModel" name="name" required>
+        <input matInput minlength="5" maxlength="30" placeholder="Full Name" type="text" [(ngModel)]="auth.user.name" #name="ngModel" name="name" required>
         <!-- <mat-hint align="end">{{input.value?.length || 0}}/20</mat-hint> -->
         <mat-hint>
           <span [hidden]="name.pristine">
@@ -16,7 +16,7 @@
         </mat-hint>
       </mat-form-field>
       <mat-form-field>
-        <input matInput maxlength="20" placeholder="Choose a username" type="text" [(ngModel)]="auth.user.username" #username="ngModel" name="username" required>
+        <input matInput minlength="5" maxlength="20" placeholder="Choose a username" type="text" [(ngModel)]="auth.user.username" #username="ngModel" name="username" required>
         <!-- <mat-hint align="end">{{input.value?.length || 0}}/20</mat-hint> -->
         <mat-hint>
           <span [hidden]="username.pristine">

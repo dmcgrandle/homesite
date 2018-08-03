@@ -22,7 +22,7 @@ export class EditUserDialogComponent implements OnInit {
   hidePass: boolean;
   hideRetype: boolean;
   tempLevel: string;
-//  levelControl: FormControl;
+  saveUser: User;
 
   constructor(public dialogRef: MatDialogRef<EditUserDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public   data: DialogData, 
@@ -32,7 +32,7 @@ export class EditUserDialogComponent implements OnInit {
   ngOnInit() {
     this.hidePass = this.hideRetype = true;
     this.tempLevel = this.data.user.level.toString();
-//    this.levelControl = new FormControl(this.tempLevel, [Validators.required]);
+    this.saveUser = JSON.parse(JSON.stringify(this.data.user)); // save initial state
   }
 
   onSaveClick(password: string): void {
@@ -47,18 +47,28 @@ export class EditUserDialogComponent implements OnInit {
           width: '350px',
           data: {alertMessage: alertMessage}
         });
-        dialogRef.afterClosed().subscribe(result => {});
+        dialogRef.afterClosed().subscribe(() => this.dialogRef.close());
       },
       (err)=> {
-        const alertMessage = 'Error updating user!';
+        const alertMessage = 'Error: ' + err.error;
         const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-          data: {alertMessage: alertMessage}
+          data: {alertMessage: alertMessage} });
+        dialogRef.afterClosed().subscribe(() => {
+          this.copyToDialogData(this.saveUser); // Restore initial state due to error
+          this.dialogRef.close();
         });
-        dialogRef.afterClosed().subscribe(result => {});
-      },
-      () => {}
+      }
     );
-    this.dialogRef.close();
-    }
+  }
+
+  copyToDialogData(user: User) {
+    // restores the DialogData to what it was before modifications due to error
+    this.data.user._id = user._id;
+    this.data.user.name =  user.name;
+    this.data.user.username = user.username;
+    delete this.data.user.password;
+    this.data.user.email =  user.email;
+    this.data.user.level =  user.level;
+  }
 
 }

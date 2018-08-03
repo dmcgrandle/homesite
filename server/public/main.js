@@ -1151,7 +1151,6 @@ var ChangePasswordComponent = /** @class */ (function () {
     };
     ChangePasswordComponent.prototype.successfulChange = function (user) {
         var _this = this;
-        console.log(user);
         var dialogRef = this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_4__["AlertMessageDialogComponent"], {
             data: { alertMessage: 'Password changed for "' + user.username + '"' }
         });
@@ -1303,7 +1302,6 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 var EditUserDialogComponent = /** @class */ (function () {
-    //  levelControl: FormControl;
     function EditUserDialogComponent(dialogRef, data, auth, dialog) {
         this.dialogRef = dialogRef;
         this.data = data;
@@ -1313,7 +1311,7 @@ var EditUserDialogComponent = /** @class */ (function () {
     EditUserDialogComponent.prototype.ngOnInit = function () {
         this.hidePass = this.hideRetype = true;
         this.tempLevel = this.data.user.level.toString();
-        //    this.levelControl = new FormControl(this.tempLevel, [Validators.required]);
+        this.saveUser = JSON.parse(JSON.stringify(this.data.user)); // save initial state
     };
     EditUserDialogComponent.prototype.onSaveClick = function (password) {
         var _this = this;
@@ -1328,15 +1326,26 @@ var EditUserDialogComponent = /** @class */ (function () {
                 width: '350px',
                 data: { alertMessage: alertMessage }
             });
-            dialogRef.afterClosed().subscribe(function (result) { });
+            dialogRef.afterClosed().subscribe(function () { return _this.dialogRef.close(); });
         }, function (err) {
-            var alertMessage = 'Error updating user!';
+            var alertMessage = 'Error: ' + err.error;
             var dialogRef = _this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_3__["AlertMessageDialogComponent"], {
                 data: { alertMessage: alertMessage }
             });
-            dialogRef.afterClosed().subscribe(function (result) { });
-        }, function () { });
-        this.dialogRef.close();
+            dialogRef.afterClosed().subscribe(function () {
+                _this.copyToDialogData(_this.saveUser); // Restore initial state due to error
+                _this.dialogRef.close();
+            });
+        });
+    };
+    EditUserDialogComponent.prototype.copyToDialogData = function (user) {
+        // restores the DialogData to what it was before modifications due to error
+        this.data.user._id = user._id;
+        this.data.user.name = user.name;
+        this.data.user.username = user.username;
+        delete this.data.user.password;
+        this.data.user.email = user.email;
+        this.data.user.level = user.level;
     };
     EditUserDialogComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
@@ -2348,7 +2357,7 @@ var PageNotFoundComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"register-container\" fxLayoutAlign=\"center center\">\n      <!-- fxLayout=\"row\"\n      fxLayout.sm=\"column\"\n      fxLayout.xs=\"column\" -->\n    <form novalidate #registerForm=\"ngForm\" class=\"register-form\" fxLayout=\"column\" (ngSubmit)=\"onRegisterClick()\">\n      <mat-toolbar class=\"toolbar\">\n        <h3 align=\"center\">Register a new user</h3>\n      </mat-toolbar>\n      <mat-form-field>\n        <input matInput maxlength=\"30\" placeholder=\"Full Name\" type=\"text\" [(ngModel)]=\"auth.user.name\" #name=\"ngModel\" name=\"name\" required>\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n        <mat-hint>\n          <span [hidden]=\"name.pristine\">\n            <span [hidden]=\"!name.errors?.required\">** Full Name is required **</span>\n          </span>\n        </mat-hint>\n      </mat-form-field>\n      <mat-form-field>\n        <input matInput maxlength=\"20\" placeholder=\"Choose a username\" type=\"text\" [(ngModel)]=\"auth.user.username\" #username=\"ngModel\" name=\"username\" required>\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n        <mat-hint>\n          <span [hidden]=\"username.pristine\">\n            <span [hidden]=\"!username.errors?.required\">** Username is required **</span>\n          </span>\n        </mat-hint>\n      </mat-form-field>\n      <div fxLayout=\"column\" ngModelGroup=\"passGroup\" equal>  <!-- This div encloses a formGroup - making collection of two inputs \"password\" and \"retry\" -->\n        <mat-form-field>\n          <input matInput minlength=\"5\" maxlength=\"30\" placeholder=\"Choose a password\" [type]=\"hidePass ? 'password' : 'text'\"\n             [(ngModel)]=\"auth.user.password\" name=\"password\" #password=\"ngModel\" required>\n          <mat-icon matSuffix (click)=\"hidePass = !hidePass\">{{hidePass ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"password.pristine\">\n              <span [hidden]=\"!password.errors?.required\">** Password is required **</span>\n              <span [hidden]=\"!password.errors?.minlength\">** Minimum length is 5 characters **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <mat-form-field>\n          <input matInput minlength=\"5\" maxlength=\"30\" placeholder=\"Verify the password\" [type]=\"hideRetype ? 'password' : 'text'\"\n             ngModel name=\"retype\" #retype=\"ngModel\" required>\n          <mat-icon matSuffix (click)=\"hideRetype = !hideRetype\">{{hideRetype ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"retype.pristine\">\n              <span [hidden]=\"!retype.errors?.required\">** Verification of the password is required **</span>\n              <span [hidden]=\"!retype.errors?.minlength\">** Minimum length is 5 characters **</span>\n              <span [hidden]=\"!registerForm.form.hasError('equal', 'passGroup')\"> - Passwords do not match</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n      </div>\n      <mat-form-field>\n        <input matInput minlength=\"5\" maxlength=\"40\" placeholder=\"Email\" type=\"email\" [(ngModel)]=\"auth.user.email\" #email=\"ngModel\" name=\"email\" required>\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n        <mat-hint>\n          <span [hidden]=\"email.pristine\">\n            <span [hidden]=\"!email.errors?.required\">** email is required **</span>\n            <span [hidden]=\"!email.errors?.minlength\">** Minimum length is 5 characters **</span>\n          </span>\n        </mat-hint>\n      </mat-form-field>\n      <div fxLayout=\"row\">\n        <button mat-button mat-dialog-close>Cancel</button>\n        <span class=\"fill-space\"></span>\n        <button mat-raised-button type=\"submit\" color=\"primary\" [disabled]=\"registerForm.form.invalid\">Register</button>\n      </div>\n    </form>\n</div>\n"
+module.exports = "<div class=\"register-container\" fxLayoutAlign=\"center center\">\n      <!-- fxLayout=\"row\"\n      fxLayout.sm=\"column\"\n      fxLayout.xs=\"column\" -->\n    <form novalidate #registerForm=\"ngForm\" class=\"register-form\" fxLayout=\"column\" (ngSubmit)=\"onRegisterClick()\">\n      <mat-toolbar class=\"toolbar\">\n        <h3 align=\"center\">Register a new user</h3>\n      </mat-toolbar>\n      <mat-form-field>\n        <input matInput minlength=\"5\" maxlength=\"30\" placeholder=\"Full Name\" type=\"text\" [(ngModel)]=\"auth.user.name\" #name=\"ngModel\" name=\"name\" required>\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n        <mat-hint>\n          <span [hidden]=\"name.pristine\">\n            <span [hidden]=\"!name.errors?.required\">** Full Name is required **</span>\n          </span>\n        </mat-hint>\n      </mat-form-field>\n      <mat-form-field>\n        <input matInput minlength=\"5\" maxlength=\"20\" placeholder=\"Choose a username\" type=\"text\" [(ngModel)]=\"auth.user.username\" #username=\"ngModel\" name=\"username\" required>\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n        <mat-hint>\n          <span [hidden]=\"username.pristine\">\n            <span [hidden]=\"!username.errors?.required\">** Username is required **</span>\n          </span>\n        </mat-hint>\n      </mat-form-field>\n      <div fxLayout=\"column\" ngModelGroup=\"passGroup\" equal>  <!-- This div encloses a formGroup - making collection of two inputs \"password\" and \"retry\" -->\n        <mat-form-field>\n          <input matInput minlength=\"5\" maxlength=\"30\" placeholder=\"Choose a password\" [type]=\"hidePass ? 'password' : 'text'\"\n             [(ngModel)]=\"auth.user.password\" name=\"password\" #password=\"ngModel\" required>\n          <mat-icon matSuffix (click)=\"hidePass = !hidePass\">{{hidePass ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"password.pristine\">\n              <span [hidden]=\"!password.errors?.required\">** Password is required **</span>\n              <span [hidden]=\"!password.errors?.minlength\">** Minimum length is 5 characters **</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n        <mat-form-field>\n          <input matInput minlength=\"5\" maxlength=\"30\" placeholder=\"Verify the password\" [type]=\"hideRetype ? 'password' : 'text'\"\n             ngModel name=\"retype\" #retype=\"ngModel\" required>\n          <mat-icon matSuffix (click)=\"hideRetype = !hideRetype\">{{hideRetype ? 'visibility' : 'visibility_off'}}</mat-icon>\n          <mat-hint>\n            <span [hidden]=\"retype.pristine\">\n              <span [hidden]=\"!retype.errors?.required\">** Verification of the password is required **</span>\n              <span [hidden]=\"!retype.errors?.minlength\">** Minimum length is 5 characters **</span>\n              <span [hidden]=\"!registerForm.form.hasError('equal', 'passGroup')\"> - Passwords do not match</span>\n            </span>\n          </mat-hint>\n        </mat-form-field>\n      </div>\n      <mat-form-field>\n        <input matInput minlength=\"5\" maxlength=\"40\" placeholder=\"Email\" type=\"email\" [(ngModel)]=\"auth.user.email\" #email=\"ngModel\" name=\"email\" required>\n        <!-- <mat-hint align=\"end\">{{input.value?.length || 0}}/20</mat-hint> -->\n        <mat-hint>\n          <span [hidden]=\"email.pristine\">\n            <span [hidden]=\"!email.errors?.required\">** email is required **</span>\n            <span [hidden]=\"!email.errors?.minlength\">** Minimum length is 5 characters **</span>\n          </span>\n        </mat-hint>\n      </mat-form-field>\n      <div fxLayout=\"row\">\n        <button mat-button mat-dialog-close>Cancel</button>\n        <span class=\"fill-space\"></span>\n        <button mat-raised-button type=\"submit\" color=\"primary\" [disabled]=\"registerForm.form.invalid\">Register</button>\n      </div>\n    </form>\n</div>\n"
 
 /***/ }),
 
@@ -2377,6 +2386,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
 /* harmony import */ var _classes_user_classes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_classes/user-classes */ "./src/app/_classes/user-classes.ts");
 /* harmony import */ var _services_auth_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_services/auth.service */ "./src/app/_services/auth.service.ts");
+/* harmony import */ var _alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../alert-message-dialog/alert-message-dialog.component */ "./src/app/alert-message-dialog/alert-message-dialog.component.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -2393,10 +2403,12 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 
+
 var RegisterComponent = /** @class */ (function () {
-    function RegisterComponent(auth, dialogRef, data) {
+    function RegisterComponent(auth, dialogRef, dialog, data) {
         this.auth = auth;
         this.dialogRef = dialogRef;
+        this.dialog = dialog;
         this.data = data;
         this.hidePass = true;
         this.hideRetype = true;
@@ -2406,10 +2418,24 @@ var RegisterComponent = /** @class */ (function () {
     };
     RegisterComponent.prototype.onRegisterClick = function () {
         var _this = this;
-        this.auth.authRegister().subscribe(function (data) {
-            console.log("User " + _this.auth.user['username'] + " was created successfully");
-        }, function (err) { return console.log(err); }, function () { });
-        this.dialogRef.close();
+        this.auth.authRegister()
+            .subscribe(function (user) {
+            var dialogRef = _this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_4__["AlertMessageDialogComponent"], {
+                width: '350px',
+                data: { alertMessage: 'User "' + user.username + '" was registered.\n'
+                        + 'Please allow a few days for the website administrator to activate this account.' }
+            });
+            dialogRef.afterClosed().subscribe(function () { return _this.dialogRef.close(); });
+        }, function (err) {
+            var alertMessage = 'Error: ' + err.error;
+            var dialogRef = _this.dialog.open(_alert_message_dialog_alert_message_dialog_component__WEBPACK_IMPORTED_MODULE_4__["AlertMessageDialogComponent"], {
+                data: { alertMessage: alertMessage }
+            });
+            dialogRef.afterClosed().subscribe(function () {
+                _this.auth.user = new _classes_user_classes__WEBPACK_IMPORTED_MODULE_2__["User"]; // start fresh after error
+                _this.dialogRef.close();
+            });
+        });
     };
     RegisterComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
@@ -2417,9 +2443,10 @@ var RegisterComponent = /** @class */ (function () {
             template: __webpack_require__(/*! ./register.component.html */ "./src/app/register/register.component.html"),
             styles: [__webpack_require__(/*! ./register.component.scss */ "./src/app/register/register.component.scss")]
         }),
-        __param(2, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(_angular_material__WEBPACK_IMPORTED_MODULE_1__["MAT_DIALOG_DATA"])),
+        __param(3, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(_angular_material__WEBPACK_IMPORTED_MODULE_1__["MAT_DIALOG_DATA"])),
         __metadata("design:paramtypes", [_services_auth_service__WEBPACK_IMPORTED_MODULE_3__["AuthService"],
-            _angular_material__WEBPACK_IMPORTED_MODULE_1__["MatDialogRef"], Object])
+            _angular_material__WEBPACK_IMPORTED_MODULE_1__["MatDialogRef"],
+            _angular_material__WEBPACK_IMPORTED_MODULE_1__["MatDialog"], Object])
     ], RegisterComponent);
     return RegisterComponent;
 }());

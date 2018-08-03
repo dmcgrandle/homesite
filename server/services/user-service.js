@@ -137,16 +137,22 @@ exports.delete = async function(user) {
 
 exports.update = async function(user) {// user._id is the only uneditable field ...
   if (await isValidData(user)) {
-    const userReturned = await exports.getUserById(user._id); // because the username may change ...
-    if (user.password){// if password object exists then use new password sent
-      user.password = await bcrypt.hash(decryptPw(user.password), cfg.SALT_ROUNDS);
-    } else {// keep the password the same
-      user.password = userReturned.password;
+    const userById = await exports.getUserById(user._id); // because the username may change ...
+    const userByUsername = await db.collection('users').findOne({username : user.username});
+//    const userByUsername = await exports.getUser(user.username);
+    if (userByUsername && (userById._id !== userByUsername._id)) {
+      throw new Error('403 Username already in use, please choose another one.');
+    } else {
+      if (user.password){// if password object exists then use new password sent
+        user.password = await bcrypt.hash(decryptPw(user.password), cfg.SALT_ROUNDS);
+      } else {// keep the password the same
+        user.password = userById.password;
+      }
+      await db.collection('users').replaceOne({_id: user._id}, checkAndArrangeUserObject(user));
     }
-    await db.collection('users').replaceOne({_id: user._id}, checkAndArrangeUserObject(user));
-  }
-  delete user.password; // Delete password property so it isn't sent back
-  return user;
+    delete user.password; // Delete password property so it isn't sent back
+    return user;
+      }
 };
 
 
