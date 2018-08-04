@@ -12,6 +12,7 @@
 
 # Angular build target
 /server/public
+server/public/*
 
 # test .jpgs and .mp4s
 /server/protected/images

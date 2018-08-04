@@ -66,8 +66,7 @@ export class MediaService {
     return url.pipe(
       switchMap(segments => this.getPhotoAlbumByPath(segments.join('/'))),
       tap(album => this.curPhotoAlbum = album),
-      switchMap(album => this.getPhotoAlbumsByIdArray(album.albums)),
-      tap(albums => console.log(albums))
+      switchMap(album => this.getPhotoAlbumsByIdArray(album.albums))
     );
   };
 
