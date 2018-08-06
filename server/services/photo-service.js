@@ -146,7 +146,7 @@ buildAlbumsAndPhotos = function(paths, files) {
         filename: photos[0].filename, 
         fullPath: photos[0].fullPath,
         caption: ''};
-    albums[0].name = 'All Photo Albums';
+    albums[0].name = 'Root Photo Album';
     return { albums: albums, photos: photos};
 
 };

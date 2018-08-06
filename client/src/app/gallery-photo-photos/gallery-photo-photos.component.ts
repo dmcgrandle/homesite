@@ -16,7 +16,9 @@ export enum KEY_CODE {
   END = 35,
   HOME = 36,
   LEFT_ARROW = 37,
-  RIGHT_ARROW = 39
+  UP_ARROW = 38,
+  RIGHT_ARROW = 39,
+  DOWN_ARROW = 40
 };
 
 @Component({
@@ -85,9 +87,11 @@ export class GalleryPhotoPhotosComponent implements OnInit {
       const curIndex = this.media.curPhotoAlbum.photos.indexOf(this.curPhoto._id);
       switch (event.keyCode) { // set nextIndex to where we are going next
         case KEY_CODE.RIGHT_ARROW:
+        case KEY_CODE.DOWN_ARROW:
             nextIndex = (curIndex === this.media.curPhotoAlbum.photos.length-1) ? 0: curIndex + 1;
             break;
         case KEY_CODE.LEFT_ARROW: 
+        case KEY_CODE.UP_ARROW:
             nextIndex = (curIndex === 0) ? this.media.curPhotoAlbum.photos.length-1 : curIndex - 1;
             break;
         case KEY_CODE.END: 

@@ -1,27 +1,44 @@
 <div *ngIf="displayAlbums">
-  <h2>{{media.curPhotoAlbum.name}}:</h2>
+  <h2>List of Albums:</h2>
+  
   <div class="container"
+    fxLayoutGap="8px"
     fxLayout="row wrap"
-    fxLayoutGap="4px"
-    fxLayoutAlign.gt-xs="space-evenly stretch">
-    <mat-card *ngFor="let album of displayAlbums" (click)="updateDisplayAlbumOrNavToPhotos(album)"
-      fxFlex.xl="16.2%" fxFlex.lg="24.5%" fxFlex.md="32.5%" fxFlex.sm="49%" fxFlex.xs="98%">
-      <mat-card-header>
+    fxLayoutAlign.gt-xs="space-evenly center" >
+
+    <!-- If the album being displayed has both other albums AND pictures then display an icon for these pics -->
+    <mat-card *ngIf="media.curPhotoAlbum.photos.length > 0" (click)="navToPhotos(media.curPhotoAlbum)"
+        fxFlex.xl="16.2%" fxFlex.lg="24.5%" fxFlex.md="32.5%" fxFlex.sm="49%" fxFlex.xs="98%">  
+      <mat-card-header fxLayoutAlign="start none">
         <mat-card-title>
-          <h3 fxFlexAlign>{{album.name}}</h3>
+          <h3>View Photos in "{{media.curPhotoAlbum.name}}"</h3>
+        </mat-card-title>
+        <mat-card-subtitle>{{media.curPhotoAlbum.description}}</mat-card-subtitle>
+      </mat-card-header>
+      <!-- <div fxLayout="space-around center"> -->
+      <!-- <div> -->
+          <img mat-card-image [src]='(media.curPhotoAlbum.featuredPhoto.fullPath) | secure'>
+      <!-- </div> -->
+    </mat-card>
+    <!-- Now loop through displaying all the albums in this album. -->
+    <mat-card *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)"
+      fxFlex.xl="16.2%" fxFlex.lg="24.5%" fxFlex.md="32.5%" fxFlex.sm="49%" fxFlex.xs="98%">
+      <mat-card-header fxLayoutAlign="start none">
+        <mat-card-title>
+          <h3>{{album.name}}</h3>
         </mat-card-title>
         <mat-card-subtitle>{{album.description}}</mat-card-subtitle>
       </mat-card-header>
-      <div *ngIf='album.featuredPhoto.filename' fxFill fxLayout="center center">
-        <img mat-card-image [src]='(album.featuredPhoto.fullPath) | secure'>
-      </div>
-      <mat-card-footer>  
-      </mat-card-footer>
+      <!-- <div *ngIf='album.featuredPhoto.filename' fxLayoutAlign="space-around center"> -->
+          <!-- <img *ngIf='album.featuredPhoto.filename' mat-card-image [src]='(album.featuredPhoto.fullPath) | secure'> -->
+          <img FxLayoutAlign="center" *ngIf='album.featuredPhoto.filename' mat-card-image [src]='(album.featuredPhoto.fullPath) | secure'>
+      <!-- </div> -->
     </mat-card>
   </div>
 </div>
 
 <div *ngIf="!displayAlbums">
   <p>Waiting on server ...</p>
+  <mat-spinner></mat-spinner>
 </div>
 

@@ -15,6 +15,7 @@ import { Album, Photo } from '../_classes/photo-classes';
 export class GalleryPhotoAlbumsComponent implements OnInit {
 
   displayAlbums : Array<Album>;
+  photosDisplayName: string;
 
   constructor(private    media: MediaService,
               private    route: ActivatedRoute,
@@ -25,12 +26,19 @@ export class GalleryPhotoAlbumsComponent implements OnInit {
   ngOnInit() {
     // this observable changes on init, or when nav button hit (back or fwd)
     this.media.getPhotoAlbumsByURL(this.route.url).subscribe(
-      (albums) => this.displayAlbums = albums,
+      (albums) => {
+        this.displayAlbums = albums;
+        if (this.media.curPhotoAlbum._id > 0) {
+          this.photosDisplayName = this.media.curPhotoAlbum.name;
+        } else {
+          this.photosDisplayName = ""
+        }
+      },
       (err) => this.errAlert('Problem getting albums!', err)
     );
   };
 
-  public updateDisplayAlbumOrNavToPhotos(album: Album) {
+  public updateDisplayAlbum(album: Album) {
     this.media.curPhotoAlbum = album; // go down one level (directory).
     if (album.albums.length > 0) {// means this album contains other albums
       this.media.getPhotoAlbumsByIdArray(album.albums).subscribe( 
@@ -42,9 +50,13 @@ export class GalleryPhotoAlbumsComponent implements OnInit {
         (err) => this.errAlert('Problem getting albums!', err)
       );
     } else { // Not an album of albums!  So nav to photos ...
-      this.router.navigate(['/photos/' + album.path]); 
+      this.navToPhotos(album);
     } 
   };
+
+  public navToPhotos(album: Album) {
+    return this.router.navigate(['/photos/' + album.path]);
+  }
 
   private errAlert(msg: string, err) {
     const alertMessage = msg + err.error;
