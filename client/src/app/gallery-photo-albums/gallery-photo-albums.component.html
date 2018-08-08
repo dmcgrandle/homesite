@@ -1,5 +1,5 @@
 <div *ngIf="displayAlbums">
-  <h2>List of Albums:</h2>
+  <h2>List of Photo Albums:</h2>
   
   <div class="container"
     fxLayoutGap="8px"
@@ -17,7 +17,7 @@
       </mat-card-header>
       <!-- <div fxLayout="space-around center"> -->
       <!-- <div> -->
-          <img mat-card-image [src]='(media.curPhotoAlbum.featuredPhoto.fullPath) | secure'>
+          <img mat-card-image [src]='(media.curPhotoAlbum.featuredMedia.fullPath) | secure'>
       <!-- </div> -->
     </mat-card>
     <!-- Now loop through displaying all the albums in this album. -->
@@ -29,9 +29,9 @@
         </mat-card-title>
         <mat-card-subtitle>{{album.description}}</mat-card-subtitle>
       </mat-card-header>
-      <!-- <div *ngIf='album.featuredPhoto.filename' fxLayoutAlign="space-around center"> -->
-          <!-- <img *ngIf='album.featuredPhoto.filename' mat-card-image [src]='(album.featuredPhoto.fullPath) | secure'> -->
-          <img FxLayoutAlign="center" *ngIf='album.featuredPhoto.filename' mat-card-image [src]='(album.featuredPhoto.fullPath) | secure'>
+      <!-- <div *ngIf='album.featuredMedia.filename' fxLayoutAlign="space-around center"> -->
+          <!-- <img *ngIf='album.featuredMedia.filename' mat-card-image [src]='(album.featuredMedia.fullPath) | secure'> -->
+          <img FxLayoutAlign="center" *ngIf='album.featuredMedia.filename' mat-card-image [src]='(album.featuredMedia.fullPath) | secure'>
       <!-- </div> -->
     </mat-card>
   </div>

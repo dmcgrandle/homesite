@@ -14,9 +14,9 @@ import { GalleryPhotoPhotosComponent } from './gallery-photo-photos/gallery-phot
 
 const appRoutes: Routes = [
     { path: 'gallery', component: GalleryComponent },
-    { path: 'videos', component: GalleryVideoAlbumsComponent },
-    { path: 'albums', component: GalleryPhotoAlbumsComponent }, 
-    { path: 'albums', children: [
+    { path: 'videoAlbums', component: GalleryVideoAlbumsComponent },
+    { path: 'photoAlbums', component: GalleryPhotoAlbumsComponent }, 
+    { path: 'photoAlbums', children: [
         { path: '**', component: GalleryPhotoAlbumsComponent}
     ]},
     { path: 'photos', children: [

@@ -8,7 +8,7 @@ import { delay } from 'rxjs/operators';
 
 import { MediaService } from '../_services/media.service';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
-import { Album, Photo } from '../_classes/photo-classes';
+import { PhotoAlbum, Photo } from '../_classes/photo-classes';
 import { User } from '../_classes/user-classes';
 import { AuthService } from '../_services/auth.service';
 import { catchError, finalize, tap, startWith, switchMap } from '../../../node_modules/rxjs/operators';

@@ -3,7 +3,8 @@ import { Observable } from 'rxjs';
 import { flatMap, switchMap, tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 
-import { Album, Photo } from '../_classes/photo-classes';
+import { PhotoAlbum, Photo } from '../_classes/photo-classes';
+import { VideoAlbum, Video } from '../_classes/video-classes';
 import { UrlSegment } from '../../../node_modules/@angular/router';
 
 @Injectable({
@@ -11,7 +12,8 @@ import { UrlSegment } from '../../../node_modules/@angular/router';
 })
 export class MediaService {
 
-  public curPhotoAlbum: Album; // used to keep track of current album between components
+  public curPhotoAlbum: PhotoAlbum; // used to keep track of current PhotoAlbum between components
+  public curVideoAlbum: VideoAlbum;
 
   constructor(private http: HttpClient) {};
 
@@ -27,24 +29,35 @@ export class MediaService {
     return <Observable<string[]>>this.http.get('/api/photos/thumbs/(' + thumbs.join('+') + ')');
   };
 
-  public getPhotoAlbumById(id: number): Observable<Album> {
-    return <Observable<Album>>this.http.get('/api/photos/album-by-id/' + id);
+  public getPhotoAlbumById(id: number): Observable<PhotoAlbum> {
+    return <Observable<PhotoAlbum>>this.http.get('/api/photos/album-by-id/' + id);
   };
 
-  public getPhotoAlbumByPath(path: string): Observable<Album> {
+  public getPhotoAlbumByPath(path: string): Observable<PhotoAlbum> {
     let pathString = '(' + path.split('/').join('+') + ')';
-    if (pathString == '(albums)') pathString = '()'; // 'albums' is our root path.
-    return <Observable<Album>>this.http.get('/api/photos/album-by-path/' + pathString);
+    if (pathString == '(photoAlbums)') pathString = '()'; // 'photoAlbums' is our root path.
+    return <Observable<PhotoAlbum>>this.http.get('/api/photos/album-by-path/' + pathString);
   };
 
-  public getPhotoAlbumsByIdArray(albums: Array<number>): Observable<Album[]> {
+  public getVideoAlbumByPath(path: string): Observable<VideoAlbum> {
+    let pathString = '(' + path.split('/').join('+') + ')';
+    if (pathString == '(videoAlbums)') pathString = '()';
+    return <Observable<VideoAlbum>>this.http.get('/api/videos/album-by-path/' + pathString);
+  };
+
+  public getPhotoAlbumsByIdArray(albums: Array<number>): Observable<PhotoAlbum[]> {
     let albumString = '(' + albums.join('+') + ')';
-    return <Observable<Album[]>>this.http.get('/api/photos/albums/' + albumString);
+    return <Observable<PhotoAlbum[]>>this.http.get('/api/photos/albums/' + albumString);
   };
 
-  public getPhotoAlbumByURL(url: Observable<UrlSegment[]>): Observable<Album> {
+  public getVideoAlbumsByIdArray(albums: Array<number>): Observable<VideoAlbum[]> {
+    let albumString = '(' + albums.join('+') + ')';
+    return <Observable<VideoAlbum[]>>this.http.get('/api/videos/albums/' + albumString);
+  };
+
+  public getPhotoAlbumByURL(url: Observable<UrlSegment[]>): Observable<PhotoAlbum> {
   // This function takes in an UrlSegment array, joins those segments into a path,
-  // passes that path to getAlbumsByPath.  When that resolves it saves the resulting
+  // passes that path to getPhotoAlbumsByPath.  When that resolves it saves the resulting
   // album into curPhotoAlbum variable (class scope).  Ultimately this function 
   // returns an observable which resolves to the album from getPhotoAlbumByPath.
     return url.pipe(
@@ -53,13 +66,13 @@ export class MediaService {
     );
   };
 
-  public getPhotoAlbumsByURL(url: Observable<UrlSegment[]>): Observable<Album[]> {
+  public getPhotoAlbumsByURL(url: Observable<UrlSegment[]>): Observable<PhotoAlbum[]> {
   // This function effectively collapses three observables into one: It first takes 
   // in an observable of an UrlSegment array. When that resolves, it joins those 
   // segments into a path, and passes that path to getPhotoAlbumsByPath (the second 
   // observable). Once that observable resolves into an album, it then saves the result
   // into the curPhotoAlbum variable (class scope) and finally calls getPhotoAlbums 
-  // (the third observable) with that album's album.albums array.  This entire method
+  // (the third observable) with that album's album.photoAlbums array.  This entire method
   // ultimately returns an observable that resolves to the resulting array of album 
   // objects from getPhotoAlbumsByIdArray.  
   // Whew - that's a lot for just a few lines of code!  :)
@@ -70,4 +83,18 @@ export class MediaService {
     );
   };
 
+  public getVideoAlbumByURL(url: Observable<UrlSegment[]>): Observable<VideoAlbum> {
+      return url.pipe(
+        switchMap(segments => this.getVideoAlbumByPath(segments.join('/'))),
+        tap(album => this.curVideoAlbum = album)
+      );
+    };
+  
+  public getVideoAlbumsByURL(url: Observable<UrlSegment[]>): Observable<VideoAlbum[]> {
+      return url.pipe(
+        switchMap(segments => this.getVideoAlbumByPath(segments.join('/'))),
+        tap(album => this.curVideoAlbum = album),
+        switchMap(album => this.getVideoAlbumsByIdArray(album.albums))
+      );
+    };
 }

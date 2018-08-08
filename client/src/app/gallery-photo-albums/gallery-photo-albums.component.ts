@@ -5,7 +5,7 @@ import { Location } from '@angular/common';
 
 import { MediaService } from '../_services/media.service';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
-import { Album, Photo } from '../_classes/photo-classes';
+import { PhotoAlbum, Photo } from '../_classes/photo-classes';
 
 @Component({
   selector: 'app-gallery-photo-albums',
@@ -14,7 +14,7 @@ import { Album, Photo } from '../_classes/photo-classes';
 })
 export class GalleryPhotoAlbumsComponent implements OnInit {
 
-  displayAlbums : Array<Album>;
+  displayAlbums : Array<PhotoAlbum>;
   photosDisplayName: string;
 
   constructor(private    media: MediaService,
@@ -38,13 +38,13 @@ export class GalleryPhotoAlbumsComponent implements OnInit {
     );
   };
 
-  public updateDisplayAlbum(album: Album) {
+  public updateDisplayAlbum(album: PhotoAlbum) {
     this.media.curPhotoAlbum = album; // go down one level (directory).
     if (album.albums.length > 0) {// means this album contains other albums
       this.media.getPhotoAlbumsByIdArray(album.albums).subscribe( 
         (albums) => { // get the albums array for this new album
           this.displayAlbums = albums; // set albums to display
-          const url = 'albums' + this.router.createUrlTree([album.path]).toString();
+          const url = 'photoAlbums' + this.router.createUrlTree([album.path]).toString();
           this.location.go(url); // Update the URL in the browser window without navigating.
         },
         (err) => this.errAlert('Problem getting albums!', err)
@@ -54,7 +54,7 @@ export class GalleryPhotoAlbumsComponent implements OnInit {
     } 
   };
 
-  public navToPhotos(album: Album) {
+  public navToPhotos(album: PhotoAlbum) {
     return this.router.navigate(['/photos/' + album.path]);
   }
 

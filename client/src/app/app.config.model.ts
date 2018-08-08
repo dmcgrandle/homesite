@@ -10,7 +10,7 @@ export interface IAppConfig {
         email: string;
     };
     gallery: {
-        featuredPhoto: {
+        featuredMedia: {
             filename: string;
         },
         featuredVideo: {

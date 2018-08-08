@@ -37,10 +37,14 @@ cfg.fileService = {
 
 }
 
-// config for photo-service
-cfg.photoService = {
+// config for media-service
+cfg.mediaService = {
     PHOTO_DIR : {
-        PATH: '/protected/images/',
+        PATH: '/protected/images/', // Note: the trailing slash is important ...
+        CACHE_DIR: '.cache'
+    },
+    VIDEO_DIR: {
+        PATH: '/protected/videos/',
         CACHE_DIR: '.cache'
     },
     THUMBS: {
@@ -53,12 +57,14 @@ cfg.photoService = {
         PREFIX: 'thumb', // prefix for each file, eg: thumb-f5f15876.jpg
         SUFFIX: '.jpg',  // suffix - change to match FORMAT above
         MAX_CREATE_AT_ONCE: 50 // limit for constrained env, eg: Raspberry Pi
+    },
+    POSTERS: { // poster image to display for video file
+        WIDTH: 600,
+        FORMAT: 'jpeg',
+        PREFIX: 'poster',
+        SUFFIX: '.jpg',
+        MAX_CREATE_AT_ONCE: 20
     }
-}
-
-// config for video-service
-cfg.videoService = {
-
 }
 
 //config for download-service

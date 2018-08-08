@@ -15,44 +15,59 @@ const cfg = require('../config').fileService;
 // module-scope variables:
 let fSvc = {};
 
-const filterExcludeIfNotPhoto = through2.obj(function (item, enc, next) {
-    // Return true if file is a photo and not hidden or in a hidden dir
-    if (item.stats.isFile() && !isHidden(item.path) && isPhotoSuffix(item.path.substr(-4,4).toLowerCase())) { 
-        this.push(item);
-    }
-    next();
-});
+// Set up filters:
 
-const filterExcludeFiles = through2.obj(function (item, enc, next) {
+const filterExcludeIfNotMediaConstructor = function (testMediaFunc) {
+    // Note - needs a function passed which will test for the media suffix that is passed
+    return through2.obj(function (item, enc, next) {
+        // Return true if file is a photo and not hidden or in a hidden dir
+        if (item.stats.isFile() && !isHidden(item.path) && testMediaFunc(item.path.substr(-4,4).toLowerCase())) { 
+            this.push(item);
+        }
+        next();
+    });
+}
+
+// use the constructor form of through2 so we can call this same logic multiple times,
+// creating a 'new' instance for each function we call it from.
+const filterEFConstructor = through2.ctor({objectMode: true}, function (item, enc, next) {
     if (item.stats.isDirectory() && !isHidden(item.path)) {
         this.push(item);
     }
-    next(); 
+    next();
 });
 
 isHidden = function(path) { // Regex to test if there is a hidden directory or file in path
     return (/(^|\/)\.[^\/\.]/g).test(path);
 };
 
-fSvc.photoDirs = function(topDir) {
+fSvc.mediaDirs = function(topDir) {
     return new Promise( function(resolve, reject) {
         try {
             let items = [];
+            const filterExcludeFiles = new filterEFConstructor();
             klaw('.' + topDir)
                 .pipe(filterExcludeFiles)
-                .on('data', item => items.push(stripPath(item, topDir)))
+                .on('data', item => {
+//                    console.log('item is: ' + util.inspect(item, {maxDepth: 5}));
+                    items.push(stripPath(item, topDir));
+                })
                 .on('end', () => resolve(items))
         } catch(err) {
             reject(err);
         }
     });
 }
-fSvc.photoFiles = function(topDir) {
+
+fSvc.mediaFiles = function(topDir, testMediaFunc) {
+    // Note - needs a test media function passed which will test for the correct file suffix
+    // See function 'isPhotoSuffix' in media-service.js for example.
     return new Promise( function(resolve, reject) {
         try {
             let items = []; 
+            const filterExcludeIfNotMedia = new filterExcludeIfNotMediaConstructor(testMediaFunc);
             klaw('.' + topDir)
-                .pipe(filterExcludeIfNotPhoto)
+                .pipe(filterExcludeIfNotMedia)
                 .on('data', item => items.push(stripPath(item, topDir)))
                 .on('end', () => resolve(items))
         } catch(err) {
@@ -67,10 +82,6 @@ stripPath = function(item, topDir) {
     const s = item.path.search(topDir);
     return (s > 0) ? item.path.substr(s + topDir.length) : '';
 }
-
-isPhotoSuffix = function(str) { //TODO: add more recognized picture formats
-    return ((str == '.jpg') || (str == 'jpeg'))
-};
 
 //fSvc.items = items;
 

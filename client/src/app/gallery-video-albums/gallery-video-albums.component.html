@@ -1,3 +1,42 @@
-<p>
-  gallery-video-albums not yet implemented!
-</p>
+<div *ngIf="displayAlbums">
+  <h2>List of Video Albums:</h2>
+  
+  <div class="container"
+    fxLayoutGap="8px"
+    fxLayout="row wrap"
+    fxLayoutAlign.gt-xs="space-evenly center" >
+
+    <!-- If the album being displayed has both other albums AND videos then display an icon for these vids -->
+    <mat-card *ngIf="media.curVideoAlbum.videos.length > 0" (click)="navToVideos(media.curVideoAlbum)"
+        fxFlex.xl="16.2%" fxFlex.lg="24.5%" fxFlex.md="32.5%" fxFlex.sm="49%" fxFlex.xs="98%">  
+      <mat-card-header fxLayoutAlign="start none">
+        <mat-card-title>
+          <h3>View Videos in "{{media.curVideoAlbum.name}}"</h3>
+        </mat-card-title>
+        <mat-card-subtitle>{{media.curVideoAlbum.description}}</mat-card-subtitle>
+      </mat-card-header>
+      <!-- <div fxLayout="space-around center"> -->
+      <!-- <div> -->
+          <img mat-card-image [src]='(media.curVideoAlbum.featuredMedia.fullPath) | secure'>
+      <!-- </div> -->
+    </mat-card>
+    <!-- Now loop through displaying all the albums in this album. -->
+    <mat-card *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)"
+      fxFlex.xl="16.2%" fxFlex.lg="24.5%" fxFlex.md="32.5%" fxFlex.sm="49%" fxFlex.xs="98%">
+      <mat-card-header fxLayoutAlign="start none">
+        <mat-card-title>
+          <h3>{{album.name}}</h3>
+        </mat-card-title>
+        <mat-card-subtitle>{{album.description}}</mat-card-subtitle>
+      </mat-card-header>
+      <img FxLayoutAlign="center" *ngIf='album.featuredMedia.filename' mat-card-image [src]='(album.featuredMedia.fullPath) | secure'>
+    </mat-card>
+  </div>
+</div>
+
+<div *ngIf="!displayAlbums">
+  <p>Waiting on server ...</p>
+  <mat-spinner></mat-spinner>
+</div>
+
+  

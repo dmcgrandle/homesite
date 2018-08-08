@@ -8,7 +8,7 @@ const util = require('util');
 
 // Project Imports:
 const tokenSvc = require('../services/token-service');
-const photoSvc = require('../services/photo-service');
+const mediaSvc = require('../services/media-service');
 const userSvc = require('../services/user-service');
 
 // middleware that is specific to this router
@@ -22,7 +22,7 @@ router.use(bodyParser.json());
 /* GET album with given id.  Needs level 2+ access */
 router.get('/album-by-id/:id', function(req, res, next) { 
   userSvc.isValidLevel(req.user, 2) // check username in jwt token for level
-    .then(() => photoSvc.getAlbumById(Number(req.params.id)))
+    .then(() => mediaSvc.getPhotoAlbumById(Number(req.params.id)))
     .then(album => res.status(200).json(album))
     .catch(err => processError(err, res));
 });
@@ -30,7 +30,7 @@ router.get('/album-by-id/:id', function(req, res, next) {
 /* GET photo with given id.  Needs level 2+ access */
 router.get('/photo-by-id/:id', function(req, res, next) { 
   userSvc.isValidLevel(req.user, 2) // check username in jwt token for level
-    .then(() => photoSvc.getPhotoById(Number(req.params.id)))
+    .then(() => mediaSvc.getPhotoById(Number(req.params.id)))
     .then(photo => res.status(200).json(photo))
     .catch(err => processError(err, res));
 });
@@ -41,7 +41,7 @@ router.get('/photo-by-id/:id', function(req, res, next) {
     (test+one+two) and entire url is "http://example.com/api/photos/album/(test+one+two)" */
 router.get('/album-by-path/:path', function(req, res, next) {
   userSvc.isValidLevel(req.user, 2)
-    .then(() => photoSvc.getAlbumByPath(req.params.path))
+    .then(() => mediaSvc.getPhotoAlbumByPath(req.params.path))
     .then(album => res.status(200).json(album))
     .catch(err => processError(err, res));
 });
@@ -53,21 +53,21 @@ router.get('/album-by-path/:path', function(req, res, next) {
     becomes (0+2+7) and entire url is "http://example.com/api/photos/albums/(0+2+7)"     */
 router.get('/albums/:albumIdsList', function(req, res, next) { 
   userSvc.isValidLevel(req.user, 2)
-    .then(() => photoSvc.getAlbums(req.params.albumIdsList))
+    .then(() => mediaSvc.getPhotoAlbums(req.params.albumIdsList))
     .then(albums => res.status(200).json(albums))
     .catch(err => processError(err, res));
 });
 
 router.get('/photos/:photoIdsList', function(req, res, next) { 
   userSvc.isValidLevel(req.user, 2)
-    .then(() => photoSvc.getPhotos(req.params.photoIdsList))
+    .then(() => mediaSvc.getPhotos(req.params.photoIdsList))
     .then(photos => res.status(200).json(photos))
     .catch(err => processError(err, res));
 });
 
 router.get('/thumbs/:photoIdsList', function(req, res, next) { 
   userSvc.isValidLevel(req.user, 2)
-    .then(() => photoSvc.getThumbs(req.params.photoIdsList))
+    .then(() => mediaSvc.getThumbs(req.params.photoIdsList))
     .then(thumbs => res.status(200).json(thumbs))
     .catch(err => processError(err, res));
 });

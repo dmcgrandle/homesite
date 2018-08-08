@@ -5,7 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AES } from 'crypto-ts';
 
 import { AppConfig } from '../app.config';
-import { Album, Photo } from '../_classes/photo-classes';
+import { PhotoAlbum, Photo } from '../_classes/photo-classes';
 import { User } from '../_classes/user-classes';
 import { LoginResponse } from '../_classes/server-response-classes';
 

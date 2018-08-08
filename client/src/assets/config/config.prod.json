@@ -10,7 +10,7 @@
         "email": "webmaster@example.com"
     },
     "gallery": {
-        "featuredPhoto": {
+        "featuredMedia": {
             "filename": "protected/images/2018-00-03Graduation0364.jpg"
         },
         "featuredVideo": {
