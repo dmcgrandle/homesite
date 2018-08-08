@@ -17,7 +17,7 @@
       </mat-card-header>
       <!-- <div fxLayout="space-around center"> -->
       <!-- <div> -->
-          <img mat-card-image [src]='(media.curVideoAlbum.featuredMedia.fullPath) | secure'>
+          <img mat-card-image [src]='(media.curVideoAlbum.featuredMedia.posterPath) | secure'>
       <!-- </div> -->
     </mat-card>
     <!-- Now loop through displaying all the albums in this album. -->
@@ -29,7 +29,7 @@
         </mat-card-title>
         <mat-card-subtitle>{{album.description}}</mat-card-subtitle>
       </mat-card-header>
-      <img FxLayoutAlign="center" *ngIf='album.featuredMedia.filename' mat-card-image [src]='(album.featuredMedia.fullPath) | secure'>
+      <img FxLayoutAlign="center" *ngIf='album.featuredMedia.filename' mat-card-image [src]='(album.featuredMedia.posterPath) | secure'>
     </mat-card>
   </div>
 </div>

@@ -288,6 +288,7 @@ buildMediaArray = function(albums, files, mediaType) {
     // the photos arrays that are stored within each album.
     let prevTargetAlbumPath = '';
     let medias = [];
+    const thumbPathKey = ((mediaType=='photo')?'thumb':'poster') + 'Path';
     fIndex = targetAlbumIndex = prevTargetAlbumIndex = 0; // fInxex == photo._id
     files.forEach(file => {
         splitPaths = file.split('/');
@@ -298,7 +299,8 @@ buildMediaArray = function(albums, files, mediaType) {
         media.filename = mediaFilename;      // filename without path
         media.fullPath = mediaFullPath;  // full path and filename of media
         // path and filename of thumbnail relative to root URL
-        media[((mediaType=='photo')?'thumb':'poster') + 'Path'] = getRelTorPPath(file, mediaType);
+        let thumbPath = getRelTorPPath(file, mediaType);
+        media[thumbPathKey] = thumbPath;
         media.caption = '';                  // optional caption for photo
         let targetAlbumPath = file.slice(0,-(mediaFilename.length+1));
         if (targetAlbumPath === prevTargetAlbumPath) {
@@ -309,6 +311,7 @@ buildMediaArray = function(albums, files, mediaType) {
                 filename: mediaFilename, 
                 fullPath: mediaFullPath,
                 caption: ''};
+            albums[targetAlbumIndex].featuredMedia[thumbPathKey] = thumbPath;
             splitPaths.pop(); // first, drop the filename 
             const numParents = splitPaths.length-1; // have to save it since we mod splitPaths
             for (let i=0;i<numParents;i++) {// walk up the tree finding all parents
@@ -321,7 +324,8 @@ buildMediaArray = function(albums, files, mediaType) {
                             filename: mediaFilename, 
                             fullPath: mediaFullPath, 
                             caption: ''};
-                    }
+                        albums[parentAlbumIndex].featuredMedia[thumbPathKey] = thumbPath;
+                        }
                 }
             }// end for (walking up the parent tree)
         } // end set up featuredMedia
