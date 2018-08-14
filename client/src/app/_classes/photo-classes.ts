@@ -6,8 +6,8 @@ export class PhotoAlbum {
     path: string;             // physical directory path of this PhotoAlbum
     description: string;      // Description of this PhotoAlbum
     featuredMedia: Photo;     // Photo to be displayed as the PhotoPhotoAlbum cover
-    photos: Array<number>;    // array of Photo ids (if any) this PhotoAlbum contains
-    albums: Array<number>;    // array of photoAlbum ids (if any) this PhotoAlbum contains
+    photoIds: Array<number>;  // array of Photo ids (if any) this PhotoAlbum contains
+    albumIds: Array<number>;  // array of photoAlbum ids (if any) this PhotoAlbum contains
     };
 
     export class Photo {

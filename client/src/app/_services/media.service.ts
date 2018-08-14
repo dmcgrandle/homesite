@@ -13,7 +13,9 @@ import { UrlSegment } from '../../../node_modules/@angular/router';
 export class MediaService {
 
   public curPhotoAlbum: PhotoAlbum; // used to keep track of current PhotoAlbum between components
+  public curPhoto: Photo;
   public curVideoAlbum: VideoAlbum;
+  public curVideo: Video;
 
   constructor(private http: HttpClient) {};
 
@@ -21,12 +23,24 @@ export class MediaService {
     return <Observable<Photo>>this.http.get('/api/photos/photo-by-id/' + id);
   };
 
+  public getVideoById(id: number): Observable<Video> {
+    return <Observable<Video>>this.http.get('/api/videos/video-by-id/' + id);
+  };
+
   public getPhotosByIdArray(photos: Array<number>): Observable<Photo[]> {
     return <Observable<Photo[]>>this.http.get('/api/photos/photos/(' + photos.join('+') + ')');
   };
 
-  public getThumbsByIdArray(thumbs: Array<number>): Observable<string[]> {
-    return <Observable<string[]>>this.http.get('/api/photos/thumbs/(' + thumbs.join('+') + ')');
+  public getVideosByIdArray(photos: Array<number>): Observable<Video[]> {
+    return <Observable<Video[]>>this.http.get('/api/videos/videos/(' + photos.join('+') + ')');
+  };
+
+  public getThumbsByIdArray(thumbIds: Array<number>): Observable<string[]> {
+    return <Observable<string[]>>this.http.get('/api/photos/thumbs/(' + thumbIds.join('+') + ')');
+  };
+
+  public getPostersByIdArray(posterIds: Array<number>): Observable<string[]> {
+    return <Observable<string[]>>this.http.get('/api/videos/posters/(' + posterIds.join('+') + ')');
   };
 
   public getPhotoAlbumById(id: number): Observable<PhotoAlbum> {
@@ -45,13 +59,20 @@ export class MediaService {
     return <Observable<VideoAlbum>>this.http.get('/api/videos/album-by-path/' + pathString);
   };
 
-  public getPhotoAlbumsByIdArray(albums: Array<number>): Observable<PhotoAlbum[]> {
-    let albumString = '(' + albums.join('+') + ')';
+  public getVideoByPath(path: string): Observable<Video> {
+    let pathString = '(' + path.split('/').join('+') + ')';
+    if (pathString == '(videoAlbums)') pathString = '()';
+    return <Observable<Video>>this.http.get('/api/videos/video-by-path/' + pathString);
+  };
+
+
+  public getPhotoAlbumsByIdArray(albumIds: Array<number>): Observable<PhotoAlbum[]> {
+    let albumString = '(' + albumIds.join('+') + ')';
     return <Observable<PhotoAlbum[]>>this.http.get('/api/photos/albums/' + albumString);
   };
 
-  public getVideoAlbumsByIdArray(albums: Array<number>): Observable<VideoAlbum[]> {
-    let albumString = '(' + albums.join('+') + ')';
+  public getVideoAlbumsByIdArray(albumIds: Array<number>): Observable<VideoAlbum[]> {
+    let albumString = '(' + albumIds.join('+') + ')';
     return <Observable<VideoAlbum[]>>this.http.get('/api/videos/albums/' + albumString);
   };
 
@@ -79,7 +100,7 @@ export class MediaService {
     return url.pipe(
       switchMap(segments => this.getPhotoAlbumByPath(segments.join('/'))),
       tap(album => this.curPhotoAlbum = album),
-      switchMap(album => this.getPhotoAlbumsByIdArray(album.albums))
+      switchMap(album => this.getPhotoAlbumsByIdArray(album.albumIds))
     );
   };
 
@@ -94,7 +115,15 @@ export class MediaService {
       return url.pipe(
         switchMap(segments => this.getVideoAlbumByPath(segments.join('/'))),
         tap(album => this.curVideoAlbum = album),
-        switchMap(album => this.getVideoAlbumsByIdArray(album.albums))
+        switchMap(album => this.getVideoAlbumsByIdArray(album.albumIds))
       );
     };
-}
+
+  public getVideoByURL(url: Observable<UrlSegment[]>): Observable<Video> {
+    return url.pipe(
+      switchMap(segments => this.getVideoByPath(segments.join('/')))
+    );
+  };
+
+
+  }

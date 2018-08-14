@@ -56,6 +56,13 @@ exports.getPhotoById = async function (id) {
     return photo;
 }
 
+exports.getVideoById = async function (id) {
+    if ((id < 0) || typeof(id) != 'number') throw new Error('404 Bad ID.');
+    const video = await db.collection('videos').findOne({_id : id});
+    if (!video) throw new Error('404 Unknown Video id: ' + id);
+    return video;
+}
+
 exports.getPhotoAlbumByPath = async function (pathEncoded) {
     const path = pathEncoded.slice(1,-1).replace(/\+/g, '/');
     const album = await db.collection('photoAlbums').findOne({path : path});
@@ -70,15 +77,15 @@ exports.getPhotoAlbums = async function (albumIdsList) {
         pArray.push(db.collection('photoAlbums').findOne({_id : idsArray[i]}));
     }
     albums = await Promise.all(pArray);
-    for (let i=0;i<idsArray.length;i++) {
+    for (let i=0;i<idsArray.length;i++) { 
         if (!albums[i]) // validity check
             throw new Error('403 Album IDs list: ' + albumIdsList + ' is invalid.');
     }
     return albums;
 };
 
-exports.getPhotos = async function (photoIdsList) {
-    const idsArray = photoIdsList.slice(1,-1).split('+').map(Number);
+exports.getPhotos = async function (photoIds) {
+    const idsArray = photoIds.slice(1,-1).split('+').map(Number);
     let pArray = []; // set up promises array for all of the photos being requested
     for (let i=0;i<idsArray.length;i++) {
         pArray.push(db.collection('photos').findOne({_id : idsArray[i]}));
@@ -86,9 +93,23 @@ exports.getPhotos = async function (photoIdsList) {
     photos = await Promise.all(pArray);
     for (let i=0;i<idsArray.length;i++) {
         if (!photos[i]) // validity check
-            throw new Error('403 Photo IDs list: ' + photoIdsList + ' is invalid.');
+            throw new Error('403 Photo IDs list: ' + photoIds + ' is invalid.');
     }
     return photos;
+};
+
+exports.getVideos = async function (videoIds) {
+    const idsArray = videoIds.slice(1,-1).split('+').map(Number);
+    let pArray = []; // set up promises array for all of the videos being requested
+    for (let i=0;i<idsArray.length;i++) {
+        pArray.push(db.collection('videos').findOne({_id : idsArray[i]}));
+    }
+    videos = await Promise.all(pArray);
+    for (let i=0;i<idsArray.length;i++) {
+        if (!videos[i]) // validity check
+            throw new Error('403 Video IDs list: ' + videoIds + ' is invalid.');
+    }
+    return videos;
 };
 
 exports.getThumbs = async function (photoIdsList) {
@@ -97,6 +118,14 @@ exports.getThumbs = async function (photoIdsList) {
     photos.forEach(photo => thumbs.push(photo.thumbPath)); 
     return thumbs;
 };
+
+exports.getPosters = async function (posterIds) {
+    const videos = await exports.getVideos(posterIds);
+    let posters = [];
+    videos.forEach(video => posters.push(video.posterPath));
+    return posters;
+};
+
 
 exports.getVideoAlbums = async function (albumIdsList) {
     const idsArray = albumIdsList.slice(1,-1).split('+').map(Number);
@@ -117,6 +146,15 @@ exports.getVideoAlbumByPath = async function (pathEncoded) {
     const album = await db.collection('videoAlbums').findOne({path : path});
     if (!album) throw new Error('404 Unknown Album: ' + path);
     return album;
+}
+
+exports.getVideoByPath = async function (pathEncoded) {
+    // Note - this function currently assumes that the path sent does NOT include 
+    // the VIDEO_DIR.PATH at the front.  TODO: check for this instead of assuming ...
+    const path = cfg.VIDEO_DIR.PATH + pathEncoded.slice(1,-1).replace(/\+/g, '/');
+    const video = await db.collection('videos').findOne({fullPath : path});
+    if (!video) throw new Error('404 Unknown Video: ' + path);
+    return video;
 }
 
 
@@ -267,15 +305,15 @@ buildAlbumsArray = function(paths, media) {
         album.path = path;
         album.description = '';
         album.featuredMedia = {};
-        album[media + 's'] = [];
-        album.albums = [];
+        album[media + 'Ids'] = [];
+        album.albumIds = [];
         albums[aIndex] = album;
         // 2. Now add this album's index (which equals it's _id) to it's parent's
         // albums array.
         targetAlbumPath = path.slice(0,-(splitPaths[splitPaths.length-1].length+1));
         targetAlbumIndex = ((targetAlbumPath === prevTargetAlbumPath) ? prevTargetAlbumIndex : 
             albums.findIndex(album => album.path === targetAlbumPath));
-        if (aIndex > 0) albums[targetAlbumIndex].albums.push(aIndex); // add to proper albums array
+        if (aIndex > 0) albums[targetAlbumIndex].albumIds.push(aIndex); // add to proper albumIds array
         prevTargetAlbumPath = targetAlbumPath;
         prevTargetAlbumIndex = targetAlbumIndex;
         aIndex++;
@@ -329,7 +367,7 @@ buildMediaArray = function(albums, files, mediaType) {
                 }
             }// end for (walking up the parent tree)
         } // end set up featuredMedia
-        albums[targetAlbumIndex][mediaType + 's'].push(fIndex); // eg: add photo id to photos array
+        albums[targetAlbumIndex][mediaType + 'Ids'].push(fIndex); // eg: add photo id to photos array
         medias.push(media); // eg: add photo to the photos array
         // set up indexes for next iteration of loop:
         prevTargetAlbumPath = targetAlbumPath;
@@ -378,9 +416,9 @@ isEmpty = function(obj) {
 }
 
 isPhotoSuffix = function(str) { //TODO: add more recognized picture formats
-    return ((str == '.jpg') || (str == 'jpeg'))
+    return ((str.toLowerCase() === '.jpg') || (str.toLowerCase() === 'jpeg'))
 };
 
 isVideoSuffix = function(str) { //TODO: add more recognized video formats
-    return (str == '.mp4')
+    return ((str.toLowerCase() === '.mp4') || (str.toLowerCase() === '.mov'))
 };

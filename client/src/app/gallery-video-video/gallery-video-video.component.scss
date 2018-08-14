@@ -1,0 +1,15 @@
+.container {
+    background-color: black;
+    border-radius: 6px;
+    video {
+        margin-top: 10px;
+        height: 85vh;
+    }
+    h5 {
+        margin: 10px 0;
+        color: floralwhite;
+        overflow: hidden;
+        white-space: nowrap;
+        max-width: 95%;
+    }
+}

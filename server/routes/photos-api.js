@@ -48,26 +48,26 @@ router.get('/album-by-path/:path', function(req, res, next) {
 
 
 /*  GET array of albums of with given ids.  Needs level 2+ access
-    Format of :albumsIdsList - array of id numbers, made URL-friendly with no spaces, and
+    Format of :albumsIds - array of id numbers, made URL-friendly with no spaces, and
     by replacing [] with () and commas with +, so for example the array [ 0, 2, 7 ]
     becomes (0+2+7) and entire url is "http://example.com/api/photos/albums/(0+2+7)"     */
-router.get('/albums/:albumIdsList', function(req, res, next) { 
+router.get('/albums/:albumIds', function(req, res, next) { 
   userSvc.isValidLevel(req.user, 2)
-    .then(() => mediaSvc.getPhotoAlbums(req.params.albumIdsList))
+    .then(() => mediaSvc.getPhotoAlbums(req.params.albumIds))
     .then(albums => res.status(200).json(albums))
     .catch(err => processError(err, res));
 });
 
-router.get('/photos/:photoIdsList', function(req, res, next) { 
+router.get('/photos/:photoIds', function(req, res, next) { 
   userSvc.isValidLevel(req.user, 2)
-    .then(() => mediaSvc.getPhotos(req.params.photoIdsList))
+    .then(() => mediaSvc.getPhotos(req.params.photoIds))
     .then(photos => res.status(200).json(photos))
     .catch(err => processError(err, res));
 });
 
-router.get('/thumbs/:photoIdsList', function(req, res, next) { 
+router.get('/thumbs/:photoIds', function(req, res, next) { 
   userSvc.isValidLevel(req.user, 2)
-    .then(() => mediaSvc.getThumbs(req.params.photoIdsList))
+    .then(() => mediaSvc.getThumbs(req.params.photoIds))
     .then(thumbs => res.status(200).json(thumbs))
     .catch(err => processError(err, res));
 });

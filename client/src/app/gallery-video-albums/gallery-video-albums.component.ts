@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, AfterViewInit } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Location } from '@angular/common';
@@ -13,7 +13,7 @@ import { VideoAlbum, Video } from '../_classes/video-classes';
   templateUrl: './gallery-video-albums.component.html',
   styleUrls: ['./gallery-video-albums.component.scss']
 })
-export class GalleryVideoAlbumsComponent implements OnInit {
+export class GalleryVideoAlbumsComponent implements OnInit, AfterViewInit {
 
   displayAlbums : Array<VideoAlbum>;
   videosDisplayName: string;
@@ -39,10 +39,14 @@ export class GalleryVideoAlbumsComponent implements OnInit {
     );
   };
 
+  ngAfterViewInit() {
+    
+  }
+
   public updateDisplayAlbum(album: VideoAlbum) {
     this.media.curVideoAlbum = album; // go down one level (directory).
-    if (album.albums.length > 0) {// means this album contains other albums
-      this.media.getVideoAlbumsByIdArray(album.albums).subscribe( 
+    if (album.albumIds.length > 0) {// means this album contains other albums
+      this.media.getVideoAlbumsByIdArray(album.albumIds).subscribe( 
         (albums) => { // get the albums array for this new album
           this.displayAlbums = albums; // set albums to display
           const url = 'videoAlbums' + this.router.createUrlTree([album.path]).toString();

@@ -40,8 +40,8 @@ export class GalleryPhotoAlbumsComponent implements OnInit {
 
   public updateDisplayAlbum(album: PhotoAlbum) {
     this.media.curPhotoAlbum = album; // go down one level (directory).
-    if (album.albums.length > 0) {// means this album contains other albums
-      this.media.getPhotoAlbumsByIdArray(album.albums).subscribe( 
+    if (album.albumIds.length > 0) {// means this album contains other albums
+      this.media.getPhotoAlbumsByIdArray(album.albumIds).subscribe( 
         (albums) => { // get the albums array for this new album
           this.displayAlbums = albums; // set albums to display
           const url = 'photoAlbums' + this.router.createUrlTree([album.path]).toString();

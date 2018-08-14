@@ -1,70 +1,55 @@
-.mat-card-image {
-//    margin-bottom: -28px !important;
-    border-radius: 6px;
-    border: 3px;
-    border-color: black;
-    border-style: ridge;
-  }
+#full-screen {
+    //    max-height: 100vh;
+        background-color: black;
+        border-radius: 6px;
 
-.img-large {
-//    margin-top: -20px;
-    max-height: 60vh;
-    width: auto;
-    max-width: 95vw;
-}
-
-.title {
-    margin: 0 0 5px 0;
-    padding-top: 5px;
-    color: floralwhite;
-
-//    position: relative;
-     h2 {
-         margin: 0;
-//         color: floralwhite;
-         padding: 5px;
-//         z-index: 1;
-//         padding: 2px;
-//         background-color: darkslategray;
-//         border: 1px solid black;
-//         opacity: 0.3;
-//         border-radius: 3px;
-     }
-     a {
-         color: floralwhite;
-        .mat-icon {
+    .title {
+        margin: 0 0 5px 0;
+        padding-top: 5px;
+        color: floralwhite;
+        h2 {
+            margin: 0;
             padding: 5px;
-            margin-right: 5px;
+        }
+        a {
+            color: floralwhite;
+            .mat-icon {
+                padding: 5px;
+                margin-right: 5px;
+            }
+        }
+    }
+
+    .large {
+        background-color: black;
+        cursor: pointer;
+        h4 {
+            margin: 0 0 10px 0;;
+            color: floralwhite;
+        }
+        .img-large {
+                margin-bottom: 0px;
+                max-height: 60vh;
+                width: auto;
+                max-width: 95vw;
+                border: 3px ridge black;
+                border-radius: 6px;
+        }
+    }
+
+    #thumbnails {
+        overflow: scroll;
+        .img-thumbs {
+            cursor: pointer;
+            border-radius: 6px;
+            border: 3px;
+            border-color: black;
+            border-style: ridge;
+            width: 100%;
+        }
+        #selected {
+            border-color: white;
         }
     }
 }
 
-  .mat-card {
-    cursor: pointer;
-    background-color: black;
-  }
-
-#thumbnails {
-    overflow: scroll;
-}
-
-.img-thumbs {
-    cursor: pointer;
-    border-radius: 6px;
-    border: 3px;
-    border-color: black;
-    border-style: ridge;
-    width: 100%;
-//    object-fit: fill;
-//    align-self: stretch;
-}
-
-#selected {
-    border-color: white;
-}
-
-#full-screen {
-//    max-height: 100vh;
-    background-color: black;
-    border-radius: 6px;
-}

@@ -7,7 +7,7 @@
     fxLayoutAlign.gt-xs="space-evenly center" >
 
     <!-- If the album being displayed has both other albums AND pictures then display an icon for these pics -->
-    <mat-card *ngIf="media.curPhotoAlbum.photos.length > 0" (click)="navToPhotos(media.curPhotoAlbum)"
+    <mat-card *ngIf="media.curPhotoAlbum.photoIds.length > 0" (click)="navToPhotos(media.curPhotoAlbum)"
         fxFlex.xl="16.2%" fxFlex.lg="24.5%" fxFlex.md="32.5%" fxFlex.sm="49%" fxFlex.xs="98%">  
       <mat-card-header fxLayoutAlign="start none">
         <mat-card-title>

@@ -30,9 +30,11 @@ import { EqualDirective } from './_helpers/equal-validator';
 import { ForgotDialogComponent } from './forgot-dialog/forgot-dialog.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { GalleryComponent } from './gallery/gallery.component';
-import { GalleryVideoAlbumsComponent } from './gallery-video-albums/gallery-video-albums.component';
 import { GalleryPhotoAlbumsComponent } from './gallery-photo-albums/gallery-photo-albums.component';
 import { GalleryPhotoPhotosComponent } from './gallery-photo-photos/gallery-photo-photos.component';
+import { GalleryVideoAlbumsComponent } from './gallery-video-albums/gallery-video-albums.component';
+import { GalleryVideoVideosComponent } from './gallery-video-videos/gallery-video-videos.component';
+import { GalleryVideoVideoComponent } from './gallery-video-video/gallery-video-video.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AboutComponent } from './about/about.component';
 import { DownloadsComponent } from './downloads/downloads.component';
@@ -57,9 +59,11 @@ import { SecurePipe } from './_helpers/secure.pipe';
     ForgotDialogComponent,
     ChangePasswordComponent,
     GalleryComponent,
-    GalleryVideoAlbumsComponent,
     GalleryPhotoAlbumsComponent,
     GalleryPhotoPhotosComponent,
+    GalleryVideoAlbumsComponent,
+    GalleryVideoVideosComponent,
+    GalleryVideoVideoComponent,
     PageNotFoundComponent,
     AboutComponent,
     DownloadsComponent,

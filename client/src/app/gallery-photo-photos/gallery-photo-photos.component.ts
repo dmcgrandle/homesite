@@ -7,19 +7,7 @@ import { MediaService } from '../_services/media.service';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
 import { FullscreenOverlayContainer } from '../../../node_modules/@angular/cdk/overlay';
 import { Photo } from '../_classes/photo-classes';
-
-Event
-
-export enum KEY_CODE {
-  PAGE_UP = 33,
-  PAGE_DOWN = 34,
-  END = 35,
-  HOME = 36,
-  LEFT_ARROW = 37,
-  UP_ARROW = 38,
-  RIGHT_ARROW = 39,
-  DOWN_ARROW = 40
-};
+import { KEY_CODE } from '../_classes/key-code-enum';
 
 @Component({
   selector: 'app-gallery-photo-photos',
@@ -30,8 +18,8 @@ export enum KEY_CODE {
 export class GalleryPhotoPhotosComponent implements OnInit {
 
 //  version = VERSION;
-  curPhoto: Photo;
-  curThumbs: string[];
+  photos: Photo[];
+  curPhotoIndex: number;
 
   constructor(private  media: MediaService,
               private  route: ActivatedRoute,
@@ -43,36 +31,35 @@ export class GalleryPhotoPhotosComponent implements OnInit {
     // media.curPhotoAlbum variable will already be set up. If not
     // we were probably called by a browser typed link or refresh.
     if (this.media.curPhotoAlbum) {
-      this.setCurrentValues(this.media.curPhotoAlbum.photos);
+      this.setCurrentValues(this.media.curPhotoAlbum.photoIds);
     } else {// We need to load the curAlbum from the url sent.
       this.media.getPhotoAlbumByURL(this.route.url).subscribe(
-        (album) => this.setCurrentValues(album.photos),
+        (album) => this.setCurrentValues(album.photoIds),
         (err) => this.errAlert('Problem getting albums!', err)
       );
     }
   }
 
-  private setCurrentValues(photos: number[]) {
-    this.media.getPhotoById(photos[0]).subscribe(photo => this.curPhoto = photo);
-    this.media.getThumbsByIdArray(photos).subscribe(thumbs => this.curThumbs = thumbs);
+  private setCurrentValues(photoIds: number[]) {
+    this.media.getPhotosByIdArray(photoIds).subscribe(photos => this.photos = photos);
+    this.curPhotoIndex = 0; //start at first photo
   }
 
-  private changePhoto(photoId: number) {
-    this.media.getPhotoById(photoId).subscribe(photo => this.curPhoto = photo);
+  private changePhoto(newPhoto: Photo) {
+    this.curPhotoIndex = this.photos.findIndex(photo => photo._id === newPhoto._id);
   }
 
-  private highlightAndScroll(photoId: number, thumbE: Element, thumbsE: Element) {
+  private highlightAndScroll(photo: Photo, thumbE: Element, thumbsE: Element) {
     // Only property we can scroll with is scrollLeft which is in PIXELS, so need
     // to calculate how many thumbs in the current window and where the center
     // is, then convert all that to pixels to calculate the amount to scroll.
     // Originally tried to use scrollIntoView, but that scrolled vertically as
     // well which messed up the screen depending on client browser window size.
-    if (photoId === this.curPhoto._id) {
-      const thumbIndex = this.media.curPhotoAlbum.photos.indexOf(photoId);
+    if (photo._id === this.photos[this.curPhotoIndex]._id) {
       const thumbWidth = thumbE.scrollWidth + 6; // 6 is the border width
       const windowWidth = thumbsE.clientWidth; // visible thumbnails window
       const numThumbsDisplayed = windowWidth/thumbWidth - 1;
-      const numThumbsToLeftOfCenter = thumbIndex - numThumbsDisplayed/2;
+      const numThumbsToLeftOfCenter = this.curPhotoIndex - numThumbsDisplayed/2;
       thumbsE.scrollLeft = numThumbsToLeftOfCenter*thumbWidth;
 //      thumbE.scrollIntoView({behavior: "instant", block: "center", inline: "center"})
       return "selected"; // changes the id property of this element so css styles can outline it
@@ -84,18 +71,17 @@ export class GalleryPhotoPhotosComponent implements OnInit {
   keyEvent(event: KeyboardEvent) {
     if (event.keyCode in KEY_CODE) {
       let nextIndex = 0;
-      const curIndex = this.media.curPhotoAlbum.photos.indexOf(this.curPhoto._id);
       switch (event.keyCode) { // set nextIndex to where we are going next
         case KEY_CODE.RIGHT_ARROW:
         case KEY_CODE.DOWN_ARROW:
-            nextIndex = (curIndex === this.media.curPhotoAlbum.photos.length-1) ? 0: curIndex + 1;
+            nextIndex = (this.curPhotoIndex === this.media.curPhotoAlbum.photoIds.length-1) ? 0: this.curPhotoIndex + 1;
             break;
         case KEY_CODE.LEFT_ARROW: 
         case KEY_CODE.UP_ARROW:
-            nextIndex = (curIndex === 0) ? this.media.curPhotoAlbum.photos.length-1 : curIndex - 1;
+            nextIndex = (this.curPhotoIndex === 0) ? this.media.curPhotoAlbum.photoIds.length-1 : this.curPhotoIndex - 1;
             break;
         case KEY_CODE.END: 
-            nextIndex = this.media.curPhotoAlbum.photos.length-1;
+            nextIndex = this.media.curPhotoAlbum.photoIds.length-1;
             break;
         case KEY_CODE.HOME: 
             nextIndex = 0;
@@ -107,8 +93,9 @@ export class GalleryPhotoPhotosComponent implements OnInit {
 //            console.log('Pressed PAGE_DOWN');
             break;
       }
-      this.media.getPhotoById(this.media.curPhotoAlbum.photos[nextIndex])
-        .subscribe(photo => this.curPhoto = photo);
+      this.curPhotoIndex = nextIndex;
+//      this.media.getPhotoById(this.media.curPhotoAlbum.photoIds[nextIndex])
+//        .subscribe(photo => this.curPhotoIndex = photo);
     }
   }
  
