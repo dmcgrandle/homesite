@@ -8,7 +8,7 @@ const path = require('path');
 const util = require('util');
 const sharp = require('sharp');
 const uniqueFilename = require('unique-filename');
-const execFile = util.promisify(require('child_process').execFile);
+const spawn = require('child_process').spawn;
 
 // Project Imports:
 const cfg = require('../config').mediaService;
@@ -21,15 +21,19 @@ let db;
 // them in the database for retrieval by the client via the api.
     try {
         db = await require('./db-service');
+        console.log(Date(Date.now()) + ' : About to scan ' + cfg.PHOTO_DIR.PATH + '. This could take a while...');
         const photoDirs = await fileSvc.mediaDirs(cfg.PHOTO_DIR.PATH);
         const photoFiles = await fileSvc.mediaFiles(cfg.PHOTO_DIR.PATH, isPhotoSuffix);
+        console.log(Date(Date.now()) + ' : Done scanning ' + cfg.PHOTO_DIR.PATH);
         await makeThumbsIfNeeded(photoFiles);
         const photoData = buildPhotos(photoDirs, photoFiles);
         await saveDataToDB('photoAlbums', photoData.albums);
         await saveDataToDB('photos', photoData.photos);
         console.log(Date(Date.now()) + ' : created new "photoAlbums" document in db.');
+        console.log(Date(Date.now()) + ' : About to scan ' + cfg.VIDEO_DIR.PATH + '. This could take a while...');
         const videoDirs = await fileSvc.mediaDirs(cfg.VIDEO_DIR.PATH);
         const videoFiles = await fileSvc.mediaFiles(cfg.VIDEO_DIR.PATH, isVideoSuffix);
+        console.log(Date(Date.now()) + ' : Done scanning ' + cfg.VIDEO_DIR.PATH);
         await makePostersIfNeeded(videoFiles);
         const videoData = buildVideos(videoDirs, videoFiles);
         await saveDataToDB('videoAlbums', videoData.albums);
@@ -209,54 +213,88 @@ createSomeThumbs = async function(thumbsRemaining) {
         const thumbs = await Promise.all(newPArray);  // wait on creation of up to MAX items
         console.log(Date(Date.now()) + ' : Finished creating ' + numToDo + ' thumbnails.');
         if (thumbsRemaining.length > 0)
-            createSomeThumbs(thumbsRemaining); // recurse for the remaining
+            await createSomeThumbs(thumbsRemaining); // recurse for the remaining
     }
 }
 
 makePostersIfNeeded = async function(files) { 
-    // This function checks all files in the files array to see if
-    // video posters already exist, and creates them if they do not.
-    await fs.ensureDir(path.join(__dirname, '..', cfg.VIDEO_DIR.PATH + cfg.VIDEO_DIR.CACHE_DIR));
-    let pArray = []; //promise array to build
-    for (let i=0;i<files.length;i++) {
-        pArray.push(fs.exists(getFullPosterPath(files[i])));
-    }
-    const postersExist = await Promise.all(pArray);
-    pArray = []; //clear out the promise array & set up with thumb creations needed
-    for (let i=0;i<files.length;i++) {
-        if (!postersExist[i]) {
-            const fileIn = path.join(__dirname, '..', cfg.VIDEO_DIR.PATH + files[i]);
-            const fileOut = getFullPosterPath(files[i]);
-            // TODO: create a function that returns a promise when ffmpeg has created a poster, then push onto pArray
-            pArray.push(createOnePoster(fileIn, fileOut)); 
+    // Doing this differently than creating thumbs, since we are dealing with streams and
+    // events with spawn of a child process for every ffmpeg call.  With spawn it starts
+    // executing as soon as it is set up, so need to handle it differently than 'sharp'.
+    try {
+        await fs.ensureDir(path.join(__dirname, '..', cfg.VIDEO_DIR.PATH + cfg.VIDEO_DIR.CACHE_DIR));
+        let posterFiles = files.slice(); // clone the files array since we'll be modifying it
+        console.log(Date(Date.now()) + ' : Up to ' + posterFiles.length + ' video posters need to be created ...');
+        await createSomePosters(posterFiles);
         }
-    }
-    if (pArray.length > 0) {
-        console.log(Date(Date.now()) + ' : About to create ' + pArray.length + ' posters.  This could take a while...');
-        await createSomePosters(pArray);
-    }
+    catch(err) {errAndExit(err, 1)};
 }
 
-createSomePosters = async function(postersRemaining) {
+
+createSomePosters = async function(postersRemaining) {  
     // Need to limit the number of posters created silmultaneously due to memory and resource
     // issues.  This needs to be a recursive function since we can't loop and call a promise.
+    // Instead of doing the thumbExists check, then setting up the whole promise array, then executing it a
+    // batch at a time, this time we are doing the check, the promise array setup and
     let numToDo = (postersRemaining.length > cfg.POSTERS.MAX_CREATE_AT_ONCE) 
-       ? cfg.POSTERS.MAX_CREATE_AT_ONCE : postersRemaining.length;
+    ? cfg.POSTERS.MAX_CREATE_AT_ONCE : postersRemaining.length;
     if (numToDo > 0) { // still have work to do
-        let newPArray = []; 
+        let pArray = []; //promise array to build
         for (let i=0;i<numToDo;i++) {
-            newPArray.push(postersRemaining.shift());
+            pArray.push(fs.exists(getFullPosterPath(postersRemaining[i])));
+        } // first, check to see if the posters already exist.  Queue up MAX_CREATE_AT_ONCE of them.
+        try {
+            const postersExist = await Promise.all(pArray);
+            pArray = [];
+            for (let i=0;i<numToDo;i++) {
+                if (!postersExist[i]) {
+                    const fileIn = path.join(__dirname, '..', cfg.VIDEO_DIR.PATH + postersRemaining[0]);
+                    const fileOut = getFullPosterPath(postersRemaining[0]);
+                    pArray.push(ffmpegPromise('ffmpeg', ['-ss', '00:00:00', '-i', fileIn, '-vframes', '1', '-q:v', '2', 
+                    '-vf', 'scale=' + cfg.POSTERS.WIDTH + ':-1', fileOut]));     
+                }
+                postersRemaining.shift(); // drop the first item in the array.
+            }
+            if (pArray.length > 0) {
+                console.log(Date(Date.now()) + ' : Creating ' + pArray.length + ' posters...');
+                await Promise.all(pArray);
+            }
         }
-        const posters = await Promise.all(newPArray);  // wait on creation of up to MAX items
-        console.log(Date(Date.now()) + ' : Finished creating ' + numToDo + ' posters.');
-        if (postersRemaining.length > 0)
-            createSomePosters(postersRemaining); // recurse for the remaining
+        catch(err) {errAndExit(err, 1)};
+        if (postersRemaining.length > 0) {
+            try {
+                await createSomePosters(postersRemaining); // recurse for the remaining
+            }
+            catch(err) {errAndExit(err, 1)};
+        }
+
     }
 }
 
-createOnePoster = async function(fileIn, fileOut) {
-    return execFile('ffmpeg', ['-ss', '00:00:00', '-i', fileIn, '-vframes', '1', '-q:v', '2', 
-        '-vf', 'scale=' + cfg.POSTERS.WIDTH + ':-1', fileOut]);
+ffmpegPromise = function() {
+    // This "promisifies" the spawn function.  Needed to write my own rather than using
+    // a generic one such as 'child-process-es6-promise' because ffmpeg throws info into
+    // stderr instead of stdout even if it's not an error, so I check returnCode too.
+    const name = arguments[0];
+    const args = arguments[1];
+    const options = arguments[2];
+    return new Promise (function (resolve, reject) {
+        const ffmpeg = spawn(name, args, options);
+        let dataOut = ""; // buffer results sent
+        let dataErr = "";
+        ffmpeg.stdout.on('data', data => dataOut += data);
+        ffmpeg.stderr.on('data', data => dataErr += data);
+        ffmpeg.on('close', returnCode => {
+            if (dataErr && (returnCode != 0)) {
+                console.log('ffmpegPromise Error! Return code is: ' + returnCode);
+                reject(dataErr);
+            }
+            else {
+                resolve(dataOut);
+            }
+        });
+        ffmpeg.on('error', err => reject(err));
+    });
 }
 
 buildVideos = function(paths, files) {
@@ -416,9 +454,11 @@ isEmpty = function(obj) {
 }
 
 isPhotoSuffix = function(str) { //TODO: add more recognized picture formats
-    return ((str.toLowerCase() === '.jpg') || (str.toLowerCase() === 'jpeg'))
+    const lc = str.toLowerCase();
+    return ((lc === '.jpg') || (lc === 'jpeg'))
 };
 
 isVideoSuffix = function(str) { //TODO: add more recognized video formats
-    return ((str.toLowerCase() === '.mp4') || (str.toLowerCase() === '.mov'))
+    const lc = str.toLowerCase();
+    return ((lc === '.mp4') || (lc === '.mov'))
 };
