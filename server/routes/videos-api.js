@@ -11,7 +11,6 @@ const mediaSvc = require('../services/media-service');
 const userSvc = require('../services/user-service');
 
 
-
 // middleware that is specific to this router
 router.use(function timeLog (req, res, next) {
   console.log(Date(Date.now()) + " : Videos API called - '" + req.originalUrl + "'");

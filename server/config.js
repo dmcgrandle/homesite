@@ -69,7 +69,12 @@ cfg.mediaService = {
 
 //config for download-service
 cfg.downloadService = {
-
+    DOWNLOAD_DIR : {
+        PATH: '/protected/downloads/',
+        CACHE_DIR: '.cache'
+    },
+    TYPE_DESCRIPTION_DB : './file-type-description.txt',
+    USE_SI_SIZE: true  // http://www.kossboss.com/?p=2234
 }
 
 module.exports = cfg;

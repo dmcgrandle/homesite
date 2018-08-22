@@ -60,8 +60,8 @@ fSvc.mediaDirs = function(topDir) {
 }
 
 fSvc.mediaFiles = function(topDir, testMediaFunc) {
-    // Note - needs a test media function passed which will test for the correct file suffix
-    // See function 'isPhotoSuffix' in media-service.js for example.
+    // Note - testMediaFunc must be a test media function passed which will test for the correct 
+    // file suffix. See function 'isPhotoSuffix' in media-service.js for example.
     return new Promise( function(resolve, reject) {
         try {
             let items = []; 
@@ -76,13 +76,34 @@ fSvc.mediaFiles = function(topDir, testMediaFunc) {
     });
 }
 
+fSvc.downloadFiles = function(dir, testFunc) {
+    // This function reads all the files in 'dir' and returns a promise which will
+    // resolve to an array of them, minus any hidden files, directories.  Also can
+    // be further filtered by a passed 'testFunc'.
+    return new Promise( function(resolve, reject) {
+        fs.readdir('.' + dir)
+            .then(files => filterDirsAndTestFunc('.' + dir, files, testFunc))
+            .then(filteredFiles => resolve(filteredFiles))
+            .catch(err => reject(err))
+    });
+};
+
+filterDirsAndTestFunc = async function(path, files, testFunc) {
+    let newFileObjectArray = [];
+    for (const file of files) {
+        const s = await fs.stat(path+file);
+        if (s.isFile() && (file[0] !== '.') && testFunc(file)) {
+            newFileObjectArray.push({filename:file,size:s.size});
+        }
+    }
+    return newFileObjectArray;
+}
+
 stripPath = function(item, topDir) {
     // strip out everything in path up to and including the 'topDir'.
     // Note: search will return -1 on top level directory itself.
     const s = item.path.search(topDir);
     return (s > 0) ? item.path.substr(s + topDir.length) : '';
 }
-
-//fSvc.items = items;
 
 module.exports = fSvc;

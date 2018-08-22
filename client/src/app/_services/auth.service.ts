@@ -7,6 +7,7 @@ import { AES } from 'crypto-ts';
 import { AppConfig } from '../app.config';
 import { PhotoAlbum, Photo } from '../_classes/photo-classes';
 import { User } from '../_classes/user-classes';
+import { File } from '../_classes/fs-classes';
 import { LoginResponse } from '../_classes/server-response-classes';
 
 @Injectable({
@@ -83,6 +84,10 @@ export class AuthService {
 
   public authGetUsers(): Observable<User[]> {
     return this.http.get<User[]>('/api/users/list');
+  }
+
+  public authGetDownloads(): Observable<File[]> {
+    return this.http.get<File[]>('/api/downloads/list');
   }
 
   public getToken(): string {

@@ -13,7 +13,6 @@ const spawn = require('child_process').spawn;
 // Project Imports:
 const cfg = require('../config').mediaService;
 const fileSvc = require('./file-service');
-const mediaSvc = require('./media-service');
 
 let db;
 (async function() {
@@ -224,7 +223,7 @@ makePostersIfNeeded = async function(files) {
     try {
         await fs.ensureDir(path.join(__dirname, '..', cfg.VIDEO_DIR.PATH + cfg.VIDEO_DIR.CACHE_DIR));
         let posterFiles = files.slice(); // clone the files array since we'll be modifying it
-        console.log(Date(Date.now()) + ' : Up to ' + posterFiles.length + ' video posters need to be created ...');
+        console.log(Date(Date.now()) + ' : Found ' + posterFiles.length + ' videos.  Will create posters if needed.');
         await createSomePosters(posterFiles);
         }
     catch(err) {errAndExit(err, 1)};
@@ -233,9 +232,9 @@ makePostersIfNeeded = async function(files) {
 
 createSomePosters = async function(postersRemaining) {  
     // Need to limit the number of posters created silmultaneously due to memory and resource
-    // issues.  This needs to be a recursive function since we can't loop and call a promise.
-    // Instead of doing the thumbExists check, then setting up the whole promise array, then executing it a
-    // batch at a time, this time we are doing the check, the promise array setup and
+    // issues. Instead of doing the thumbExists check, then setting up the whole promise array, 
+    // then executing it a batch at a time, this time we are doing the check, the promise array
+    // setup and 'await Promise.all' if needed all in the same batch.
     let numToDo = (postersRemaining.length > cfg.POSTERS.MAX_CREATE_AT_ONCE) 
     ? cfg.POSTERS.MAX_CREATE_AT_ONCE : postersRemaining.length;
     if (numToDo > 0) { // still have work to do
@@ -267,14 +266,14 @@ createSomePosters = async function(postersRemaining) {
             }
             catch(err) {errAndExit(err, 1)};
         }
-
     }
 }
 
 ffmpegPromise = function() {
-    // This "promisifies" the spawn function.  Needed to write my own rather than using
-    // a generic one such as 'child-process-es6-promise' because ffmpeg throws info into
-    // stderr instead of stdout even if it's not an error, so I check returnCode too.
+    // This "promisifies" the spawn function call to ffmpeg.  Needed to write my own 
+    // rather than using a generic one such as 'child-process-es6-promise' because 
+    // ffmpeg throws info into stderr instead of stdout even if it's not an error, 
+    // so I check the return code too.
     const name = arguments[0];
     const args = arguments[1];
     const options = arguments[2];
@@ -454,11 +453,9 @@ isEmpty = function(obj) {
 }
 
 isPhotoSuffix = function(str) { //TODO: add more recognized picture formats
-    const lc = str.toLowerCase();
-    return ((lc === '.jpg') || (lc === 'jpeg'))
+    return ((str === '.jpg') || (str === 'jpeg'))
 };
 
 isVideoSuffix = function(str) { //TODO: add more recognized video formats
-    const lc = str.toLowerCase();
-    return ((lc === '.mp4') || (lc === '.mov'))
+    return ((str === '.mp4') || (str === '.mov'))
 };

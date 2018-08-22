@@ -1,6 +1,7 @@
 <div *ngIf="auth.isAuthenticated()">
-  <mat-toolbar class="toolbar" fxLayout="column" fxLayoutGap="0px" fxLayoutAlign="center center">
+  <div class="toolbar" fxLayout="column" fxLayoutGap="0px" fxLayoutAlign="center center">
       <h2>{{CFG.const.footer.title}}</h2>
-      <p>Contact <a href="mailto:{{CFG.const.footer.email}}">{{CFG.const.footer.email}}</a> with any issues.</p>
-  </mat-toolbar>
+      <div class="text">Contact <a href="mailto:{{CFG.const.footer.email}}">{{CFG.const.footer.email}}</a> with any issues.</div>
+      <div class="text"><sub>Built by <a href="https://github.com/dmcgrandle/homesite">homesite</a></sub></div>
+  </div>
 </div>
