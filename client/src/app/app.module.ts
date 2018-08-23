@@ -8,10 +8,12 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 //for configuration file read during initialization:
 import { APP_INITIALIZER } from '@angular/core';
 
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+//import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+//import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
   MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatPaginatorModule,
-  MatSlideToggleModule, MatToolbarModule, MatListModule, MatGridListModule,
+  MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
   MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MatMenuModule, MatTableModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import 'hammerjs';
@@ -79,7 +81,7 @@ import { SecurePipe } from './_helpers/secure.pipe';
     HttpClientModule,
     MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
     MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatTableModule, 
-    MatSlideToggleModule, MatToolbarModule, MatListModule, MatGridListModule,
+    MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
     MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule,
     FlexLayoutModule, MatMenuModule, MatPaginatorModule, MatProgressSpinnerModule
   ],

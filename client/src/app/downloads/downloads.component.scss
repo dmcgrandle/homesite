@@ -1,16 +1,38 @@
-table {
-    width: 100%;
+.download-container {
+
+    table {
+        width: 100%;
+
+        .clickable {
+            cursor: pointer;
+        }
+        
+        .fiv-viv {
+            font-size: 3em;
+        }
+        
+        .center-align {
+            text-align: center;
+        }
+
+        td {
+            .mat-icon {
+                font-size: 2em;
+            }
+        }
+
+        .indent {
+            padding-left: 2vw;
+        }
+        
+        th.right-align {
+            padding-right: 6vw;
+        }
+        
+        .right-align {
+            text-align: right;
+            padding-right: 5vw;
+        }
+    }
 }
 
-tr {
-    cursor: pointer;
-}
-
-.fiv-viv {
-    font-size: 3em;
-}
-
-.right-align {
-    text-align: right;
-    padding-right: 5vw;
-}

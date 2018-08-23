@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, pipe, of } from 'rxjs';
 import { tap, map, shareReplay } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { AES } from 'crypto-ts';
 
 import { AppConfig } from '../app.config';
@@ -88,6 +88,10 @@ export class AuthService {
 
   public authGetDownloads(): Observable<File[]> {
     return this.http.get<File[]>('/api/downloads/list');
+  }
+
+  public downloadFile(file: File): Observable<Blob> {
+    return this.http.get(file.fullPath, {responseType: 'blob'})
   }
 
   public getToken(): string {
