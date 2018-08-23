@@ -20,15 +20,7 @@ router.use(tokenSvc.middlewareCheck());
 // Last middleware: serve all files here statically.  Note the need for '..'
 // since being inside the router also changes directory to the 'routes' dir,
 // so we first have to go back up one level before we can find 'protected'.
-router.use((req, res, next) => {
-  console.log('Hmmm ...');
-  next();
-});
 router.use(express.static(path.join(__dirname, '..', 'protected')));
-router.use((req, res, next) => {
-  console.log('Well ...');
-  next();
-});
 
 
 
