@@ -61,7 +61,6 @@ router.put('/update', function(req, res, next) {
   .catch(err => processError(err, res));
 });
 
-
 /* POST /forgot to reset password for a user. */
 router.post('/forgot', function(req, res, next) {
     userSvc.getUserByEmail(req.body)

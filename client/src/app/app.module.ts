@@ -14,7 +14,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
   MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatPaginatorModule,
   MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
-  MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MatMenuModule, MatTableModule } from '@angular/material';
+  MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MatMenuModule, 
+  MatTableModule, MatSortModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import 'hammerjs';
 
@@ -83,7 +84,8 @@ import { SecurePipe } from './_helpers/secure.pipe';
     MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatTableModule, 
     MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
     MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule,
-    FlexLayoutModule, MatMenuModule, MatPaginatorModule, MatProgressSpinnerModule
+    FlexLayoutModule, MatMenuModule, MatPaginatorModule, MatProgressSpinnerModule,
+    MatSortModule
   ],
   providers: [
     AppConfig, {

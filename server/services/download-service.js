@@ -4,6 +4,7 @@
 
 // External Imports:
 const spawn = require('child_process').spawn;
+const multer = require('multer');
 
 // Project Imports:
 const cfg = require('../config').downloadService;
@@ -20,25 +21,90 @@ let db;
         db = await require('./db-service');
         const files = await fileSvc.downloadFiles(cfg.DOWNLOAD_DIR.PATH, isDownloadSuffix);
         const downloads = await buildDownloads(files);
-        await saveDataToDB('downloads', downloads);
+        await saveDataToDB(cfg.DB_COLLECTION_NAME, downloads);
         console.log(Date(Date.now()) + ' : created new "download" document in db.');
     }
     catch(err) {errSvc.exit(err, 1)};
 })();
 
-exports.deleteme = async function() {
-};
+
+exports.updateDownloadsDB = async function(file) {
+    try { 
+        const lastDl = await db.collection(cfg.DB_COLLECTION_NAME).find().sort({_id: -1}).limit(1).next();
+        let fileObject = {};
+        fileObject._id = lastDl._id + 1;
+        fileObject.filename = file.filename;
+        fileObject.fullPath = '/' + file.path;
+        fileObject.suffix = file.filename.slice(file.filename.lastIndexOf('.'));
+        fileObject.type = await getTypeDescription(fileObject.suffix.slice(1));
+        fileObject.size = file.size;
+        fileObject.sizeHR = humanFileSize(file.size, cfg.USE_SI_SIZE);
+        fileObject.icon = 'fiv-viv fiv-icon-' + fileObject.suffix.slice(1);
+        const dlReturned = await db.collection(cfg.DB_COLLECTION_NAME).findOne({filename : file.filename});
+        if (dlReturned) { // a download with the same name exists - update it
+            fileObject._id = dlReturned._id;
+            await db.collection(cfg.DB_COLLECTION_NAME).replaceOne({_id: dlReturned._id}, fileObject);
+        }
+        else {
+            await db.collection(cfg.DB_COLLECTION_NAME).insertOne(fileObject);
+        }
+        return fileObject;
+    } catch (err) { errSvc.exit(err) };
+}
+
+exports.getDownload = async function(filename) {
+    const download = await db.collection(cfg.DB_COLLECTION_NAME).findOne({filename : filename});
+    if (!download) throw new Error('404 Unknown File.');
+    return download;
+}
 
 exports.getList = async function() {
     try {
-        const downloads = await db.collection('downloads').find({}).toArray();
+        const downloads = await db.collection(cfg.DB_COLLECTION_NAME).find({}).toArray();
         return downloads;
     } catch(err) {errSvc.exit(err, 1)};
   };
 
+exports.delete = async function(filename) {
+    await exports.getDownload(filename); // verify it exists before doing any work
+    await fileSvc.deleteFile('.' + cfg.DOWNLOAD_DIR.PATH + filename);
+    const result = await db.collection(cfg.DB_COLLECTION_NAME).findOneAndDelete(
+        {filename : filename}
+    );
+    if (result.lastErrorObject.n != 1) {
+        throw new Error('404 File not found in database.');
+    }
+    return result.value;
+}  
+
+// Set up Multer
+const multerConf = {
+    storage: multer.diskStorage({
+      destination: function(req, file, next) {
+        next(null, 'protected/downloads/');
+      },
+      filename: function(req, file, next) {
+        next(null, file.originalname);
+      }
+    })
+}
+const multerUpload = multer(multerConf).single('upload');
+exports.upload = function (req, res, next) {
+    // Middleware function to upload
+    let path = '';
+    multerUpload(req, res, function (err) {
+        if (err) {
+        console.log(err);
+        return res.status(422).send('Error uploading file.');
+        }
+        next();
+//        return res.status(200).json({success: 'Upload completed for ' + path});
+    });
+}
+
 saveDataToDB = async function (collection, data) {
     try { 
-        if (0 != await db.collection(collection).find({_id : 0}).limit(1).count()) {// already exists
+        if (0 < await db.collection(collection).count()) {// already exists
             await db.collection(collection).drop(); // wipe it out.
         }
         await db.collection(collection).insertMany(data);
@@ -50,15 +116,15 @@ buildDownloads = async function (files) {
     let downloads = [];
     index = 0;
     for (let i=0;i<files.length;i++) {
-        const file = files[i].filename;
-        const size = files[i].size;
+        const filename = files[i].filename;
         let fileObject = {};
         fileObject._id = i;
-        fileObject.filename = file;
-        fileObject.fullPath = cfg.DOWNLOAD_DIR.PATH + file;
-        fileObject.suffix = file.slice(file.lastIndexOf('.'));
+        fileObject.filename = filename;
+        fileObject.fullPath = cfg.DOWNLOAD_DIR.PATH + filename;
+        fileObject.suffix = filename.slice(filename.lastIndexOf('.'));
         fileObject.type = await getTypeDescription(fileObject.suffix.slice(1));
-        fileObject.size = humanFileSize(size, cfg.USE_SI_SIZE);
+        fileObject.size = files[i].size;
+        fileObject.sizeHR = humanFileSize(files[i].size, cfg.USE_SI_SIZE);
         fileObject.icon = 'fiv-viv fiv-icon-' + fileObject.suffix.slice(1);
         downloads.push(fileObject);
     }

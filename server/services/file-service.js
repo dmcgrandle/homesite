@@ -88,6 +88,10 @@ fSvc.downloadFiles = function(dir, testFunc) {
     });
 };
 
+fSvc.deleteFile = function(file) {
+    return fs.unlink(file);
+}
+
 filterDirsAndTestFunc = async function(path, files, testFunc) {
     let newFileObjectArray = [];
     for (const file of files) {

@@ -21,7 +21,11 @@ export class JwtInterceptor implements HttpInterceptor {
     return next.handle(newRequest)
       .pipe(
         tap(
-          event => {}, // called on each HttpEvent
+          event => { // called on each HttpEvent
+//            if (event instanceof HttpResponse) {
+//              // Do something with the response object
+//            }
+          }, 
           error => { // called on any error
             if (error.status === 401) {
               console.log('Need to log in again ...');

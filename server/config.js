@@ -16,6 +16,7 @@ cfg.tokenService = {
 
 // config for user-service
 cfg.userService = {
+    DB_COLLECTION_NAME: 'users',
     PW_SECRET: 'SuperSecret', // must match client/src/assets/config/config.prod.json -> login.password_secret
     SALT_ROUNDS: 8, // see "A Note on Rounds" here: https://www.npmjs.com/package/bcrypt before changing
     server_url: 'http://localhost:3000',
@@ -69,6 +70,7 @@ cfg.mediaService = {
 
 //config for download-service
 cfg.downloadService = {
+    DB_COLLECTION_NAME: 'downloads',
     DOWNLOAD_DIR : {
         PATH: '/protected/downloads/',
         CACHE_DIR: '.cache'

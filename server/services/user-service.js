@@ -19,13 +19,14 @@ const cryptoTS = require('crypto-ts');
 // Project Imports:
 const cfg = require('../config').userService;
 const tokenSvc = require('./token-service');
+const errSvc = require('./err-service');
 
 // Set up db for database access:
 let db; // module scope needed, these variables are used throughout the module.
 (async function() { // set up module-scope variables asynchronously.
   try { // if errors then crash
     db = await require('./db-service');
-    if (0 === await db.collection('users').find({_id : 0}).limit(1).count()) {
+    if (0 === await db.collection(cfg.DB_COLLECTION_NAME).find({_id : 0}).limit(1).count()) {
       const defUsers = JSON.parse(await fs.readFile(cfg.default_users, 'utf8'));
       // Set up promise array to iterate through all defUsers and hash the passwords
       let pArray = [];
@@ -36,30 +37,29 @@ let db; // module scope needed, these variables are used throughout the module.
       for (let i=0;i<hashArray.length;i++) {
         defUsers[i].password = hashArray[i];
       }
-      const res = await db.collection('users').insertMany(defUsers);
+      const res = await db.collection(cfg.DB_COLLECTION_NAME).insertMany(defUsers);
       assert.equal(defUsers.length, res.insertedCount); // checking creation was successful   
       console.log(Date(Date.now()) + ' : created new "user" document in db.');
     }
   }
-  catch(err) {errAndExit(err, 1)}; 
+  catch(err) {errSvc.exit(err, 1)}; 
 })(); // IIFE 
 
 
 exports.getUser = async function(username) {
-  const userReturned = await db.collection('users').findOne({username : username});
+  const userReturned = await db.collection(cfg.DB_COLLECTION_NAME).findOne({username : username});
   if (!userReturned) throw new Error('404 Unknown User.  Please try another username or register a new user.');
   return userReturned;
 };
 
 exports.getUserById = async function(id) {
-  const userReturned = await db.collection('users').findOne({_id : id});
+  const userReturned = await db.collection(cfg.DB_COLLECTION_NAME).findOne({_id : id});
   if (!userReturned) throw new Error('404 Unknown User.  Please try another username or register a new user.');
   return userReturned;
 };
 
-
 exports.getUserByEmail = async function(user) {
-  const userReturned = await db.collection('users').findOne({email : user.email});
+  const userReturned = await db.collection(cfg.DB_COLLECTION_NAME).findOne({email : user.email});
   if (!userReturned) throw new Error('404 Email address not found, did you type it correctly?');
   return userReturned;
 };
@@ -75,7 +75,7 @@ exports.getLevel = async function(user) {
 };
 
 exports.getListSansPasswords = async function() {
-  const usersReturned = await db.collection('users').find({}).toArray();
+  const usersReturned = await db.collection(cfg.DB_COLLECTION_NAME).find({}).toArray();
   for (let i in usersReturned) { delete usersReturned[i].password; }
   return usersReturned;
 };
@@ -88,6 +88,13 @@ exports.isValidLevel = async function(user, level) {
   return true; // no errors thrown
 };
 
+exports.testLevelForUpload = function(req, res, next) {
+  // Middleware function to test the user level for upload
+    exports.isValidLevel(req.user, 3)
+        .then(() => next())
+        .catch(err => errSvc.processError(err, res));
+}
+
 exports.isValidPassword = async function(user) {
   const dbUser = await exports.getUser(user.username);
   if (!(await bcrypt.compare(decryptPw(user.password), dbUser.password))) {
@@ -97,7 +104,7 @@ exports.isValidPassword = async function(user) {
 };
 
 exports.isUnique = async function(user) {
-  const userReturned = await db.collection('users').findOne({username : user.username});
+  const userReturned = await db.collection(cfg.DB_COLLECTION_NAME).findOne({username : user.username});
   if (userReturned && (userReturned.level != 0)) { // it's okay if user found but deleted...
     throw new Error('403 Username already in use, please choose another one.');
   }
@@ -108,15 +115,15 @@ exports.create = async function(user) {
   if (await isValidData(user)) {
     user.level = 1; // Users are created inactive
     user.password = await bcrypt.hash(decryptPw(user.password), cfg.SALT_ROUNDS);
-    let userReturned = await db.collection('users').findOne({level : 0});
+    let userReturned = await db.collection(cfg.DB_COLLECTION_NAME).findOne({level : 0});
     if (!userReturned) { // no deleted users, so create a new one
-      let lastU = await db.collection('users').find().sort({_id: -1}).limit(1).next();
+      let lastU = await db.collection(cfg.DB_COLLECTION_NAME).find().sort({_id: -1}).limit(1).next();
       user._id = lastU._id + 1;
-      await db.collection('users').insertOne(user); 
+      await db.collection(cfg.DB_COLLECTION_NAME).insertOne(user); 
     }
     else { //update the existing deleted user with new info
       user._id = userReturned._id;
-      await db.collection('users').replaceOne({_id: user._id}, user);
+      await db.collection(cfg.DB_COLLECTION_NAME).replaceOne({_id: user._id}, user);
     }
   }
   delete user.password; // Delete password property so it isn't sent back
@@ -125,7 +132,7 @@ exports.create = async function(user) {
 
 exports.delete = async function(user) {
   if (user.username == "admin") throw new Error('403 Cannot delete admin user');
-  const result = await db.collection('users').findOneAndUpdate(
+  const result = await db.collection(cfg.DB_COLLECTION_NAME).findOneAndUpdate(
     {username : user.username},
     {$set: {level: 0}}
   );
@@ -138,7 +145,7 @@ exports.delete = async function(user) {
 exports.update = async function(user) {// user._id is the only uneditable field ...
   if (await isValidData(user)) {
     const userById = await exports.getUserById(user._id); // because the username may change ...
-    const userByUsername = await db.collection('users').findOne({username : user.username});
+    const userByUsername = await db.collection(cfg.DB_COLLECTION_NAME).findOne({username : user.username});
 //    const userByUsername = await exports.getUser(user.username);
     if (userByUsername && (userById._id !== userByUsername._id)) {
       throw new Error('403 Username already in use, please choose another one.');
@@ -148,7 +155,7 @@ exports.update = async function(user) {// user._id is the only uneditable field 
       } else {// keep the password the same
         user.password = userById.password;
       }
-      await db.collection('users').replaceOne({_id: user._id}, checkAndArrangeUserObject(user));
+      await db.collection(cfg.DB_COLLECTION_NAME).replaceOne({_id: user._id}, checkAndArrangeUserObject(user));
     }
     delete user.password; // Delete password property so it isn't sent back
     return user;
@@ -163,7 +170,7 @@ exports.changePassword = async function(changeByExisting, user) {
   else { // if changing by token then user.password has the new password in it.
     user.password = await bcrypt.hash(decryptPw(user.password), cfg.SALT_ROUNDS);
   }
-  const result = await db.collection('users').findOneAndUpdate(
+  const result = await db.collection(cfg.DB_COLLECTION_NAME).findOneAndUpdate(
     {username : user.username},
     {$set: {password: user.password}}
   );
@@ -231,9 +238,3 @@ checkAndArrangeUserObject = function(user) {
   newUser.level = user.level;
   return newUser;
 }
-
-errAndExit = function(err, code) {
-//  throw new Error('001 Error connecting to database');
-  console.log(err);
-  process.exit(code);
-};

@@ -1,38 +1,37 @@
 .download-container {
-
+    .dl-header-container {
+        h2 {
+            padding-left: .5vw;
+        }
+        .upload-icon {
+            padding-right: 1.5vw;
+        }
+    }
     table {
         width: 100%;
-
-        .clickable {
-            cursor: pointer;
-        }
-        
         .fiv-viv {
             font-size: 3em;
         }
-        
         .center-align {
             text-align: center;
         }
-
-        td {
-            .mat-icon {
-                font-size: 2em;
-            }
-        }
-
         .indent {
             padding-left: 2vw;
         }
-        
         th.right-align {
             padding-right: 6vw;
         }
-        
         .right-align {
             text-align: right;
             padding-right: 5vw;
         }
     }
+    .mat-icon {
+        font-size: 2em;
+    }
+    .clickable {
+        cursor: pointer;
+    }
+
 }
 

@@ -10,12 +10,13 @@ export class Directory { // This is a future class, currently unused
     dirIds: Array<number>;
     };
 
-export class File {
+export class DlFile {
     _id: number;              // id of this File
     filename: string;         // filename without path
     fullPath: string;         // full path with filename
     suffix: string;           // suffix of file (eg: .pdf, .zip, etc)
     type: string;             // file type
-    size: string;
-    icon: string;
+    size: number;             // file size in bytes
+    sizeHR: string;           // size in Human Readable string format
+    icon: string;             // icon from fiv-viv icons to display
     };

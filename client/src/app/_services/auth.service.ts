@@ -1,27 +1,23 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, pipe, of } from 'rxjs';
 import { tap, map, shareReplay } from 'rxjs/operators';
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse, HttpEvent, HttpParams, HttpRequest } from '@angular/common/http';
 import { AES } from 'crypto-ts';
 
 import { AppConfig } from '../app.config';
 import { PhotoAlbum, Photo } from '../_classes/photo-classes';
 import { User } from '../_classes/user-classes';
-import { File } from '../_classes/fs-classes';
+import { DlFile } from '../_classes/fs-classes';
 import { LoginResponse } from '../_classes/server-response-classes';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
 
-//  private _authenticated: BehaviorSubject<boolean> = new BehaviorSubject(false);
   user: User;
 
   constructor(private http: HttpClient,
               public   CFG: AppConfig) {
   // set up default starting values
-//  this.user = new User;
     if (!this.user && this.isAuthenticated()) {// user must have refreshed, so reset user
       this.user = new User;
       this.user.username = this.lastLoggedInUsername();
@@ -30,16 +26,8 @@ export class AuthService {
   }
 
   public isAuthenticated(): boolean {
-//    return this._authenticated.value;
     return !this.isLoginExpired();
   }
-
-/*
-  public setAuthenticated (value: boolean) {
-//    this._authenticated.next(value);
-    this._authenticated = value;
-  }
-*/
 
   public authLogin(): Observable<LoginResponse> {
     // before transmitting user object to server for authentication, encrypt pw
@@ -86,12 +74,27 @@ export class AuthService {
     return this.http.get<User[]>('/api/users/list');
   }
 
-  public authGetDownloads(): Observable<File[]> {
-    return this.http.get<File[]>('/api/downloads/list');
+  public authGetDownloads(): Observable<DlFile[]> {
+    return this.http.get<DlFile[]>('/api/downloads/list');
   }
 
-  public downloadFile(file: File): Observable<Blob> {
+  public downloadFile(file: DlFile): Observable<Blob> {
     return this.http.get(file.fullPath, {responseType: 'blob'})
+  }
+
+  public deleteFile(file: DlFile): Observable<DlFile> {
+    return this.http.delete<DlFile>('/api/downloads/' + file.filename)
+  }
+
+  public uploadFile(file: File): Observable<HttpEvent<any>> {
+    // Note - this returns an EVENT, so we can track progress
+    console.log('file is', file);
+    let formData = new FormData();
+    formData.append('upload', file);
+    const params = new HttpParams;
+    const options = {params: params, reportProgress: true};
+    const req = new HttpRequest('POST', '/api/downloads/upload', formData, options);
+    return this.http.request(req);
   }
 
   public getToken(): string {
