@@ -67,7 +67,10 @@ export class ChangePasswordComponent implements OnInit {
 
   successfulChange(user: User) {
     const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-      data: {alertMessage: 'Password changed for "' + user.username + '"'}
+      data: {
+        alertMessage: 'Password changed for "' + user.username + '"', 
+        hideCancel: true
+      }
     });
     dialogRef.afterClosed().subscribe(() => this.router.navigate(['/login']));
     console.log("Password changed for user: " + user.username);
@@ -76,7 +79,7 @@ export class ChangePasswordComponent implements OnInit {
   errorChange(err) {
     console.log(err);
     const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-      data: {alertMessage: err.error}
+      data: {alertMessage: err.error, hideCancel: false}
     });
     dialogRef.afterClosed().subscribe(() => this.router.navigate(['/login']));
   }

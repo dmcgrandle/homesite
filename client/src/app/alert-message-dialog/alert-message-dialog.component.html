@@ -1,15 +1,15 @@
 <div class="alert-message-container" fxLayoutAlign="center center">
   <div fxLayout="column">
-    <mat-toolbar class="toolbar" align="center">
-      <h3 >Note</h3>
+    <mat-toolbar class="toolbar">
+      <h3 >{{data.heading}}</h3>
     </mat-toolbar>
     <div mat-dialog-content>
       <p>{{data.alertMessage}}</p>
     </div>
     <div mat-dialog-actions>
-      <!-- <button mat-raised-button color="secondary" mat-dialog-close>Cancel</button> -->
+      <button *ngIf="!(data.hideCancel)" mat-raised-button color="secondary" mat-dialog-close>Cancel</button>
       <span class="fill-space"></span>
-      <button mat-raised-button type="submit" (click)="onOkClick()" color="primary" cdkFocusInitial>Ok</button>
+      <button mat-raised-button type="submit" (click)="onOkClick()" color="primary" cdkFocusInitial>{{data.okText}}</button>
     </div>
   </div>
 </div>

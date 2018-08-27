@@ -62,7 +62,7 @@ export class GalleryPhotoAlbumsComponent implements OnInit {
     const alertMessage = msg + err.error;
     const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
       width: '400px',
-      data: {alertMessage: alertMessage}
+      data: {alertMessage: alertMessage, hideCancel: true}
     });
     dialogRef.afterClosed().subscribe(result => {});
     console.log(err);

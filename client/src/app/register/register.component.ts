@@ -35,15 +35,18 @@ export class RegisterComponent implements OnInit {
       .subscribe(user => {
           const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
             width: '350px',
-            data: {alertMessage: 'User "' + user.username + '" was registered.\n' 
-              + 'Please allow a few days for the website administrator to activate this account.' }
+            data: {
+              alertMessage: 'User "' + user.username + '" was registered.\n' 
+              + 'Please allow a few days for the website administrator to activate this account.',
+              hideCancel: true 
+            }
           });
           dialogRef.afterClosed().subscribe(() => this.dialogRef.close());
         },
         (err)=> {
           const alertMessage = 'Error: ' + err.error;
           const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-            data: {alertMessage: alertMessage}
+            data: {alertMessage: alertMessage, hideCancel: true}
           });
           dialogRef.afterClosed().subscribe(() => {
             this.auth.user = new User; // start fresh after error

@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit {
         const alertMessage = 'Problem logging on: ' + err.error;
         const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
           width: '400px',
-          data: {alertMessage: alertMessage}
+          data: {alertMessage: alertMessage, hideCancel: true}
         });
         dialogRef.afterClosed().subscribe(result => {});
         console.log(err);
@@ -72,7 +72,7 @@ export class LoginComponent implements OnInit {
       (err)=> {
         const alertMessage = 'Email "' + this.auth.user['email'] + '" was not found!';
         const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-          data: {alertMessage: alertMessage}
+          data: {alertMessage: alertMessage, hideCancel: true}
         });
         dialogRef.afterClosed().subscribe(result => {});
       },

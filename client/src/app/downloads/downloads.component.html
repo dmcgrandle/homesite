@@ -7,11 +7,10 @@
       fxLayout="row"
       fxLayoutGap="5vw"
       fxLayoutAlign.gt-xs="none center"
-      fxLayout.xs="column"
+      fxLayout.xs="row wrap"
       fxLayoutAlign.xs="none center">
         <h2>Downloads</h2>
-
-        <mat-form-field fxFlexAlign="stretch">
+        <mat-form-field fxFlexOrder.xs="3"> <!-- In xs drop filter to its own row below upload -->
             <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
         </mat-form-field>
         <span class="fill-space"></span>

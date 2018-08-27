@@ -18,9 +18,8 @@ import { AuthService } from '../_services/auth.service';
 export class DownloadsComponent implements OnInit {
 
   loading$ = new BehaviorSubject<boolean>(true); // will be getting initial table
-  displayedColumns: string[] = ['fileId', 'downloadIcon', 'filename', 'icon', 'type', 'sizeHR'];
+  displayedColumns: string[];
   dataSource = new MatTableDataSource<DlFile>();
-
 
   @ViewChild(MatPaginator) paginator: MatPaginator; 
   @ViewChild(MatSort) sort: MatSort;
@@ -30,8 +29,15 @@ export class DownloadsComponent implements OnInit {
               private router: Router) {}
 
   ngOnInit() {
-    if (this.auth.lastLoggedInUserLevel() > 2) { // add the delete Icon if user level is high enough
-      this.displayedColumns = ['fileId', 'downloadIcon', 'deleteIcon', 'filename', 'icon', 'type', 'sizeHR'];
+    this.displayedColumns = ['fileId', 'downloadIcon'];
+    if (this.auth.lastLoggedInUserLevel() >= 3) { // add the delete Icon if user level is high enough
+      this.displayedColumns.push('deleteIcon');
+    }
+    if (window.innerWidth < 600) { // xs screensize, so only display a few icons
+      this.displayedColumns.shift(); // remove 'fieldId' on small screens
+      this.displayedColumns = this.displayedColumns.concat(['filename']);
+    } else { // add all columns on larger screens
+      this.displayedColumns = this.displayedColumns.concat(['filename', 'icon', 'type', 'sizeHR']);
     }
     this.dataSource.paginator = this.paginator;
     this.sort.sort(<MatSortable>{ id: 'filename', start: 'asc'});
@@ -52,18 +58,22 @@ export class DownloadsComponent implements OnInit {
   }
 
   onDeleteClicked(row) {
-    console.log('Delete clicked for:');
-    console.log(row);
-    this.auth.deleteFile(row).subscribe(
-      file => {
-        console.log('file deleted was ', file);
-        this.reloadDownloads();
-      }
-    )
+    const alertMessage = 'Are you certain you want to delete file "' + row.filename + '"?' ;
+    const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
+      width: '350px',
+      data: { heading: 'Warning!', alertMessage: alertMessage, hideCancel: false, okText: 'Yes' }
+    });
+    dialogRef.afterClosed().subscribe(() => { //assuming Ok was pressed...
+      this.auth.deleteFile(row).subscribe(
+        file => {
+          console.log('Deleted file '+ file.filename);
+          this.reloadDownloads();
+        }
+      )
+    });
   }
 
   uploadFile(event) {// Upload clicked and file selected
-    console.log('File is "' + event.target.files[0].name + '"');
     this.auth.uploadFile(event.target.files[0]).subscribe(
       event => { // called as upload progresses
         if (event.type == HttpEventType.UploadProgress) {
@@ -77,14 +87,6 @@ export class DownloadsComponent implements OnInit {
       err => console.log('Upload Error: ', err),
       () => console.log('Upload done.')
     )
-  }
-
-  onRowClicked(row) {
-    console.log(row);
-/*    const dialogRef = this.dialog.open(EditUserDialogComponent, {
-            width: '350px',
-            data: {user: row}
-          }); */
   }
 
   reloadDownloads() {
