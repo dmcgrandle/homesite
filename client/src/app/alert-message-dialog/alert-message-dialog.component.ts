@@ -4,8 +4,10 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 export interface DialogData {
   heading: string;        // heading at the top of the box.  Default is "Note"
   alertMessage: string;   // the message to display
-  hideCancel: boolean;    // whether to show the 'cancel' button or not
+  alertMessage2: string;  // an optional second line to display
+  showCancel: boolean;    // whether to show the 'cancel' button or not
   okText: string;         // text on the "Ok" button.  Default is "Ok"
+  cancelText: string;     // text on the "Cancel" button.  Default is "Cancel"
 }
 
 @Component({
@@ -19,24 +21,19 @@ export class AlertMessageDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: DialogData) { }
 
   ngOnInit() {
-    console.log(this.data);
     if (!this.data.heading) {
-      this.data.heading = "Note"; // default heading
+      this.data.heading = 'Note'; // default heading
     }
     if (!this.data.okText) {
-      this.data.okText = "Ok"; // default button text
+      this.data.okText = 'Ok';
     }
-    console.log(this.data);
+    if (!this.data.cancelText) {
+      this.data.cancelText = 'Cancel';
+    }
   }
 
-  onOkClick(): void {
-    console.log(this.data);
-    this.dialogRef.close();
-  }
-
-  onCancelClick() {
-    console.log(this.data);
-    this.dialogRef.close();
+  onOkClick(): void { // if cancel was clicked the return object won't be set
+    this.dialogRef.close({okClicked: true});
   }
 
 }

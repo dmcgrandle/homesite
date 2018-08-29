@@ -1242,7 +1242,7 @@ imb|IncrediMail
 imc|IncrediMail 
 imd|Caseware IDEA (GIS data file)
 imf|ImageForge/IconForge saved filtered brushes(IconForge ImageForge ImageForge PRO)
-img|Bitmap graphics (Ventura Publisher - GEM Paint)
+img|Disk Image (raw image of CD or disk)
 imm|IncrediMail Trash
 imn|IncrediMail Notifier
 imp|Spreadsheet (Lotus Improv)

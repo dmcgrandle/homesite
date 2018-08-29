@@ -45,14 +45,14 @@ export class EditUserDialogComponent implements OnInit {
         const alertMessage = 'User "' + userReturned.name + '" has been successfully updated.' ;
         const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
           width: '350px',
-          data: { heading: 'Success', alertMessage: alertMessage, hideCancel: true }
+          data: { heading: 'Success', alertMessage: alertMessage, showCancel: false }
         });
         dialogRef.afterClosed().subscribe(() => this.dialogRef.close());
       },
       (err)=> {
         const alertMessage = 'Error: ' + err.error;
         const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-          data: { alertMessage: alertMessage, hideCancel: true } });
+          data: { alertMessage: alertMessage, showCancel: false } });
         dialogRef.afterClosed().subscribe(() => {
           this.copyToDialogData(this.saveUser); // Restore initial state due to error
           this.dialogRef.close();

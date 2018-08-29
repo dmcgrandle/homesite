@@ -15,7 +15,7 @@ import { MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldMo
   MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatPaginatorModule,
   MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
   MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MatMenuModule, 
-  MatTableModule, MatSortModule } from '@angular/material';
+  MatTableModule, MatSortModule, MatProgressBarModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import 'hammerjs';
 
@@ -48,6 +48,7 @@ import { UrlHelperService } from './_services/url-helper.service';
 
 import { JwtInterceptor } from './_helpers/jwt-interceptor';
 import { SecurePipe } from './_helpers/secure.pipe';
+import { DownloadProgressBarComponent } from './download-progress-bar/download-progress-bar.component';
 
 
 @NgModule({
@@ -72,7 +73,8 @@ import { SecurePipe } from './_helpers/secure.pipe';
     DownloadsComponent,
     SecurePipe,
     ManageUsersComponent,
-    EditUserDialogComponent
+    EditUserDialogComponent,
+    DownloadProgressBarComponent
   ],
   imports: [
     AppRoutingModule,
@@ -85,7 +87,7 @@ import { SecurePipe } from './_helpers/secure.pipe';
     MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
     MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule,
     FlexLayoutModule, MatMenuModule, MatPaginatorModule, MatProgressSpinnerModule,
-    MatSortModule
+    MatSortModule, MatProgressBarModule
   ],
   providers: [
     AppConfig, {
@@ -105,7 +107,8 @@ import { SecurePipe } from './_helpers/secure.pipe';
     }
   ],
   entryComponents: [
-    RegisterComponent, ForgotDialogComponent, AlertMessageDialogComponent, EditUserDialogComponent
+    RegisterComponent, ForgotDialogComponent, AlertMessageDialogComponent, 
+    EditUserDialogComponent, DownloadProgressBarComponent
   ],
   bootstrap: [AppComponent]
 })

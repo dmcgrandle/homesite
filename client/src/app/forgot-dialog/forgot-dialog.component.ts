@@ -37,14 +37,14 @@ export class ForgotDialogComponent implements OnInit {
           "If you don't see it in a few minutes please check your SPAM folder." ;
         const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
           width: '400px',
-          data: {alertMessage: alertMessage, hideCancel: true}
+          data: {alertMessage: alertMessage, showCancel: false}
         });
         dialogRef.afterClosed().subscribe(result => {});
       },
       (err)=> {
         const alertMessage = 'Email "' + this.auth.user['email'] + '" was not found!';
         const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-          data: {alertMessage: alertMessage, hideCancel: true}
+          data: {alertMessage: alertMessage, showCancel: false}
         });
         dialogRef.afterClosed().subscribe(result => {});
       },

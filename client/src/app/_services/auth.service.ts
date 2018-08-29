@@ -88,7 +88,6 @@ export class AuthService {
 
   public uploadFile(file: File): Observable<HttpEvent<any>> {
     // Note - this returns an EVENT, so we can track progress
-    console.log('file is', file);
     let formData = new FormData();
     formData.append('upload', file);
     const params = new HttpParams;

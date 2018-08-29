@@ -33,7 +33,7 @@ exports.updateDownloadsDB = async function(file) {
         const lastDl = await db.collection(cfg.DB_COLLECTION_NAME).find().sort({_id: -1}).limit(1).next();
         let fileObject = {};
         fileObject._id = lastDl._id + 1;
-        fileObject.filename = file.filename;
+        fileObject.filename = file.filename; 
         fileObject.fullPath = '/' + file.path;
         fileObject.suffix = file.filename.slice(file.filename.lastIndexOf('.'));
         fileObject.type = await getTypeDescription(fileObject.suffix.slice(1));
@@ -67,7 +67,7 @@ exports.getList = async function() {
 
 exports.delete = async function(filename) {
     await exports.getDownload(filename); // verify it exists before doing any work
-    await fileSvc.deleteFile('.' + cfg.DOWNLOAD_DIR.PATH + filename);
+    await fileSvc.deleteFile('.' + cfg.DOWNLOAD_DIR.PATH + filename); 
     const result = await db.collection(cfg.DB_COLLECTION_NAME).findOneAndDelete(
         {filename : filename}
     );
@@ -90,8 +90,15 @@ const multerConf = {
 }
 const multerUpload = multer(multerConf).single('upload');
 exports.upload = function (req, res, next) {
+    req.on('aborted', () => {
+        console.log('Upload aborted by client.');
+    });
+    req.on('close', () => {
+        if (req.file) {
+            console.log(Date(Date.now()) + ' : File Uploaded: "' + req.file.filename + '"');
+        }
+    })
     // Middleware function to upload
-    let path = '';
     multerUpload(req, res, function (err) {
         if (err) {
         console.log(err);
