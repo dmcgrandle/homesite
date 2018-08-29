@@ -90,6 +90,7 @@ export class LoginComponent implements OnInit {
 
   openForgotDialog(): void {
     const dialogRef = this.dialog.open(ForgotDialogComponent, {
+      width: '460px',
       data: {name: this.auth.user['email']}
     });
   }

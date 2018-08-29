@@ -34,7 +34,7 @@ app.use('/api/downloads', downloadsRouter);
 
 
 // change default to handle all unknown requests by angular app - pass to index.html
-app.get('*', function(req,res) { res.sendFile('index.html', { root: 'public'})});
+app.get('*', function (req, res) { res.sendFile('index.html', { root: 'public' }) });
 
 /*
 app.all('*', function(req, res, next) {

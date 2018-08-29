@@ -83,16 +83,16 @@ export class DownloadsComponent implements OnInit {
     }
 
     uploadFile(event) {// Upload clicked and file selected
-        let progress = new BehaviorSubject<number>(0); // start with zero progress
+        let progress$ = new BehaviorSubject<number>(0); // start with zero progress
         const dialogRef = this.dialog.open(DownloadProgressBarComponent, {
             width: '360px',
-            data: { percentDone: progress }
+            data: { progress$: progress$ }
         });
         let upload = this.auth.uploadFile(event.target.files[0]).subscribe(
             event => { // called as upload progresses
                 if (event.type == HttpEventType.UploadProgress) {
                     const percentDone = Math.round(100 * event.loaded / event.total);
-                    progress.next(percentDone); // update progress bar via observable
+                    progress$.next(percentDone); // update progress bar via observable
 //                    console.log(`File is ${percentDone}% loaded.`);
                 } else if (event instanceof HttpResponse) { // All done!
                     console.log('Uploaded file :', event.body.filename);
@@ -103,7 +103,7 @@ export class DownloadsComponent implements OnInit {
             err => console.log('Upload Error: ', err)
         );
         dialogRef.afterClosed().subscribe(data => {
-            if (data && data.okClicked) {
+            if (data && data.stopClicked) {
                 upload.unsubscribe(); // abort the upload.
                 const message = 'Transfer was aborted.';
                 this.dialog.open(AlertMessageDialogComponent, {

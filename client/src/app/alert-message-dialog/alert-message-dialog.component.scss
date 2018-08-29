@@ -1,28 +1,28 @@
 .alert-message-container {
 //  min-width: 240px;
-  background-color: white;
-  border-radius: 5px;
-  border: 1px;
-  border-color: black;
-  border-style: ridge;
-  padding: 10px 10px 22px 10px;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px;
+    border-color: black;
+    border-style: ridge;
+    padding: 10px 10px 22px 10px;
 
-  h3 {
-    font-size: 25px;
-    flex: 1 1 auto;
-    text-align: center;
+    h3 {
+        font-size: 25px;
+        flex: 1 1 auto;
+        text-align: center;
     }
 
-  .message {
-    text-align: center;    
-  }
+    .message {
+        text-align: center;    
+    }
     
-  #message1 {
-    margin: 16px 0 0 0;
-  }
+    #message1 {
+        margin: 16px 0 0 0;
+    }
   
-  #message2 {
-    margin: 0 0 16px 0;
-  }
+    #message2 {
+        margin: 0 0 16px 0;
+    }
 
 }

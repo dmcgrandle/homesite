@@ -11,11 +11,13 @@ import { APP_INITIALIZER } from '@angular/core';
 //import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 //import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
-  MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatPaginatorModule,
-  MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
-  MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MatMenuModule, 
-  MatTableModule, MatSortModule, MatProgressBarModule } from '@angular/material';
+import {
+    MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
+    MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatPaginatorModule,
+    MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
+    MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MatMenuModule,
+    MatTableModule, MatSortModule, MatProgressBarModule
+} from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import 'hammerjs';
 
@@ -52,68 +54,68 @@ import { DownloadProgressBarComponent } from './download-progress-bar/download-p
 
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HeaderComponent,
-    FooterComponent,
-    LoginComponent,
-    AlertMessageDialogComponent,
-    RegisterComponent,
-    EqualDirective,
-    ForgotDialogComponent,
-    ChangePasswordComponent,
-    GalleryComponent,
-    GalleryPhotoAlbumsComponent,
-    GalleryPhotoPhotosComponent,
-    GalleryVideoAlbumsComponent,
-    GalleryVideoVideosComponent,
-    GalleryVideoVideoComponent,
-    PageNotFoundComponent,
-    AboutComponent,
-    DownloadsComponent,
-    SecurePipe,
-    ManageUsersComponent,
-    EditUserDialogComponent,
-    DownloadProgressBarComponent
-  ],
-  imports: [
-    AppRoutingModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    HttpClientModule,
-    MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
-    MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatTableModule, 
-    MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
-    MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule,
-    FlexLayoutModule, MatMenuModule, MatPaginatorModule, MatProgressSpinnerModule,
-    MatSortModule, MatProgressBarModule
-  ],
-  providers: [
-    AppConfig, {
-      provide: APP_INITIALIZER,
-      useFactory: loadConfigDuringInit,
-      deps: [AppConfig],
-      multi: true
-    },
-    {
-      provide: OverlayContainer, 
-      useClass: FullscreenOverlayContainer
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: JwtInterceptor,
-      multi: true
-    }
-  ],
-  entryComponents: [
-    RegisterComponent, ForgotDialogComponent, AlertMessageDialogComponent, 
-    EditUserDialogComponent, DownloadProgressBarComponent
-  ],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        HeaderComponent,
+        FooterComponent,
+        LoginComponent,
+        AlertMessageDialogComponent,
+        RegisterComponent,
+        EqualDirective,
+        ForgotDialogComponent,
+        ChangePasswordComponent,
+        GalleryComponent,
+        GalleryPhotoAlbumsComponent,
+        GalleryPhotoPhotosComponent,
+        GalleryVideoAlbumsComponent,
+        GalleryVideoVideosComponent,
+        GalleryVideoVideoComponent,
+        PageNotFoundComponent,
+        AboutComponent,
+        DownloadsComponent,
+        SecurePipe,
+        ManageUsersComponent,
+        EditUserDialogComponent,
+        DownloadProgressBarComponent
+    ],
+    imports: [
+        AppRoutingModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        HttpClientModule,
+        MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
+        MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatTableModule,
+        MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
+        MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule,
+        FlexLayoutModule, MatMenuModule, MatPaginatorModule, MatProgressSpinnerModule,
+        MatSortModule, MatProgressBarModule
+    ],
+    providers: [
+        AppConfig, {
+            provide: APP_INITIALIZER,
+            useFactory: loadConfigDuringInit,
+            deps: [AppConfig],
+            multi: true
+        },
+        {
+            provide: OverlayContainer,
+            useClass: FullscreenOverlayContainer
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: JwtInterceptor,
+            multi: true
+        }
+    ],
+    entryComponents: [
+        RegisterComponent, ForgotDialogComponent, AlertMessageDialogComponent,
+        EditUserDialogComponent, DownloadProgressBarComponent
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }
 
 export function loadConfigDuringInit(appConfig: AppConfig) {
-  return () => appConfig.load();
+    return () => appConfig.load();
 }

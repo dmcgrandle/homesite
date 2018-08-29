@@ -2,8 +2,8 @@
     <mat-toolbar class="toolbar">
         <h3 >{{data.heading}}</h3>
     </mat-toolbar>
-    <mat-progress-bar mode="determinate" [value]="data.percentDone | async"></mat-progress-bar>
-    <p class="align-center">{{data.percentDone | async}}%</p>
+    <mat-progress-bar mode="determinate" [value]="data.progress$ | async"></mat-progress-bar>
+    <p class="align-center">{{data.progress$ | async}}%</p>
     <div mat-dialog-actions>
         <button mat-raised-button type="submit" (click)="onStopClick()" color="warn" cdkFocusInitial>{{data.stopText}}</button>
     </div>

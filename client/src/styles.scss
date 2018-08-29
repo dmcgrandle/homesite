@@ -17,17 +17,17 @@ $background-color-secondary: #1481BA;
 
 //override a setting from the prebuilt theme
 .mat-raised-button.mat-primary{
-  background-color: $background-color-secondary;
+    background-color: $background-color-secondary;
 };
 
 
 .fill-space {
-  flex: 1 1 auto;
+    flex: 1 1 auto;
 };
 
 .toolbar {
-  background-color: $background-color-secondary;
-  color: $text-color-floral-white;
-  border-radius: 5px;
-  margin-bottom: 15px;
+    background-color: $background-color-secondary;
+    color: $text-color-floral-white;
+    border-radius: 5px;
+    margin-bottom: 15px;
 };

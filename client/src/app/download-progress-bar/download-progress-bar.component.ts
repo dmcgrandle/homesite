@@ -1,11 +1,11 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialog, MatProgressBar, MatPaginator, MatSort, MatDialogRef, MAT_DIALOG_DATA, MatSortable} from '@angular/material';
+import { MatDialog, MatProgressBar, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { BehaviorSubject } from 'rxjs';
 
 export interface ProgressData {
     heading: string;                          // Heading for dialog box
     stopText: string;                         // Text to use for Stop button (default: 'STOP')
-    percentDone: BehaviorSubject<number>;     // Observable for stream of progress update events
+    progress$: BehaviorSubject<number>;       // Observable for progress updates
 }
 
 @Component({
@@ -28,7 +28,7 @@ export class DownloadProgressBarComponent implements OnInit {
     }
 
     onStopClick(): void {
-        this.dialogRef.close({okClicked: true});
+        this.dialogRef.close({stopClicked: true});
     }
 
 }

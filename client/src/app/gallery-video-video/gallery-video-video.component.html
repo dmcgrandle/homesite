@@ -1,5 +1,7 @@
-<div class="container" *ngIf="!loading" fxLayout="column" fxLayoutAlign.gt-xs="center center" fxLayoutAlign.xs="none none">
-    <video controls preload="auto" [src]="video.fullPath | secure" type="video/mp4" [poster]="video.posterPath | secure"></video>
+<div class="container" *ngIf="!loading" fxLayout="column" fxLayoutAlign.gt-xs="center center" 
+    fxLayoutAlign.xs="none none">
+    <video controls preload="auto" [src]="video.fullPath | secure" type="video/mp4" 
+        [poster]="video.posterPath | secure"></video>
     <h5 fxFlexAlign="center" *ngIf="!video.caption">{{video.filename}}</h5>
     <h5 fxFlexAlign="center" *ngIf="video.caption">{{video.caption}}</h5>
 </div>

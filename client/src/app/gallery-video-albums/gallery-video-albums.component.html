@@ -1,38 +1,36 @@
 <div *ngIf="displayAlbums">
-  <h2>Video Albums in {{media.curVideoAlbum.name}}:</h2>
-  
-  <div class="container" fxLayout="row wrap" fxLayoutGap="8px" fxLayoutAlign="space-evenly center">
-    <!-- If the album being displayed has both other albums AND videos then display an icon for these vids -->
-    <mat-card *ngIf="media.curVideoAlbum.videoIds.length > 0" (click)="navToVideos(media.curVideoAlbum)" 
-              fxFlex.xl="16.2%" fxFlex.lg="24.3%" fxFlex.md="32.4%" fxFlex.sm="48%" fxFlex.xs="98%"
-              fxLayout="column" fxLayoutAlign="start center" >  
-      <mat-card-header >
-        <mat-card-title>
-          <h3>View Videos in "{{media.curVideoAlbum.name}}"</h3>
-        </mat-card-title>
-        <mat-card-subtitle>{{media.curVideoAlbum.description}}</mat-card-subtitle>
-      </mat-card-header>
-      <img class="image" [src]='(media.curVideoAlbum.featuredMedia.posterPath) | secure'>
-    </mat-card>
-  <!-- Now loop through displaying all the albums in this album. -->
-    <mat-card #cardE *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)" 
-              fxFlex.xl="16.2%" fxFlex.lg="24.3%" fxFlex.md="32.4%" fxFlex.sm="48%" fxFlex.xs="98%"
-              fxLayout="column" fxLayoutAlign="start center">
-      <mat-card-header>
-        <mat-card-title>
-          <h3>{{album.name}}</h3>
-        </mat-card-title>
-        <mat-card-subtitle>{{album.description}}</mat-card-subtitle>
-      </mat-card-header>
-      <!-- [ngStyle]="{'max-height.px': imgSquare2.offsetWidth+48}" -->
-      <img class="image" *ngIf='album.featuredMedia.filename' [src]='(album.featuredMedia.posterPath) | secure'>
-    </mat-card>
-  </div>
+    <h2>Video Albums in {{media.curVideoAlbum.name}}:</h2>
+
+    <div class="container" fxLayout="row wrap" fxLayoutGap="8px" fxLayoutAlign="space-evenly center">
+        <!-- If the album being displayed has both other albums AND videos then display an icon for these vids -->
+        <mat-card *ngIf="media.curVideoAlbum.videoIds.length > 0" (click)="navToVideos(media.curVideoAlbum)" 
+            fxFlex.xl="16.2%" fxFlex.lg="24.3%" fxFlex.md="32.4%" fxFlex.sm="48%" fxFlex.xs="98%" 
+            fxLayout="column" fxLayoutAlign="start center">
+            <mat-card-header>
+                <mat-card-title>
+                    <h3>View Videos in "{{media.curVideoAlbum.name}}"</h3>
+                </mat-card-title>
+                <mat-card-subtitle>{{media.curVideoAlbum.description}}</mat-card-subtitle>
+            </mat-card-header>
+            <img class="image" [src]='(media.curVideoAlbum.featuredMedia.posterPath) | secure'>
+        </mat-card>
+        <!-- Now loop through displaying all the albums in this album. -->
+        <mat-card #cardE *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)" 
+            fxFlex.xl="16.2%" fxFlex.lg="24.3%" fxFlex.md="32.4%" fxFlex.sm="48%" fxFlex.xs="98%" 
+            fxLayout="column" fxLayoutAlign="start center">
+            <mat-card-header>
+                <mat-card-title>
+                    <h3>{{album.name}}</h3>
+                </mat-card-title>
+                <mat-card-subtitle>{{album.description}}</mat-card-subtitle>
+            </mat-card-header>
+            <!-- [ngStyle]="{'max-height.px': imgSquare2.offsetWidth+48}" -->
+            <img class="image" *ngIf='album.featuredMedia.filename' [src]='(album.featuredMedia.posterPath) | secure'>
+        </mat-card>
+    </div>
 </div>
 
 <div *ngIf="!displayAlbums">
-  <p>Waiting on server ...</p>
-  <mat-spinner></mat-spinner>
+    <p>Waiting on server ...</p>
+    <mat-spinner></mat-spinner>
 </div>
-
-  

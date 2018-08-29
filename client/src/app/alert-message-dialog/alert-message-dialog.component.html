@@ -1,6 +1,6 @@
 <div class="alert-message-container" fxLayoutAlign="center center" fxLayout="column">
     <mat-toolbar class="toolbar">
-        <h3 >{{data.heading}}</h3>
+        <h3>{{data.heading}}</h3>
     </mat-toolbar>
     <div mat-dialog-content>
         <p class="message" id="message1">{{data.alertMessage}}</p>
@@ -9,7 +9,7 @@
     <div mat-dialog-actions fxFlexAlign="stretch">
         <button *ngIf="data.showCancel" mat-raised-button color="secondary" mat-dialog-close>{{data.cancelText}}</button>
         <span class="fill-space"></span>
-        <button  mat-raised-button type="submit" (click)="onOkClick()" color="primary" cdkFocusInitial>
+        <button mat-raised-button type="submit" (click)="onOkClick()" color="primary" cdkFocusInitial>
             {{data.okText}}
         </button>
     </div>

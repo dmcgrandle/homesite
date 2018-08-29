@@ -11,10 +11,10 @@ var tokenSvc = require('../services/token-service');
 
 // middleware that is specific to this router:
 // First middleware is a logger
-router.use(function timeLog (req, res, next) {
-  console.log('Accessing Protected Resource - Time: ', Date(Date.now()));
-  next();
-}); 
+router.use(function timeLog(req, res, next) {
+    console.log('Accessing Protected Resource - Time: ', Date(Date.now()));
+    next();
+});
 // This is the authentication check for the protected files
 router.use(tokenSvc.middlewareCheck());
 // Last middleware: serve all files here statically.  Note the need for '..'
@@ -26,12 +26,12 @@ router.use(express.static(path.join(__dirname, '..', 'protected')));
 
 // If the static serve doesn't work, then throw an error.  TODO: implement as error
 router.all('*', function (req, res, next) {
-  console.log('Whoops!  This should have been served statically ...');
-  console.log('req.originalUrl: ' + req.originalUrl);
-  console.log('req.baseUrl: ' + req.baseUrl);
-  console.log('req.path: ' + req.path);
-  console.log('__dirname: ' + __dirname);
-  next();
+    console.log('Whoops!  This should have been served statically ...');
+    console.log('req.originalUrl: ' + req.originalUrl);
+    console.log('req.baseUrl: ' + req.baseUrl);
+    console.log('req.path: ' + req.path);
+    console.log('__dirname: ' + __dirname);
+    next();
 });
 
 module.exports = router;

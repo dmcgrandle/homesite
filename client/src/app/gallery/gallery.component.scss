@@ -1,18 +1,18 @@
 img {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 mat-card {
-  border-radius: 5px;
-  border: 1px;
-  border-color: black;
-  border-style: ridge;
-  padding: 10px;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px;
+    border-color: black;
+    border-style: ridge;
+    padding: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 [mat-card-image] { // had to override material design defaults
-  margin: 0;
-  width: 100%;
+    margin: 0;
+    width: 100%;
 }
