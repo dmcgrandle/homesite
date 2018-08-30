@@ -35,8 +35,9 @@ const appRoutes: Routes = [
         { path: '**', component: GalleryVideoVideoComponent}
     ]},
     { path: 'downloads', component: DownloadsComponent },
-    { path: 'changepass/:username/:token', component: ChangePasswordComponent },
+    { path: 'downloads/:download', component: DownloadsComponent },
     { path: 'changepass', component: ChangePasswordComponent },
+    { path: 'changepass/:username/:token', component: ChangePasswordComponent },
     { path: 'manage', component: ManageUsersComponent },
     { path: 'about', component: AboutComponent },
     { path: 'login', component: LoginComponent },

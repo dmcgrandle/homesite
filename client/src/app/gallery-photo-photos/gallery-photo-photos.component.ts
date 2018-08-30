@@ -4,6 +4,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { VERSION } from '@angular/material';
 
 import { MediaService } from '../_services/media.service';
+import { AuthService } from '../_services/auth.service';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
 import { FullscreenOverlayContainer } from '../../../node_modules/@angular/cdk/overlay';
 import { Photo } from '../_classes/photo-classes';
@@ -22,6 +23,7 @@ export class GalleryPhotoPhotosComponent implements OnInit {
     curPhotoIndex: number;
 
     constructor(private media: MediaService,
+        private auth: AuthService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog) { }
@@ -33,8 +35,12 @@ export class GalleryPhotoPhotosComponent implements OnInit {
         if (this.media.curPhotoAlbum) {
             this.setCurrentValues(this.media.curPhotoAlbum.photoIds);
         } else {// We need to load the curAlbum from the url sent.
+            this.auth.setAttemptedURL(this.router.url); // store this in case we need to be logged in
             this.media.getPhotoAlbumByURL(this.route.url).subscribe(
-                (album) => this.setCurrentValues(album.photoIds),
+                (album) => {
+                    this.setCurrentValues(album.photoIds);
+                    this.auth.clearAttemptedURL();
+                },
                 (err) => this.errAlert('Problem getting albums!', err)
             );
         }

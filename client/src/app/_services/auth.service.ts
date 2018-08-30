@@ -125,6 +125,19 @@ export class AuthService {
         this.user = new User;
     }
 
+    public setAttemptedURL(url: string) {
+        localStorage.setItem('attemptedURL', url);
+    }
+
+    public getAttemptedURL(): string {
+        return localStorage.getItem('attemptedURL');
+    }
+
+    public clearAttemptedURL() {
+        localStorage.removeItem('attemptedURL');
+    }
+
+
     private encryptPass(password) {
         return AES.encrypt(password, this.CFG.const.auth.password_secret).toString();
     }

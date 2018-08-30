@@ -19,6 +19,9 @@
         </mat-icon>
     </div>
 
+    <!-- This is a textarea used by the Link Icon logic to copy link info to the clipboard -->
+    <!-- <textarea [hidden]="hideClipArea" rows="0" cols="0" name="clipArea" (change)="copyToClipboard()" #clipArea></textarea> -->
+
     <div>
         <!-- container for table and paginator -->
         <table mat-table matSort [dataSource]="dataSource">
@@ -47,7 +50,16 @@
                 </td>
             </ng-container>
 
-            <!-- Filename Column -->
+            <!-- Link Icon Column -->
+            <ng-container matColumnDef="linkIcon">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell class="clickable center-align" *matCellDef="let row" matTooltip="Link to send to others to download this item"
+                    matTooltipPosition="right" matTooltipShowDelay="1000">
+                    <mat-icon (click)="onLinkClicked(row, clipArea)">link</mat-icon>
+                </td>
+            </ng-container>
+    
+                <!-- Filename Column -->
             <ng-container matColumnDef="filename">
                 <th mat-header-cell class="indent" *matHeaderCellDef mat-sort-header> Filename </th>
                 <td mat-cell class="indent" *matCellDef="let file"> {{file.filename}} </td>

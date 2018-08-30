@@ -6,6 +6,8 @@ import { MediaService } from '../_services/media.service';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
 import { FullscreenOverlayContainer } from '../../../node_modules/@angular/cdk/overlay';
 import { Video } from '../_classes/video-classes';
+import { AuthService } from '../_services/auth.service';
+
 
 @Component({
     selector: 'app-gallery-video-video',
@@ -18,6 +20,7 @@ export class GalleryVideoVideoComponent implements OnInit {
     loading: boolean = true;
 
     constructor(private media: MediaService,
+        private auth: AuthService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog) { }
@@ -37,10 +40,12 @@ export class GalleryVideoVideoComponent implements OnInit {
             console.log(this.video);
             this.loading = false;
         } else {// We need to load video from the url sent.
+            this.auth.setAttemptedURL(this.router.url); // store this in case we need to be logged in
             this.media.getVideoByURL(this.route.url).subscribe(
                 (video) => {
                     this.video = video;
                     this.loading = false;
+                    this.auth.clearAttemptedURL();
                     console.log('video is:');
                     console.log(video);
                 },
