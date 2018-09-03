@@ -16,7 +16,7 @@ import {
     MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatPaginatorModule,
     MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
     MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MatMenuModule,
-    MatTableModule, MatSortModule, MatProgressBarModule
+    MatTableModule, MatSortModule, MatProgressBarModule, MatTabsModule
 } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import 'hammerjs';
@@ -89,7 +89,7 @@ import { DownloadProgressBarComponent } from './download-progress-bar/download-p
         MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
         MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule,
         FlexLayoutModule, MatMenuModule, MatPaginatorModule, MatProgressSpinnerModule,
-        MatSortModule, MatProgressBarModule
+        MatSortModule, MatProgressBarModule, MatTabsModule
     ],
     providers: [
         AppConfig, {

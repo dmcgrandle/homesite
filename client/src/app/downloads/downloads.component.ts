@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild, ViewChildren, HostListener } from '@angul
 import { HttpClient, HttpParams, HttpRequest, HttpEvent, HttpEventType, HttpResponse } from '@angular/common/http';
 import { MatDialog, MatTableDataSource, MatPaginator, MatSort, MatDialogRef, MAT_DIALOG_DATA, MatSortable } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { saveAs } from 'file-saver';
 
@@ -20,11 +19,10 @@ import { AuthService } from '../_services/auth.service';
 })
 export class DownloadsComponent implements OnInit {
 
-    loading$ = new BehaviorSubject<boolean>(true); // will be getting initial table
+    loading$ = new BehaviorSubject<boolean>(true);
     displayedColumns: string[];
     dataSource = new MatTableDataSource<DlFile>();
     dlFilename: string;
-    // hideClipArea: boolean = true;
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
@@ -33,14 +31,12 @@ export class DownloadsComponent implements OnInit {
         private auth: AuthService,
         public dialog: MatDialog,
         private route: ActivatedRoute,
-        private router: Router,
-        private location: Location) { }
+        private router: Router) { }
 
     ngOnInit() {
         // This component can be called:
         // 1. with a specified download in the URL, so simply download to the user
         // 2. without a specified download, so display all downloads available
-        console.log('current url is ' + this.router.url);
         this.dlFilename = this.route.snapshot.paramMap.get('download');
         if (this.dlFilename) { // method 1
             this.auth.setAttemptedURL(this.router.url); // store this in case we need to be logged in
@@ -97,20 +93,19 @@ export class DownloadsComponent implements OnInit {
 
     onLinkClicked(file: DlFile) {
         // This whole function is such a hack.  It's amazing there isn't a better way
-        // to access the clipboard...
+        // to access the clipboard in Angular ...
         let url = document.URL + this.router.createUrlTree([file.filename]).toString();
-        // create a "fake" textarea we can copy to clipboard from
+        // create a "fake" textarea to store text and then copy to clipboard from
         let clipArea = document.createElement('textarea');
         clipArea.style.position = 'fixed'; // out of the flow
         clipArea.style.left = '0';
         clipArea.style.top = '0';
         clipArea.style.opacity = '0'; // so there is no flicker
-        clipArea.textContent = url;
+        clipArea.textContent = url; // store text in the fake
         document.body.appendChild(clipArea);
-//        clipArea.focus();
-        clipArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(clipArea);
+        clipArea.select(); // select the fake text to be copied 
+        document.execCommand('copy'); // finally actually copy to clipboard!
+        document.body.removeChild(clipArea); // get rid of the fake
         this.dialog.open(AlertMessageDialogComponent, {
             data: {
                 heading: 'Link',
@@ -156,7 +151,7 @@ export class DownloadsComponent implements OnInit {
                 if (event.type == HttpEventType.UploadProgress) {
                     const percentDone = Math.round(100 * event.loaded / event.total);
                     progress$.next(percentDone); // update progress bar via observable
-                    //                    console.log(`File is ${percentDone}% loaded.`);
+                    // console.log(`File is ${percentDone}% loaded.`);
                 } else if (event instanceof HttpResponse) { // All done!
                     console.log('Uploaded file :', event.body.filename);
                     this.reloadDownloads();
