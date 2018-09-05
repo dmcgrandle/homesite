@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { tap, shareReplay } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpResponse, HttpEvent, HttpParams, HttpRequest } from '@angular/common/http';
@@ -11,18 +12,30 @@ import { DlFile } from '../_classes/fs-classes';
 import { LoginResponse } from '../_classes/server-response-classes';
 
 @Injectable({ providedIn: 'root' })
-export class AuthService {
+export class AuthService implements CanActivate {
 
     user: User;
 
     constructor(private http: HttpClient,
-        public CFG: AppConfig) {
+        public CFG: AppConfig,
+        private router: Router) {
         // set up default starting values
         if (!this.user && this.isAuthenticated()) {// user must have refreshed, so reset user
             this.user = new User;
             this.user.username = this.lastLoggedInUsername();
             this.user.level = this.lastLoggedInUserLevel();
         }
+    }
+
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+        // This is used as a route guard in the app-routing.module component
+        // It checks to see if a user is logged in or not, saving URL if not.
+        if (this.isAuthenticated()) {
+            return true;
+        }
+        this.setAttemptedURL(state.url); // save URL user was trying to nav to ...
+        this.router.navigate(['/login']);
+        return false;
     }
 
     public isAuthenticated(): boolean {

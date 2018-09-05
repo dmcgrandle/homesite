@@ -39,12 +39,8 @@ export class DownloadsComponent implements OnInit {
         // 2. without a specified download, so display all downloads available
         this.dlFilename = this.route.snapshot.paramMap.get('download');
         if (this.dlFilename) { // method 1
-            this.auth.setAttemptedURL(this.router.url); // store this in case we need to be logged in
             this.auth.downloadFile(<DlFile>{fullPath: '/protected/downloads/' + this.dlFilename}).subscribe(
-                blob => {
-                    saveAs(blob, this.dlFilename);
-                    this.auth.clearAttemptedURL(); // we succeeded to save the file, so clear the attempt
-                },
+                blob => saveAs(blob, this.dlFilename),
                 err => console.log(err),
                 () => console.log('Downloaded file: ' + this.dlFilename)
             );

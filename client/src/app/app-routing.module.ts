@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { AuthService } from './_services/auth.service';
 import { LoginComponent } from './login/login.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { ManageUsersComponent } from './manage-users/manage-users.component';
@@ -16,30 +17,30 @@ import { DownloadsComponent } from './downloads/downloads.component';
 
 
 const appRoutes: Routes = [
-    { path: 'gallery', component: GalleryComponent },
-    { path: 'photoAlbums', component: GalleryPhotoAlbumsComponent }, 
+    { path: 'gallery', component: GalleryComponent, canActivate: [AuthService] },
+    { path: 'photoAlbums', component: GalleryPhotoAlbumsComponent, canActivate: [AuthService] }, 
     { path: 'photoAlbums', children: [
-        { path: '**', component: GalleryPhotoAlbumsComponent}
+        { path: '**', component: GalleryPhotoAlbumsComponent, canActivate: [AuthService]}
     ]},
     { path: 'photos', children: [
-        { path: '**', component: GalleryPhotoPhotosComponent}
+        { path: '**', component: GalleryPhotoPhotosComponent, canActivate: [AuthService]}
     ]},
-    { path: 'videoAlbums', component: GalleryVideoAlbumsComponent },
+    { path: 'videoAlbums', component: GalleryVideoAlbumsComponent, canActivate: [AuthService] },
     { path: 'videoAlbums', children: [
-        { path: '**', component: GalleryVideoAlbumsComponent}
+        { path: '**', component: GalleryVideoAlbumsComponent, canActivate: [AuthService]}
     ]},
     { path: 'videos', children: [
-        { path: '**', component: GalleryVideoVideosComponent}
+        { path: '**', component: GalleryVideoVideosComponent, canActivate: [AuthService]}
     ]},
     { path: 'video', children: [
-        { path: '**', component: GalleryVideoVideoComponent}
+        { path: '**', component: GalleryVideoVideoComponent, canActivate: [AuthService]}
     ]},
-    { path: 'downloads', component: DownloadsComponent },
-    { path: 'downloads/:download', component: DownloadsComponent },
-    { path: 'changepass', component: ChangePasswordComponent },
+    { path: 'downloads', component: DownloadsComponent, canActivate: [AuthService] },
+    { path: 'downloads/:download', component: DownloadsComponent, canActivate: [AuthService] },
+    { path: 'changepass', component: ChangePasswordComponent, canActivate: [AuthService] },
     { path: 'changepass/:username/:token', component: ChangePasswordComponent },
-    { path: 'manage', component: ManageUsersComponent },
-    { path: 'about', component: AboutComponent },
+    { path: 'manage', component: ManageUsersComponent, canActivate: [AuthService] },
+    { path: 'about', component: AboutComponent, canActivate: [AuthService] },
     { path: 'login', component: LoginComponent },
     { path: '', redirectTo: 'login', pathMatch: 'full' },
     { path: '**', component: PageNotFoundComponent }

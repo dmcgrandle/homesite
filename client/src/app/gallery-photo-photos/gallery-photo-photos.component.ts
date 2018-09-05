@@ -23,7 +23,6 @@ export class GalleryPhotoPhotosComponent implements OnInit {
     curPhotoIndex: number;
 
     constructor(private media: MediaService,
-        private auth: AuthService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog) { }
@@ -35,12 +34,8 @@ export class GalleryPhotoPhotosComponent implements OnInit {
         if (this.media.curPhotoAlbum) {
             this.setCurrentValues(this.media.curPhotoAlbum.photoIds);
         } else {// We need to load the curAlbum from the url sent.
-            this.auth.setAttemptedURL(this.router.url); // store this in case we need to be logged in
             this.media.getPhotoAlbumByURL(this.route.url).subscribe(
-                (album) => {
-                    this.setCurrentValues(album.photoIds);
-                    this.auth.clearAttemptedURL();
-                },
+                (album) => this.setCurrentValues(album.photoIds),
                 (err) => this.errAlert('Problem getting albums!', err)
             );
         }

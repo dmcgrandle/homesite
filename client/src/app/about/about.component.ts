@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-//import { MatTab } from '@angular/material';
 
 import { AppConfig } from '../app.config';
 
@@ -9,11 +8,16 @@ import { AppConfig } from '../app.config';
     styleUrls: ['./about.component.scss'],
     encapsulation: ViewEncapsulation.None // Had to turn off to style the .mat-tab-label height in scss
 })
-export class AboutComponent implements OnInit {
+export class AboutComponent {
+
+    step: number = 0;           // For the accordian selection
 
     constructor(public CFG: AppConfig) { }
 
-    ngOnInit() {
-    }
 
+    
+    setStep(index: number) {
+        this.step = index;
+    }
+    
 }
