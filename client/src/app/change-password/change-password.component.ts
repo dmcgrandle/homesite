@@ -26,7 +26,7 @@ export class ChangePasswordComponent implements OnInit {
 
     token: string;
 
-    constructor(private auth: AuthService,
+    constructor(public auth: AuthService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog) { }

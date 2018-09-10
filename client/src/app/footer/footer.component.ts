@@ -10,7 +10,7 @@ import { AppConfig } from '../app.config';
 })
 export class FooterComponent implements OnInit {
 
-    constructor(private auth: AuthService,
+    constructor(public auth: AuthService,
         public CFG: AppConfig) { }
 
     ngOnInit() {

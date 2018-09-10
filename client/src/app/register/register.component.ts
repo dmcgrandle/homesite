@@ -21,7 +21,7 @@ export class RegisterComponent implements OnInit {
     hidePass: boolean = true;
     hideRetype: boolean = true;
 
-    constructor(private auth: AuthService,
+    constructor(public auth: AuthService,
         public dialogRef: MatDialogRef<RegisterComponent>,
         public dialog: MatDialog,
         @Inject(MAT_DIALOG_DATA) public data: DialogData) { }

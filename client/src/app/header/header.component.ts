@@ -11,7 +11,7 @@ import { AppConfig } from '../app.config';
 })
 export class HeaderComponent implements OnInit {
 
-    constructor(private auth: AuthService, public CFG: AppConfig) { }
+    constructor(public auth: AuthService, public CFG: AppConfig) { }
 
     ngOnInit() {
 

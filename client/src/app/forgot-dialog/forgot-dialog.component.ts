@@ -19,8 +19,7 @@ export class ForgotDialogComponent implements OnInit {
     token: string;
     error: boolean = false;
 
-    constructor(
-        private auth: AuthService,
+    constructor(public auth: AuthService,
         public dialogRef: MatDialogRef<ForgotDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: DialogData,
         private activatedRoute: ActivatedRoute,

@@ -19,7 +19,7 @@ export class LoginComponent implements OnInit {
     hide: boolean = true;
 
     constructor(public CFG: AppConfig,
-        private auth: AuthService,
+        public auth: AuthService,
         public dialog: MatDialog,
         private router: Router) { }
 

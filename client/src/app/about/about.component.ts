@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 
 import { AppConfig } from '../app.config';
 
@@ -14,8 +14,6 @@ export class AboutComponent {
 
     constructor(public CFG: AppConfig) { }
 
-
-    
     setStep(index: number) {
         this.step = index;
     }

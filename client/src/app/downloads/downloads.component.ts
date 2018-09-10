@@ -28,7 +28,7 @@ export class DownloadsComponent implements OnInit {
     @ViewChild(MatSort) sort: MatSort;
 
     constructor(public CFG: AppConfig,
-        private auth: AuthService,
+        public auth: AuthService,
         public dialog: MatDialog,
         private route: ActivatedRoute,
         private router: Router) { }

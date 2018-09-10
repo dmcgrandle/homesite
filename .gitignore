@@ -41,6 +41,7 @@ server/public/*
 
 # misc
 /server/keys
+config/keys
 /.sass-cache
 /connect.lock
 /coverage
