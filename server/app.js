@@ -3,7 +3,7 @@
 // Imports:
 const express = require('express');
 const path = require('path');
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 // Set up routers:
@@ -20,10 +20,10 @@ const app = express();
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-//app.use(cookieParser());
+// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-//app.use(express.static(path.join(__dirname, '../mcg/dist/mcg')));
-//app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, '../mcg/dist/mcg')));
+// app.use(express.static(path.join(__dirname, 'public')));
 
 // Use Routers:
 app.use('/protected', protectedRouter);
@@ -34,7 +34,7 @@ app.use('/api/downloads', downloadsRouter);
 
 
 // change default to handle all unknown requests by angular app - pass to index.html
-app.get('*', function (req, res) { res.sendFile('index.html', { root: 'public' }) });
+app.get('*', (req, res) => res.sendFile('index.html', { root: 'public' }));
 
 /*
 app.all('*', function(req, res, next) {
