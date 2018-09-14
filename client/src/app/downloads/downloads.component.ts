@@ -71,7 +71,14 @@ export class DownloadsComponent implements OnInit {
         this.auth.downloadFile(file).subscribe(
             blob => saveAs(blob, file.filename),
             err => console.log(err),
-            () => console.log('Downloaded file: ' + file.filename)
+            () =>  this.dialog.open(AlertMessageDialogComponent, {
+                data: {
+                    heading: 'Download Complete',
+                    alertMessage: 'You downloaded the file:',
+                    alertMessage2: file.filename,
+                    showCancel: false,
+                }
+            })
         );
     }
 
@@ -86,6 +93,9 @@ export class DownloadsComponent implements OnInit {
         // this.hideClipArea = true;
     }
 
+    onNameClicked(file: DlFile) {
+        console.log(file);
+    }
 
     onLinkClicked(file: DlFile) {
         // This whole function is such a hack.  It's amazing there isn't a better way

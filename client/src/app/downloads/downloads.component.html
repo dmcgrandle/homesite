@@ -62,7 +62,7 @@
                 <!-- Filename Column -->
             <ng-container matColumnDef="filename">
                 <th mat-header-cell class="indent" *matHeaderCellDef mat-sort-header> Filename </th>
-                <td mat-cell class="indent" *matCellDef="let file"> {{file.filename}} </td>
+                <td mat-cell class="indent" *matCellDef="let file" (click)="onNameClicked(file)"> {{file.filename}} </td>
             </ng-container>
 
             <!-- Icon Column -->

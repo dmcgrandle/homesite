@@ -14,6 +14,9 @@
 /server/public
 server/public/*
 
+# jest coverage data
+server/coverage
+
 # test .jpgs and .mp4s
 /server/protected/images
 /server/protected/videos

@@ -13,15 +13,13 @@ const cfg = require('../config').dbService;
 // syntax makes it more clear that this module returns a promise and
 // exactly what it resolves to.
 exports.database = new Promise((resolve, reject) => {
-  try {
-    mongoClient.connect(cfg.db_url).then((client) => {
+  mongoClient.connect(cfg.db_url)
+    .then((client) => {
       console.log(Date(Date.now()) + ' : Connected to ' + cfg.db_url
         + ' using database "' + cfg.db_name + '"');
       resolve(client.db(cfg.db_name)); // this promise resolves to the db object
-    });
-  } catch (err) {
-    reject(err);
-  }
+    })
+    .catch(err => reject(err));
 });
 
 // module.exports = database;

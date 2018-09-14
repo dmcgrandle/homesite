@@ -14,6 +14,8 @@ exports.processError = (err, res) => {
   }
 };
 
+exports.sum = (a, b) => a + b;
+
 exports.exit = (err, code) => {
   //  throw new Error('001 Error connecting to database');
   console.log(err);

@@ -22,19 +22,19 @@ let db;
   // them in the database for retrieval by the client via the api.
   try {
     db = await dbSvc.database;
-    console.log(Date(Date.now()) + ' : About to scan ' + cfg.PHOTO_DIR.PATH);
+    // console.log(Date(Date.now()) + ' : About to scan ' + cfg.PHOTO_DIR.PATH);
     const photoDirs = await fileSvc.mediaDirs(cfg.PHOTO_DIR.PATH);
     const photoFiles = await fileSvc.mediaFiles(cfg.PHOTO_DIR.PATH, isPhotoSuffix);
-    console.log(Date(Date.now()) + ' : Done scanning ' + cfg.PHOTO_DIR.PATH);
+    // console.log(Date(Date.now()) + ' : Done scanning ' + cfg.PHOTO_DIR.PATH);
     await makeThumbsIfNeeded(photoFiles);
     const photoData = buildPhotos(photoDirs, photoFiles);
     await saveDataToDB('photoAlbums', photoData.albums);
     await saveDataToDB('photos', photoData.photos);
     console.log(Date(Date.now()) + ' : created new "photoAlbums" document in db.');
-    console.log(Date(Date.now()) + ' : About to scan ' + cfg.VIDEO_DIR.PATH);
+    // console.log(Date(Date.now()) + ' : About to scan ' + cfg.VIDEO_DIR.PATH);
     const videoDirs = await fileSvc.mediaDirs(cfg.VIDEO_DIR.PATH);
     const videoFiles = await fileSvc.mediaFiles(cfg.VIDEO_DIR.PATH, isVideoSuffix);
-    console.log(Date(Date.now()) + ' : Done scanning ' + cfg.VIDEO_DIR.PATH);
+    // console.log(Date(Date.now()) + ' : Done scanning ' + cfg.VIDEO_DIR.PATH);
     await makePostersIfNeeded(videoFiles);
     const videoData = buildVideos(videoDirs, videoFiles);
     await saveDataToDB('videoAlbums', videoData.albums);

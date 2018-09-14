@@ -1,6 +1,29 @@
 module.exports = {
-  "extends": "airbnb-base",
-  "rules": {
+  extends: "airbnb-base",
+  env: {
+    commonjs: true,
+    node: true,
+//    es6: true,
+  },
+ overrides: [
+   {
+     files: [
+       "**/*.test.js"
+     ],
+     env: {
+       jest: true
+     },
+    //  plugins: ["jest"],
+    //  rules: {
+    //    "jest/no-disabled-tests": "warn",
+    //    "jest/no-focused-tests": "error",
+    //    "jest/no-identical-title": "error",
+    //    "jest/prefer-to-have-length": "warn",
+    //    "jest/valid-expect": "error",
+    //  }
+   }
+ ], 
+  rules: {
     "prefer-template": 0,
     "prefer-destructuring": 0,
     "no-console": 0,

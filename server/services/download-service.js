@@ -135,7 +135,7 @@ async function buildDownloads(files) {
     fileObject._id = i;
     fileObject.filename = filename;
     fileObject.fullPath = cfg.DOWNLOAD_DIR.PATH + filename;
-    fileObject.suffix = filename.slice(filename.lastIndexOf('.'));
+    fileObject.suffix = filename.slice(filename.lastIndexOf('.')).toLowerCase();
     /* eslint-disable-next-line no-await-in-loop */
     fileObject.type = await getTypeDescription(fileObject.suffix.slice(1));
     fileObject.size = files[i].size;
@@ -155,7 +155,7 @@ exports.updateDownloadsDB = async (file) => {
     fileObject._id = lastDl._id + 1;
     fileObject.filename = file.filename;
     fileObject.fullPath = '/' + file.path;
-    fileObject.suffix = file.filename.slice(file.filename.lastIndexOf('.'));
+    fileObject.suffix = file.filename.slice(file.filename.lastIndexOf('.')).toLowerCase();
     fileObject.type = await getTypeDescription(fileObject.suffix.slice(1));
     fileObject.size = file.size;
     fileObject.sizeHR = humanFileSize(file.size, cfg.USE_SI_SIZE);
