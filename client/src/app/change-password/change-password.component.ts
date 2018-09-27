@@ -1,15 +1,16 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material';
 
 import { User } from '../_classes/user-classes';
 import { AuthService } from '../_services/auth.service';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
 
+/*
 export interface DialogData {
     alertMessage: string;
 }
+*/
 
 @Component({
     selector: 'app-change-password',
@@ -21,7 +22,7 @@ export class ChangePasswordComponent implements OnInit {
     hideExgPass: boolean = true; // hide existing password as dots instead of plain text
     hideNewPass: boolean = true;
     hideNewPassChk: boolean = true;
-    knowExisting: boolean = false;
+    knowExisting: boolean;
     existingPass: string;
 
     token: string;
@@ -43,7 +44,6 @@ export class ChangePasswordComponent implements OnInit {
             this.knowExisting = false;
             this.auth.user.username = this.route.snapshot.paramMap.get('username');
         } else { // method 2
-            if (!this.auth.isAuthenticated()) { this.router.navigate(['/login']) }
             this.knowExisting = true;
         }
 

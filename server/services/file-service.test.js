@@ -1,5 +1,7 @@
 /* ------------------        file-service.test.js          -------------------
+  Unit testing for methods in file-service.js
 -----------------------------------------------------------------------------*/
+
 const fileSvc = require('./file-service');
 
 const dir = '/test/example_data/';

@@ -1,7 +1,7 @@
 /* -----------------        token-service.test.js          --------------------
+  Unit testing for methods in token-service.js
 -----------------------------------------------------------------------------*/
-// const request = require('supertest');
-// const app = require('../app');
+
 const jwt = require('jsonwebtoken');
 const tokenSvc = require('./token-service');
 
@@ -52,12 +52,3 @@ test('test: modify email token and verify failure', async () => {
     expect(true).toBeFalsy(); // should never get here ...
   } catch (err) { expect(err.message).toBe('403 Invalid token'); }
 });
-
-/*
-describe('Test create new token', () => {
-  test('It should response the GET method', async () => {
-    const response = await request(app).get('/');
-    expect(response.statusCode).toBe(200);
-  });
-});
-*/
