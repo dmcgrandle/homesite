@@ -7,7 +7,9 @@
         <p class="message" id="message2">{{data.alertMessage2}}</p>
     </div>
     <div mat-dialog-actions fxFlexAlign="stretch">
-        <button *ngIf="data.showCancel" mat-raised-button color="secondary" mat-dialog-close>{{data.cancelText}}</button>
+        <button *ngIf="data.showCancel" mat-raised-button color="secondary" mat-dialog-close>
+            {{data.cancelText}}
+        </button>
         <span class="fill-space"></span>
         <button mat-raised-button type="submit" (click)="onOkClick()" color="primary" cdkFocusInitial>
             {{data.okText}}

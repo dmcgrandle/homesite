@@ -6,35 +6,35 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppConfig } from '../app.config';
 import { HeaderComponent } from './header.component';
 
-describe('HeaderComponent', () => {
-    const configSpy = jasmine.createSpyObj({
-        const: {
-            header: {
-                title: 'tHeader'
-            }
-        }
-    });
-    let component: HeaderComponent;
-    let fixture: ComponentFixture<HeaderComponent>;
+// describe('HeaderComponent', () => {
+//     const configSpy = jasmine.createSpyObj({
+//         const: {
+//             header: {
+//                 title: 'tHeader'
+//             }
+//         }
+//     });
+//     let component: HeaderComponent;
+//     let fixture: ComponentFixture<HeaderComponent>;
 
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            declarations: [HeaderComponent],
-            imports: [ MatDividerModule, MatMenuModule, MatIconModule, MatToolbarModule, HttpClientModule, RouterTestingModule],
-            providers: [
-                { provide: AppConfig, useValue: configSpy }
-            ]
-        })
-            .compileComponents();
-    }));
+//     beforeEach(async(() => {
+//         TestBed.configureTestingModule({
+//             declarations: [HeaderComponent],
+//             imports: [ MatDividerModule, MatMenuModule, MatIconModule, MatToolbarModule, HttpClientModule, RouterTestingModule],
+//             providers: [
+//                 { provide: AppConfig, useValue: configSpy }
+//             ]
+//         })
+//             .compileComponents();
+//     }));
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(HeaderComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+//     beforeEach(() => {
+//         fixture = TestBed.createComponent(HeaderComponent);
+//         component = fixture.componentInstance;
+// //        fixture.detectChanges();
+//     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-});
+//     it('should create', () => {
+//         expect(component).toBeTruthy();
+//     });
+// });

@@ -1,16 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material';
 
 import { User } from '../_classes/user-classes';
 import { AuthService } from '../_services/auth.service';
-import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
-
-/*
-export interface DialogData {
-    alertMessage: string;
-}
-*/
+import { AlertMessageDialogComponent, DialogData } from '../alert-message-dialog/alert-message-dialog.component';
+import { NgForm } from '@angular/forms';
 
 @Component({
     selector: 'app-change-password',
@@ -24,8 +19,9 @@ export class ChangePasswordComponent implements OnInit {
     hideNewPassChk: boolean = true;
     knowExisting: boolean;
     existingPass: string;
-
     token: string;
+
+@ViewChild('changePasswordForm') chgPassForm: NgForm; // for testing
 
     constructor(public auth: AuthService,
         private route: ActivatedRoute,
@@ -42,6 +38,7 @@ export class ChangePasswordComponent implements OnInit {
         this.token = this.route.snapshot.paramMap.get('token');
         if (this.token) {// method 1
             this.knowExisting = false;
+            if (!this.auth.user) this.auth.user = new User;
             this.auth.user.username = this.route.snapshot.paramMap.get('username');
         } else { // method 2
             this.knowExisting = true;
@@ -53,13 +50,13 @@ export class ChangePasswordComponent implements OnInit {
         if (this.knowExisting) {
             this.auth.user.password = this.existingPass;
             this.auth.authChangePasswordByPassword(newpass).subscribe(
-                (result: User) => this.successfulChange(result),
+                (user: User) => this.successfulChange(user),
                 (err) => this.errorChange(err)
             );
         } else {
             this.auth.user.password = newpass;
             this.auth.authChangePasswordByToken(this.token).subscribe(
-                (result: User) => this.successfulChange(result),
+                (user: User) => this.successfulChange(user),
                 (err) => this.errorChange(err)
             );
         }
@@ -67,13 +64,12 @@ export class ChangePasswordComponent implements OnInit {
 
     successfulChange(user: User) {
         const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-            data: {
-                alertMessage: 'Password changed for "' + user.username + '"',
+            data: <DialogData>{
+                alertMessage: `Password changed for user: ${user.username}`,
                 showCancel: false
             }
         });
-        dialogRef.afterClosed().subscribe(() => this.router.navigate(['/login']));
-        console.log("Password changed for user: " + user.username);
+        dialogRef.afterClosed().subscribe(() => this.router.navigate(['/gallery']));
     }
 
     errorChange(err) {
@@ -86,5 +82,6 @@ export class ChangePasswordComponent implements OnInit {
 }
 
 /* Note: this form is simple to validate without using the built in angular
-   form validity system because there are only two values on the entire form.
-   See the RegisterComponent for the complicated method. :) */
+   form validity system because there are only two values that need comparing,
+   and that can be done right in the template - no need for extra code. See the 
+   RegisterComponent for a more complicated method. :) */

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
-import { tap, shareReplay } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpResponse, HttpEvent, HttpParams, HttpRequest } from '@angular/common/http';
 import { AES } from 'crypto-ts';
 
@@ -14,7 +14,7 @@ import { LoginResponse } from '../_classes/server-response-classes';
 @Injectable({ providedIn: 'root' })
 export class AuthService implements CanActivate {
 
-    user: User;
+    public user: User;
 
     constructor(private http: HttpClient,
         public CFG: AppConfig,
@@ -27,7 +27,7 @@ export class AuthService implements CanActivate {
         }
     }
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         // This is used as a route guard in the app-routing.module component
         // It checks to see if a user is logged in or not, saving URL if not.
         if (this.isAuthenticated()) {
@@ -49,32 +49,31 @@ export class AuthService implements CanActivate {
             tap((res: LoginResponse) => {
                 this.storeLoginResponse(res);
                 this.user.level = res.level;
-            }),
-            shareReplay()
+            })
         );
     }
 
     public authRegister(): Observable<User> {
         this.user.password = this.encryptPass(this.user.password);
-        return this.http.post<User>('/api/users/create', this.user).pipe(shareReplay());
+        return this.http.post<User>('/api/users/create', this.user);
     }
 
     public authForgot(): Observable<Object> {
-        return this.http.post('/api/users/forgot', this.user).pipe(shareReplay());
+        return this.http.post('/api/users/forgot', this.user);
     }
 
     public authChangePasswordByToken(token: string): Observable<User> {
         this.user.password = this.encryptPass(this.user.password);
         let body = this.user;
         body['token'] = token; // Add token to the object to send to the server
-        return <Observable<User>>this.http.post('/api/users/changepw-by-token', body).pipe(shareReplay());
+        return <Observable<User>>this.http.post('/api/users/changepw-by-token', body);
     }
 
     public authChangePasswordByPassword(newPassword: string): Observable<User> {
         this.user.password = this.encryptPass(this.user.password);
         let body = this.user;
         body['newPassword'] = this.encryptPass(newPassword);
-        return <Observable<User>>this.http.post('/api/users/changepw-by-pw', body).pipe(shareReplay());
+        return <Observable<User>>this.http.post('/api/users/changepw-by-pw', body);
     }
 
     public authUpdateUser(user: User): Observable<User> {
@@ -150,8 +149,7 @@ export class AuthService implements CanActivate {
         localStorage.removeItem('attemptedURL');
     }
 
-
-    private encryptPass(password) {
+    private encryptPass(password): string {
         return AES.encrypt(password, this.CFG.const.auth.password_secret).toString();
     }
 

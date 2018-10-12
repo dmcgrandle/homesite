@@ -2,12 +2,12 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 export interface DialogData {
-    heading: string;        // heading at the top of the box.  Default is "Note"
-    alertMessage: string;   // the message to display
-    alertMessage2: string;  // an optional second line to display
-    showCancel: boolean;    // whether to show the 'cancel' button or not
-    okText: string;         // text on the "Ok" button.  Default is "Ok"
-    cancelText: string;     // text on the "Cancel" button.  Default is "Cancel"
+    heading?: string;        // heading at the top of the box.  Default is "Note"
+    alertMessage: string;    // the message to display
+    alertMessage2?: string;  // optional second line to display
+    showCancel: boolean;     // whether to show the 'cancel' button or not
+    okText?: string;         // optional text on the "Ok" button.  Default is "Ok"
+    cancelText?: string;     // optional text on the "Cancel" button.  Default is "Cancel"
 }
 
 @Component({
@@ -20,9 +20,9 @@ export class AlertMessageDialogComponent implements OnInit {
     constructor(public dialogRef: MatDialogRef<AlertMessageDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: DialogData) { }
 
-    ngOnInit() {
+    ngOnInit() { // set defaults
         if (!this.data.heading) {
-            this.data.heading = 'Note'; // default heading
+            this.data.heading = 'Note';
         }
         if (!this.data.okText) {
             this.data.okText = 'Ok';

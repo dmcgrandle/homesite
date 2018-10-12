@@ -76,7 +76,7 @@ router.post('/forgot', (req, res) => {
 router.post('/changepw-by-token', (req, res) => {
   tokenSvc.isValidEmailToken(req.body.token)
     .then(() => userSvc.changePassword(false, req.body))
-    .then(user => res.status(201).json('Password changed for user: ' + user.username))
+    .then(user => res.status(201).json(user))
     .catch(err => errSvc.processError(err, res));
 });
 
@@ -84,7 +84,7 @@ router.post('/changepw-by-token', (req, res) => {
 router.post('/changepw-by-pw', (req, res) => {
   userSvc.isValidLevel(req.user, 2)
     .then(() => userSvc.changePassword(true, req.body))
-    .then(user => res.status(201).json('Password changed for user: ' + user.username))
+    .then(user => res.status(201).json(user))
     .catch(err => errSvc.processError(err, res));
 });
 

@@ -10,56 +10,56 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppConfig } from '../app.config';
 import { RegisterComponent } from './register.component';
 
-describe('RegisterComponent', () => {
-    const mockDialogRef = {
-        close: jasmine.createSpy('close')
-    };
-    const mockDialogData = {
-        data: jasmine.createSpyObj({
-            heading: 'Testing',
-            alertMessage: 'This is test alertMessage',
-            alertMessage2: 'This is test alertMessage2',
-            showCancel: true,
-            okText: 'tOk',
-            cancelText: 'tCancel'
-        })
-    };
-    const configSpy = jasmine.createSpyObj({
-        const: {
-            header: {
-                title: 'tHeader'
-            }
-        }
-    });
-    let component: RegisterComponent;
-    let fixture: ComponentFixture<RegisterComponent>;
+// describe('RegisterComponent', () => {
+//     const mockDialogRef = {
+//         close: jasmine.createSpy('close')
+//     };
+//     const mockDialogData = {
+//         data: jasmine.createSpyObj({
+//             heading: 'Testing',
+//             alertMessage: 'This is test alertMessage',
+//             alertMessage2: 'This is test alertMessage2',
+//             showCancel: true,
+//             okText: 'tOk',
+//             cancelText: 'tCancel'
+//         })
+//     };
+//     const configSpy = jasmine.createSpyObj({
+//         const: {
+//             header: {
+//                 title: 'tHeader'
+//             }
+//         }
+//     });
+//     let component: RegisterComponent;
+//     let fixture: ComponentFixture<RegisterComponent>;
 
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            declarations: [RegisterComponent],
-            imports: [ FormsModule, MatFormFieldModule, MatToolbarModule, MatIconModule, HttpClientModule,
-                RouterTestingModule, MatDialogModule, MatInputModule, BrowserAnimationsModule ],
-            providers: [
-                { provide: MatDialogRef, useValue: mockDialogRef },
-                { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
-                { provide: AppConfig, useValue: configSpy }
-            ]
-        })
-        TestBed.overrideModule(BrowserDynamicTestingModule, {
-            set: {
-                entryComponents: [RegisterComponent]
-            }
-        })
-        .compileComponents();
-    }));
+//     beforeEach(async(() => {
+//         TestBed.configureTestingModule({
+//             declarations: [RegisterComponent],
+//             imports: [ FormsModule, MatFormFieldModule, MatToolbarModule, MatIconModule, HttpClientModule,
+//                 RouterTestingModule, MatDialogModule, MatInputModule, BrowserAnimationsModule ],
+//             providers: [
+//                 { provide: MatDialogRef, useValue: mockDialogRef },
+//                 { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
+//                 { provide: AppConfig, useValue: configSpy }
+//             ]
+//         })
+//         TestBed.overrideModule(BrowserDynamicTestingModule, {
+//             set: {
+//                 entryComponents: [RegisterComponent]
+//             }
+//         })
+//         .compileComponents();
+//     }));
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(RegisterComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+//     beforeEach(() => {
+//         fixture = TestBed.createComponent(RegisterComponent);
+//         component = fixture.componentInstance;
+//         fixture.detectChanges();
+//     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-});
+//     it('should create', () => {
+//         expect(component).toBeTruthy();
+//     });
+// });

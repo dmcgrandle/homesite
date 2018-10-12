@@ -27,6 +27,11 @@ export class MediaService {
         return <Observable<Video>>this.http.get('/api/videos/video-by-id/' + id);
     };
 
+    public getVideoByPath(path: string): Observable<Video> {
+        let fullPath = '(' + path.split('/').join('+') + ')';
+        return <Observable<Video>>this.http.get('/api/videos/video-by-path/' + fullPath);
+    };
+
     public getPhotosByIdArray(photos: Array<number>): Observable<Photo[]> {
         return <Observable<Photo[]>>this.http.get('/api/photos/photos/(' + photos.join('+') + ')');
     };
@@ -58,13 +63,6 @@ export class MediaService {
         if (pathString == '(videoAlbums)') pathString = '()';
         return <Observable<VideoAlbum>>this.http.get('/api/videos/album-by-path/' + pathString);
     };
-
-    public getVideoByPath(path: string): Observable<Video> {
-        let pathString = '(' + path.split('/').join('+') + ')';
-        if (pathString == '(videoAlbums)') pathString = '()';
-        return <Observable<Video>>this.http.get('/api/videos/video-by-path/' + pathString);
-    };
-
 
     public getPhotoAlbumsByIdArray(albumIds: Array<number>): Observable<PhotoAlbum[]> {
         let albumString = '(' + albumIds.join('+') + ')';

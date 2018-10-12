@@ -230,6 +230,8 @@ exports.changePassword = async (changeByExisting, userPassed) => {
   if (result.lastErrorObject.n !== 1) {
     throw new Error('404 Unknown User.  Please try another username or register a new user.');
   }
+  console.log('Changed password for user', result.value.username);
+  delete result.value.password; // Remove password from returned user
   return result.value;
 };
 
