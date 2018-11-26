@@ -39,6 +39,7 @@
 
     #thumbnails {
         overflow: scroll;
+        max-height: none !important;
         .img-thumbs {
             cursor: pointer;
             border-radius: 6px;

@@ -37,7 +37,7 @@ export class MockAppConfig {
     }
 }
 
-describe('AboutComponent', () => {
+xdescribe('AboutComponent', () => {
     let aboutComponent: AboutComponent;
     let aboutElement: HTMLElement;
     let fixture: ComponentFixture<AboutComponent>;

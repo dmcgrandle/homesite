@@ -12,10 +12,13 @@
 
 # Angular build target
 /server/public
-server/public/*
+/server/public/*
+
+# Angular coverage data
+/client/coverage/*
 
 # jest coverage data
-server/coverage
+/server/coverage
 
 # test .jpgs and .mp4s
 /server/protected/images
@@ -58,3 +61,4 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+client/coverage/index.html

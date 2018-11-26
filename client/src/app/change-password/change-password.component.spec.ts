@@ -1,4 +1,4 @@
-import { async, fakeAsync, ComponentFixture, TestBed, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatFormFieldModule, MatInputModule, MatToolbarModule, MatIconModule, MatDialogModule, MatDialog } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -10,9 +10,8 @@ import { AuthService } from '../_services/auth.service';
 import { User } from '../_classes/user-classes';
 import { ChangePasswordComponent } from './change-password.component';
 import { of, throwError } from 'rxjs';
-import { DebugElement } from '@angular/core';
 
-describe('ChangePasswordComponent', () => {
+xdescribe('ChangePasswordComponent', () => {
     const tUser: Partial<User> = { username: 'tGuest'};
     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate']);
     const mockAuth = jasmine.createSpyObj('AuthService', {
@@ -29,7 +28,7 @@ describe('ChangePasswordComponent', () => {
                 }
             }
         }
-    };
+    }; // TODO: There is probably a better way to mock ActivatedRoute
     let chgPassComp: ChangePasswordComponent;
     let chgPassElement: HTMLElement;
     let fixture: ComponentFixture<ChangePasswordComponent>;
@@ -38,7 +37,7 @@ describe('ChangePasswordComponent', () => {
         TestBed.configureTestingModule({
             declarations: [ChangePasswordComponent],
             imports: [HttpClientModule, FormsModule, MatInputModule, MatIconModule,
-                MatToolbarModule, MatFormFieldModule, MatDialogModule, BrowserAnimationsModule],
+                MatToolbarModule, MatFormFieldModule, MatDialogModule, BrowserAnimationsModule ],
             providers: [
                 { provide: Router, useValue: routerSpy },
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
@@ -51,7 +50,6 @@ describe('ChangePasswordComponent', () => {
         fixture = TestBed.createComponent(ChangePasswordComponent);
         chgPassComp = fixture.componentInstance;
     });
-
     it('should be creatable', () => {
         expect(chgPassComp).toBeTruthy();
     });
@@ -78,7 +76,6 @@ describe('ChangePasswordComponent', () => {
             spyOn(chgPassComp, 'errorChange');
             chgPassComp.knowExisting = true;
         });
-
         it('should successfully initiate a change password by password request', () => {
             chgPassComp.onChangePassword('tNewPass');
             expect(auth.authChangePasswordByPassword).toHaveBeenCalledTimes(1);
@@ -124,7 +121,6 @@ describe('ChangePasswordComponent', () => {
             spyOn(dialog, 'open').and.returnValue({ afterClosed : () => of({}) });
             chgPassComp.successfulChange(<User>tUser);
         });
-
         it('should successfully initiate an Alert Message dialog open to display success message', () => {
             expect(dialog.open).toHaveBeenCalled();
         });
@@ -145,7 +141,6 @@ describe('ChangePasswordComponent', () => {
             spyOn(dialog, 'open').and.returnValue({ afterClosed : () => of({}) });
             chgPassComp.errorChange('tError');
         });
-
         it('should successfully initiate an AlertMessage dialog open to display error message', () => {
             expect(dialog.open).toHaveBeenCalled();
         });
@@ -163,12 +158,10 @@ describe('ChangePasswordComponent', () => {
         });
 
         describe('Initialized with email token validation', () => {
-
             beforeEach(() => {
                 fixture.detectChanges();
                 buttons = chgPassElement.querySelectorAll('button');
             });
-
             it('should display two inputs (no existing-pass field)', () => {
                 expect(fixture.debugElement.queryAll(By.css('input')).length).toBe(2);
             });
@@ -201,14 +194,14 @@ describe('ChangePasswordComponent', () => {
         });
 
         describe('Initialized with password validation', () => {
+
             beforeEach(() => {
                 const route = TestBed.get(ActivatedRoute);
                 spyOn(route.snapshot.paramMap, 'get').and.returnValue(null);
                 fixture.detectChanges();
                 buttons = chgPassElement.querySelectorAll('button');
             });
-    
-            it('should display three inputs (includes existing-pass field)', () => {
+                it('should display three inputs (includes existing-pass field)', () => {
                 expect(fixture.debugElement.queryAll(By.css('input')).length).toBe(3);
             });
             it('initially "Change Password" button should be disabled', () => {

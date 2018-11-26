@@ -5,25 +5,20 @@
 <div class="download-container" [hidden]="loading$ | async">
     <div class="dl-header-container" fxLayout="row" fxLayoutGap="5vw" fxLayoutAlign.gt-xs="none center" 
         fxLayout.xs="row wrap" fxLayoutAlign.xs="none center">
-        <h2>Downloads</h2>
+        <h2>Downloads/Uploads</h2>
         <mat-form-field fxFlexOrder.xs="3">
             <!-- In xs drop filter to its own row below upload -->
             <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
         </mat-form-field>
         <span class="fill-space"></span>
         <!-- For file upload: set up a hidden input and 'click' it when the "upload" icon is clicked -->
-        <input hidden="true" type="file" #file (change)="uploadFile($event)">
+        <input hidden="true" type="file" #file (change)="uploadPickedFile($event)">
         <mat-icon *ngIf="auth.lastLoggedInUserLevel() > 2" class="upload-icon clickable" (click)="file.click()" 
             matTooltip="Upload A File" matTooltipPosition="left" matTooltipShowDelay="1000">
             publish
         </mat-icon>
     </div>
-
-    <!-- This is a textarea used by the Link Icon logic to copy link info to the clipboard -->
-    <!-- <textarea [hidden]="hideClipArea" rows="0" cols="0" name="clipArea" (change)="copyToClipboard()" #clipArea></textarea> -->
-
-    <div>
-        <!-- container for table and paginator -->
+    <div>   <!-- container for table and paginator -->
         <table mat-table matSort [dataSource]="dataSource">
 
             <!-- FileId Column -->
@@ -55,14 +50,14 @@
                 <th mat-header-cell *matHeaderCellDef></th>
                 <td mat-cell class="clickable center-align" *matCellDef="let row" matTooltip="Link to send to others to download this item"
                     matTooltipPosition="right" matTooltipShowDelay="1000">
-                    <mat-icon (click)="onLinkClicked(row, clipArea)">link</mat-icon>
+                    <mat-icon (click)="onLinkClicked(row)">link</mat-icon>
                 </td>
             </ng-container>
     
                 <!-- Filename Column -->
             <ng-container matColumnDef="filename">
                 <th mat-header-cell class="indent" *matHeaderCellDef mat-sort-header> Filename </th>
-                <td mat-cell class="indent" *matCellDef="let file" (click)="onNameClicked(file)"> {{file.filename}} </td>
+                <td mat-cell class="indent" *matCellDef="let file" (click)="editFilename(file)"> {{file.filename}} </td>
             </ng-container>
 
             <!-- Icon Column -->
@@ -89,7 +84,7 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
-        <mat-paginator [pageSize]="8" [pageSizeOptions]="[5, 8, 15, 20]" showFirstLastButtons></mat-paginator>
+        <mat-paginator [pageSize]="50" [pageSizeOptions]="[5, 10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
     </div>
 
 </div>

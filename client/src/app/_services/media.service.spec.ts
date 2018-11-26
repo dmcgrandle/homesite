@@ -7,7 +7,7 @@ import { PhotoAlbum, Photo } from '../_classes/photo-classes';
 import { VideoAlbum, Video } from '../_classes/video-classes';
 import { UrlSegment } from '@angular/router';
 
-describe('MediaService', () => {
+xdescribe('MediaService', () => {
     let media: MediaService;
     let httpMock: HttpTestingController;
     beforeEach(() => {

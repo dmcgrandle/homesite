@@ -29,7 +29,9 @@ router.get('/list', (req, res) => {
     .catch(err => errSvc.processError(err, res));
 });
 
-/* POST: upload a file to the downloads directory.  Needs level 3+ access */
+/*  POST: upload a file to the downloads directory.  Needs level 3+ access
+    Set this up a little differently than other router handlers: set up a middleware
+    chain by defining 3 "next" functions that get called in order. */
 router.post('/upload', userSvc.testLevelForUpload, dlSvc.upload, (req, res) => {
   dlSvc.updateDownloadsDB(req.file)
     .then(reply => res.status(200).json(reply))
@@ -43,15 +45,6 @@ router.delete('/:filename', (req, res) => {
     .then(delDl => res.status(200).json(delDl))
     .catch(err => errSvc.processError(err, res));
 });
-
-/*
-router.post('/upload', function(req, res, next) {
-  userSvc.isValidLevel(req.user, 3)
-    .then(() => multer(multerConf).single('file'))
-    .then(downloads => res.status(200).json(downloads))
-    .catch(err => errSvc.processError(err, res));
-});
-*/
 
 // Utility functions for users route API
 

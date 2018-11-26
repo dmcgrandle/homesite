@@ -1569,6 +1569,7 @@ mkd|Pervasive Btrieve files
 mke|Makefile (MS Windows SDK)
 mki|Japanese graphics MAKIchan format (MagView 0.5)
 mks|Data (TACT)
+mkv|Matroska video file
 ml3|Project (Milestones 3.x)
 mlb|Macro library (Symphony)
 mlm|Novel Groupwise e-mail 

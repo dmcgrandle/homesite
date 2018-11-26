@@ -53,12 +53,14 @@ function decryptPw(pw) { // decrypt password sent from client, return plain text
 
 function isValidData(user) {
   // TODO: implement more complex validations
-  user.forEach((field) => {
-    if (field.length < cfg.min_field_length) {
-      throw new Error('400 ' + field + ' too small: must be minimum '
+  const keys = Object.keys(user);
+  const values = Object.values(user);
+  values.forEach((value, index) => {
+    if (value.length < cfg.min_field_length) {
+      throw new Error('400 ' + keys[index] + ' too small: must be minimum '
         + cfg.min_field_length + ' characters');
-    } else if (field.length > cfg.max_field_length) {
-      throw new Error('400 ' + field + ' too large: must be maximum '
+    } else if (value.length > cfg.max_field_length) {
+      throw new Error('400 ' + keys[index] + ' too large: must be maximum '
         + cfg.max_field_length + ' characters');
     }
   });

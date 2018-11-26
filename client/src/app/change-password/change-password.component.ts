@@ -80,7 +80,6 @@ export class ChangePasswordComponent implements OnInit {
         dialogRef.afterClosed().subscribe(() => this.router.navigate(['/login']));
     }
 }
-
 /* Note: this form is simple to validate without using the built in angular
    form validity system because there are only two values that need comparing,
    and that can be done right in the template - no need for extra code. See the 

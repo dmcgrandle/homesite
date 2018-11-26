@@ -7,9 +7,25 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Launch Chrome against localhost",
+            "name": "Launch Chrome",
             "url": "http://localhost:8080",
             "webRoot": "${workspaceFolder}"
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach by Process ID",
+            "processId": "${command:PickProcess}",
+//            "diagnosticLogging": true,
+//            "webRoot": "${workspaceFolder}/../server/public",
+        },
+        {
+            "type": "chrome",
+            "request": "attach",
+            "name": "Debug client tests",
+            "port": 9876,
+            "url": "http://localhost:9876",
+            "webRoot": "${workspaceFolder}/../server/public"
         }
     ]
 }

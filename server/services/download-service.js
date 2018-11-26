@@ -52,15 +52,19 @@ exports.upload = (req, res, next) => {
     console.log('Upload aborted by client.');
   });
   req.on('close', () => {
+    console.log('finished uploading.');
     if (req.file) {
       console.log(Date(Date.now()) + ' : File Uploaded: "' + req.file.filename + '"');
     }
   });
   // Middleware function to upload - define next to handle errors
   multerUpload(req, res, (err) => {
-    if (!err) { next(); }
-    console.log(err);
-    return res.status(422).send('Error uploading file.');
+    if (err) {
+      console.log(err);
+      return res.status(422).send('Error uploading file.');
+    }
+    next();
+    return null;
   });
 };
 
