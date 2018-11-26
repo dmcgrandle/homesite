@@ -1,0 +1,33 @@
+<div id="full-screen" *ngIf="photos">
+    <div class="title" fxLayout="row">
+        <h2><span>{{media.curPhotoAlbum.name}}:</span></h2>
+        <span class="fill-space"></span>
+        <a fxHide.xs [download]="photos[curPhotoIndex].filename" [href]="photos[curPhotoIndex].fullPath | secure">
+            <mat-icon>vertical_align_bottom</mat-icon>
+        </a>
+    </div>
+    <div class="container" fxLayout="column" fxLayoutGap="4px" fxLayoutAlign.gt-xs="space-evenly stretch">
+        <!-- large display picture -->
+        <mat-card class="large" (click)="makeFullscreen()" fxLayout="column" fxLayoutAlign="none center" 
+            fxHide.lt-sm fxFlexAlign="center">
+            <img class="img-large" mat-card-image [src]="photos[curPhotoIndex].fullPath | secure">
+            <mat-card-footer>
+                <h4 *ngIf="!photos[curPhotoIndex].caption">{{photos[curPhotoIndex].filename}}</h4>
+                <h4 *ngIf="photos[curPhotoIndex].caption">{{photos[curPhotoIndex].caption}}</h4>
+            </mat-card-footer>
+        </mat-card>
+        <!-- scrollable row of thumbnails -->
+        <div id="thumbnails" #thumbnailsE fxLayout.gt-xs="row" fxLayout.xs="column" fxLayoutGap.gt-xs="6px"
+            fxLayoutGap.xs="1px" fxLayoutAlign.gt-xs="none center" fxLayoutAlign.xs="none none">
+            <div *ngFor="let photo of photos" (click)="changePhoto(photo)" fxFlex.xl="0 0 4.25%" 
+                fxFlex.lg="0 0 6.31%" fxFlex.md="0 0 7.8%" fxFlex.sm="0 0 11.75%" fxFlex.xs="1 1 auto">
+                <img #thumbE fxFlexAlignSelf="center" class="img-thumbs" [src]="photo.thumbPath | secure"
+                    [id]="highlightAndScroll(photo, thumbE, thumbnailsE)">
+            </div>
+        </div>>
+    </div>
+</div>
+
+<div *ngIf="!photos">
+    <p>Waiting on the server ...</p>
+</div>

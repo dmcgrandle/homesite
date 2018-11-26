@@ -1,0 +1,24 @@
+.mat-dialog-container {
+    padding: 3px;
+}
+
+.edit-user-container {
+    background-color: white;
+    border-radius: 5px;
+    border: 1px;
+    border-color: black;
+    border-style: ridge;
+    padding: 10px 10px 22px 10px;
+}
+    
+h3 {
+    font-size: 25px;
+    flex: 1 1 auto;
+}
+    
+.password-group {
+    margin: 0 5px 20px 5px;
+    border: 1px solid #660000;
+    border-radius: 2px;
+    padding: 10px;
+}

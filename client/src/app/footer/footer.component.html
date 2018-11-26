@@ -1,0 +1,7 @@
+<div *ngIf="auth.isAuthenticated()">
+    <div class="toolbar" fxLayout="column" fxLayoutGap="0px" fxLayoutAlign="center center">
+        <h2>{{CFG.const.footer.title}}</h2>
+        <div class="text">Contact <a href="mailto:{{CFG.const.footer.email}}">{{CFG.const.footer.email}}</a> with any issues.</div>
+        <div class="text"><sub>Built by <a href="https://github.com/dmcgrandle/homesite">homesite</a></sub></div>
+    </div>
+</div>

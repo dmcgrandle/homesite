@@ -1,0 +1,33 @@
+/* You can add global styles to this file, and also import other style files */
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
+// From coolers.co: 5 compatible colors with 'dark turquoise':
+// Number    Official Name       Notes
+// -------   ------------------  ------------------------------
+// #00CED1 - Dark Turquoise    - pretty color Sandra would like
+// #001021 -                   - nearly black
+// #034748 -                   - sort of a forest green
+// #1481BA -                   - McGrandle blue!
+// #3CDBD3 -                   - light turquoise
+
+$text-color-dark: #001021;
+$text-color-floral-white: #FFFAF0;
+$background-color-primary: #034748;
+$background-color-secondary: #1481BA;
+
+//override a setting from the prebuilt theme
+.mat-raised-button.mat-primary{
+    background-color: $background-color-secondary;
+};
+
+
+.fill-space {
+    flex: 1 1 auto;
+};
+
+.toolbar {
+    background-color: $background-color-secondary;
+    color: $text-color-floral-white;
+    border-radius: 5px;
+    margin-bottom: 15px;
+};

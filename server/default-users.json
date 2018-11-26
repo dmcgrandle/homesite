@@ -1,0 +1,114 @@
+[
+    {
+        "_id": 0,
+        "name": "Admin User",
+        "username": "admin",
+        "password": "password",
+        "email": "admin@example.com",
+        "level": 4
+    },
+    {
+        "_id": 1,
+        "name": "Guest Account",
+        "username": "guest",
+        "password": "password",
+        "email": "guest@example.com",
+        "level": 2
+    },
+    {
+        "_id": 2,
+        "name": "Guest Account 2",
+        "username": "guest2",
+        "password": "password",
+        "email": "guest2@example.com",
+        "level": 1
+    },
+    {
+        "_id": 3,
+        "name": "Guest Account 3",
+        "username": "guest3",
+        "password": "password",
+        "email": "guest3@example.com",
+        "level": 1
+    },
+    {
+        "_id": 4,
+        "name": "Guest Account 4",
+        "username": "guest4",
+        "password": "password",
+        "email": "guest4@example.com",
+        "level": 1
+    },
+    {
+        "_id": 5,
+        "name": "Guest Account 5",
+        "username": "guest5",
+        "password": "password",
+        "email": "guest5@example.com",
+        "level": 1
+    },
+    {
+        "_id": 6,
+        "name": "Guest Account 6",
+        "username": "guest6",
+        "password": "password",
+        "email": "guest6@example.com",
+        "level": 1
+    },
+    {
+        "_id": 7,
+        "name": "Guest Account 7",
+        "username": "guest7",
+        "password": "password",
+        "email": "guest7@example.com",
+        "level": 1
+    },
+    {
+        "_id": 8,
+        "name": "Guest Account 8",
+        "username": "guest8",
+        "password": "password",
+        "email": "guest8@example.com",
+        "level": 1
+    },
+    {
+        "_id": 9,
+        "name": "Guest Account 9",
+        "username": "guest9",
+        "password": "password",
+        "email": "guest9@example.com",
+        "level": 1
+    },
+    {
+        "_id": 10,
+        "name": "Guest Account 10",
+        "username": "guest10",
+        "password": "password",
+        "email": "guest10@example.com",
+        "level": 1
+    },
+    {
+        "_id": 11,
+        "name": "Guest Account 11",
+        "username": "guest11",
+        "password": "password",
+        "email": "guest11@example.com",
+        "level": 1
+    },
+    {
+        "_id": 12,
+        "name": "Guest Account 12",
+        "username": "guest12",
+        "password": "password",
+        "email": "guest12@example.com",
+        "level": 1
+    },
+    {
+        "_id": 13,
+        "name": "Guest Account 13",
+        "username": "guest13",
+        "password": "password",
+        "email": "guest13@example.com",
+        "level": 1
+    }
+]

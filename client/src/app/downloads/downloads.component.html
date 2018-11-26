@@ -1,0 +1,90 @@
+<div class="spinner" *ngIf="loading$ | async">
+    <mat-spinner></mat-spinner>
+</div>
+
+<div class="download-container" [hidden]="loading$ | async">
+    <div class="dl-header-container" fxLayout="row" fxLayoutGap="5vw" fxLayoutAlign.gt-xs="none center" 
+        fxLayout.xs="row wrap" fxLayoutAlign.xs="none center">
+        <h2>Downloads/Uploads</h2>
+        <mat-form-field fxFlexOrder.xs="3">
+            <!-- In xs drop filter to its own row below upload -->
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+        </mat-form-field>
+        <span class="fill-space"></span>
+        <!-- For file upload: set up a hidden input and 'click' it when the "upload" icon is clicked -->
+        <input hidden="true" type="file" #file (change)="uploadPickedFile($event)">
+        <mat-icon *ngIf="auth.lastLoggedInUserLevel() > 2" class="upload-icon clickable" (click)="file.click()" 
+            matTooltip="Upload A File" matTooltipPosition="left" matTooltipShowDelay="1000">
+            publish
+        </mat-icon>
+    </div>
+    <div>   <!-- container for table and paginator -->
+        <table mat-table matSort [dataSource]="dataSource">
+
+            <!-- FileId Column -->
+            <ng-container matColumnDef="fileId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+                <td mat-cell *matCellDef="let file"> {{file._id}} </td>
+            </ng-container>
+
+            <!-- Download Icon Column -->
+            <ng-container matColumnDef="downloadIcon">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell class="clickable center-align" *matCellDef="let row" matTooltip="Download this item" 
+                    matTooltipPosition="right" matTooltipShowDelay="1000">
+                    <mat-icon (click)="onDownloadClicked(row)">get_app</mat-icon>
+                </td>
+            </ng-container>
+
+            <!-- Delete Icon Column -->
+            <ng-container matColumnDef="deleteIcon">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell class="clickable center-align" *matCellDef="let row" matTooltip="DELETE this item permanently" 
+                    matTooltipPosition="right" matTooltipShowDelay="1000">
+                    <mat-icon (click)="onDeleteClicked(row)">delete_forever</mat-icon>
+                </td>
+            </ng-container>
+
+            <!-- Link Icon Column -->
+            <ng-container matColumnDef="linkIcon">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell class="clickable center-align" *matCellDef="let row" matTooltip="Link to send to others to download this item"
+                    matTooltipPosition="right" matTooltipShowDelay="1000">
+                    <mat-icon (click)="onLinkClicked(row)">link</mat-icon>
+                </td>
+            </ng-container>
+    
+                <!-- Filename Column -->
+            <ng-container matColumnDef="filename">
+                <th mat-header-cell class="indent" *matHeaderCellDef mat-sort-header> Filename </th>
+                <td mat-cell class="indent" *matCellDef="let file" (click)="editFilename(file)"> {{file.filename}} </td>
+            </ng-container>
+
+            <!-- Icon Column -->
+            <ng-container matColumnDef="icon">
+                <th mat-header-cell class="center-align" *matHeaderCellDef></th>
+                <td mat-cell class="center-align" *matCellDef="let file">
+                    <span class="fiv-viv {{file.icon}}"></span>
+                </td>
+            </ng-container>
+
+            <!-- Type Column -->
+            <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
+                <td mat-cell *matCellDef="let file"> {{file.type}} </td>
+            </ng-container>
+
+            <!-- SizeHR Column -->
+            <ng-container matColumnDef="sizeHR">
+                <th mat-header-cell class="right-align" *matHeaderCellDef mat-sort-header="size"> Size </th>
+                <td mat-cell class="right-align" *matCellDef="let file"> {{file.sizeHR}} </td>
+            </ng-container>
+
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator [pageSize]="50" [pageSizeOptions]="[5, 10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
+    </div>
+
+</div>
