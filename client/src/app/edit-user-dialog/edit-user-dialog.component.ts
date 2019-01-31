@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, Directive, ViewEncapsulation } from '@angular/core';
+import { Component, Inject, OnInit, Directive, ViewEncapsulation, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { NG_VALIDATORS, Validator, FormGroup, ValidatorFn, NgForm } from '@angular/forms';
 
@@ -19,6 +19,8 @@ export interface DialogData {
 })
 export class EditUserDialogComponent implements OnInit {
 
+// @ViewChild('userForm') userForm: NgForm; // for testing
+
     hidePass: boolean;
     hideRetype: boolean;
     tempLevel: string;
@@ -27,7 +29,8 @@ export class EditUserDialogComponent implements OnInit {
     constructor(public dialogRef: MatDialogRef<EditUserDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: DialogData,
         public auth: AuthService,
-        public dialog: MatDialog) { }
+        public dialog: MatDialog
+        ) { }
 
     ngOnInit() {
         this.hidePass = this.hideRetype = true;
@@ -37,8 +40,8 @@ export class EditUserDialogComponent implements OnInit {
 
     onSaveClick(password: string): void {
         if (password) this.data.user.password = password;
-        if (Number(this.tempLevel) !== this.data.user.level) {
-            this.data.user.level = Number(this.tempLevel);
+        if (+this.tempLevel !== this.data.user.level) {
+            this.data.user.level = +this.tempLevel;
         }
         this.auth.authUpdateUser(this.data.user).subscribe(
             (userReturned) => {

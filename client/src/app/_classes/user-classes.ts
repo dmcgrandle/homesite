@@ -10,12 +10,12 @@ export class User {
     email: string;
     level: number;
 
-    constructor() {
-        this._id = -1;
-        this.name = '';
-        this.username = '';
-        this.password = '';
-        this.email = '';
-        this.level = 0;
+    constructor(iUser?: Partial<User>) {
+        this._id = (iUser && iUser._id !== undefined) ? iUser._id : -1;
+        this.name = (iUser && iUser.name !== undefined) ? iUser.name : '';
+        this.username = (iUser && iUser.username !== undefined) ? iUser.username : '';
+        this.password = (iUser && iUser.password !== undefined) ? iUser.password : '';
+        this.email = (iUser && iUser.email !== undefined) ? iUser.email : '';
+        this.level = (iUser && iUser.level !== undefined) ? iUser.level : 0;
     }
 };

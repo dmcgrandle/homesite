@@ -200,6 +200,7 @@ xdescribe('ChangePasswordComponent', () => {
                 spyOn(route.snapshot.paramMap, 'get').and.returnValue(null);
                 fixture.detectChanges();
                 buttons = chgPassElement.querySelectorAll('button');
+                const button = fixture.debugElement.nativeElement.querySelector('#signInWithGithub');
             });
                 it('should display three inputs (includes existing-pass field)', () => {
                 expect(fixture.debugElement.queryAll(By.css('input')).length).toBe(3);
