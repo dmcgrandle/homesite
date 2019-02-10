@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, Directive, ViewEncapsulation, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ViewEncapsulation, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { NG_VALIDATORS, Validator, FormGroup, ValidatorFn, NgForm } from '@angular/forms';
 
@@ -6,6 +6,7 @@ import { User } from '../_classes/user-classes';
 import { EqualDirective } from '../_helpers/equal-validator';
 import { AuthService } from '../_services/auth.service';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
+import { Subscription } from 'rxjs';
 
 export interface DialogData {
     user: User;
@@ -17,14 +18,13 @@ export interface DialogData {
     styleUrls: ['./edit-user-dialog.component.scss'],
     encapsulation: ViewEncapsulation.None // Had to turn off to CSS style fieldset ... ?
 })
-export class EditUserDialogComponent implements OnInit {
-
-// @ViewChild('userForm') userForm: NgForm; // for testing
+export class EditUserDialogComponent implements OnInit, OnDestroy {
 
     hidePass: boolean;
     hideRetype: boolean;
     tempLevel: string;
     saveUser: User;
+    authSub: Subscription;
 
     constructor(public dialogRef: MatDialogRef<EditUserDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -43,21 +43,22 @@ export class EditUserDialogComponent implements OnInit {
         if (+this.tempLevel !== this.data.user.level) {
             this.data.user.level = +this.tempLevel;
         }
-        this.auth.authUpdateUser(this.data.user).subscribe(
+        this.authSub = this.auth.authUpdateUser(this.data.user).subscribe(
             (userReturned) => {
                 const alertMessage = 'User "' + userReturned.name + '" has been successfully updated.';
-                const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
+                const dRef = this.dialog.open(AlertMessageDialogComponent, {
                     width: '350px',
                     data: { heading: 'Success', alertMessage: alertMessage, showCancel: false }
                 });
-                dialogRef.afterClosed().subscribe(() => this.dialogRef.close());
+                dRef.afterClosed().subscribe(() => this.dialogRef.close());
             },
             (err) => {
                 const alertMessage = 'Error: ' + err.error;
-                const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-                    data: { alertMessage: alertMessage, showCancel: false }
+                const dRef = this.dialog.open(AlertMessageDialogComponent, {
+                    width: '350px',
+                    data: { heading: 'Error', alertMessage: alertMessage, showCancel: false }
                 });
-                dialogRef.afterClosed().subscribe(() => {
+                dRef.afterClosed().subscribe(() => {
                     this.copyToDialogData(this.saveUser); // Restore initial state due to error
                     this.dialogRef.close();
                 });
@@ -73,6 +74,10 @@ export class EditUserDialogComponent implements OnInit {
         delete this.data.user.password;
         this.data.user.email = user.email;
         this.data.user.level = user.level;
+    }
+
+    ngOnDestroy() {
+        if (this.authSub) this.authSub.unsubscribe();
     }
 
 }

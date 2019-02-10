@@ -28,7 +28,7 @@ export class MockRouter {
     navigate(url: string[]) {};
 }
 
-xdescribe('AuthService if isAuthenticated() === true', () => {
+xdescribe('AuthService', () => {
     let auth: AuthService;
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -59,25 +59,26 @@ xdescribe('AuthService if isAuthenticated() === true', () => {
             let req = httpMock.expectOne('/api/users/list');
             expect(req.request.method).toEqual('GET');
             req.flush(testList);
+            httpMock.verify();
         }));
         it('should encrypt the password when logging in', () => {
             auth.authLogin();
             expect(auth.user.password.length).toEqual(44);
             expect(AES.decrypt(auth.user.password.toString(),'1234').toString(ENC.Utf8)).toEqual('C');
         });
-        it('should successfully log in a user', async(() => {
+        it('should successfully log in a user', () => {
             const testRes: LoginResponse = {level: 4, jwtToken: 'A', expiresAt: 1234};
             auth.authLogin().subscribe(res => expect(res).toEqual(testRes));
             let req = httpMock.expectOne('/api/users/login');
             expect(req.request.method).toEqual('POST');
             req.flush(testRes);
-        }));
-        it('should successfully register a new user', async(() => {
+        });
+        it('should successfully register a new user', () => {
             auth.authRegister().subscribe(user => expect(user).toEqual(auth.user));
             let req = httpMock.expectOne('/api/users/create');
             expect(req.request.method).toEqual('POST');
             req.flush(auth.user);// send test user object back into the subscribe above.
-        }));
+        });
         it('should successfully post a forgot password request', async(() => {
             auth.authForgot().subscribe(user => expect(user).toEqual(auth.user));
             let req = httpMock.expectOne('/api/users/forgot');
