@@ -12,7 +12,7 @@ import { EditUserDialogComponent, DialogData } from './edit-user-dialog.componen
 import { of, throwError } from 'rxjs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-describe('EditUserDialogComponent', () => {
+xdescribe('EditUserDialogComponent', () => {
     const testUser: User = new User();
     const mockDialogRef = jasmine.createSpyObj('mockDialogRef', ['close']);
     const mockDialogData: DialogData = { user: testUser};
