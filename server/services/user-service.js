@@ -237,8 +237,13 @@ exports.changePassword = async (changeByExisting, userPassed) => {
   return result.value;
 };
 
+function delay(timeout) {
+  return new Promise((resolve) => setTimeout(resolve, timeout))
+}
+
 exports.emailReset = async (user) => {
   const token = await tokenSvc.getEmailChangeToken(user.username);
+  await delay(130000);
   const message = {
     from: cfg.mail.smtp_config.auth.user,
     to: user.email,

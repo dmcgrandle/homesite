@@ -4,13 +4,13 @@ import { MatDialogRef, MatDialog, MatDialogModule, MatSelectModule, MatInputModu
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { FormsModule } from '@angular/forms';
 import { DOWN_ARROW, ENTER } from '@angular/cdk/keycodes';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { of, throwError } from 'rxjs';
 
 import { User } from '../_classes/user-classes';
 import { AuthService } from '../_services/auth.service';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
 import { EditUserDialogComponent, DialogData } from './edit-user-dialog.component';
-import { of, throwError } from 'rxjs';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 xdescribe('EditUserDialogComponent', () => {
     const testUser: User = new User();
@@ -106,7 +106,7 @@ xdescribe('EditUserDialogComponent', () => {
 
     });
 
-    describe('HTML Template:', () => { // Mostly integration tests
+    describe('HTML Template:', () => { // Mostly functional tests
         beforeEach(async(() => { 
             createComponent();
             authSpy.authUpdateUser.calls.reset();

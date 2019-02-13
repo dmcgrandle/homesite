@@ -1,7 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Subject } from 'rxjs';
 
+import { User } from '../_classes/user-classes';
 import { AuthService } from '../_services/auth.service';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
 
@@ -17,39 +19,50 @@ export interface DialogData {
 export class ForgotDialogComponent implements OnInit {
 
     token: string;
-    error: boolean = false;
+    // error: boolean = false;
+    loading$: Subject<boolean> = new Subject();
 
     constructor(public auth: AuthService,
-        public dialogRef: MatDialogRef<ForgotDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: DialogData,
-        private activatedRoute: ActivatedRoute,
-        public dialog: MatDialog) {
-    }
+                public dialogRef: MatDialogRef<ForgotDialogComponent>,
+                @Inject(MAT_DIALOG_DATA) public data: DialogData,
+                public dialog: MatDialog) { }
 
     ngOnInit() {
+        this.loading$.next(false);
     }
 
     onSubmitClick() {
+        this.loading$.next(true);
         this.auth.authForgot().subscribe(
-            (userReturned) => {
-                const alertMessage = 'Email "' + userReturned['email'] + '" was sent reset email. ' +
+            (user: User) => {
+                this.loading$.next(false);
+                const alertMessage = `Email "${user.email}" was sent reset email. ` +
                     "If you don't see it in a few minutes please check your SPAM folder.";
-                const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
+                const dRef = this.dialog.open(AlertMessageDialogComponent, {
                     width: '400px',
                     data: { alertMessage: alertMessage, showCancel: false }
                 });
-                dialogRef.afterClosed().subscribe(result => { });
-            },
-            (err) => {
-                const alertMessage = 'Email "' + this.auth.user['email'] + '" was not found!';
-                const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-                    data: { alertMessage: alertMessage, showCancel: false }
+                dRef.afterClosed().subscribe(() => {
+                    this.dialogRef.close()
                 });
-                dialogRef.afterClosed().subscribe(result => { });
             },
-            () => { }
+            (err: HttpErrorResponse) => {
+                this.loading$.next(false);
+                let alertMessage: string;
+                if (err.status === 404) { // email not found
+                    alertMessage = `Email "${this.auth.user.email}" was not found!`;
+                } else {
+                    alertMessage = `Error: ${err.status} ${err.statusText}`;
+                }
+                const dRef = this.dialog.open(AlertMessageDialogComponent, {
+                    data: { heading: 'Error!', alertMessage: alertMessage, showCancel: false }
+                });
+                dRef.afterClosed().subscribe(() => {
+                    this.dialogRef.close()
+                });
+            }
         );
-        this.dialogRef.close();
+        
     }
 
 
