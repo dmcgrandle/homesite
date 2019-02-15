@@ -12,9 +12,9 @@ xdescribe('FooterComponent', () => {
     const configMock = { const: { footer: { title: tTitle, email: tEmail } } };
     const authSpy = jasmine.createSpyObj(['isAuthenticated']);
 
-    function getElementByInnerText<T>(search: string) : T {
+    function getElementByInnerHTML<T>(search: string) : T {
         return (Array.from(fixture.nativeElement.querySelectorAll('*')) as T[])
-            .filter(el => el['innerText'].toLowerCase() === search.toLowerCase())[0];
+            .filter(el => el['innerHTML'].toLowerCase() === search.toLowerCase())[0];
     }
 
     beforeEach(async(() => {
@@ -45,13 +45,13 @@ xdescribe('FooterComponent', () => {
         expect(toolbarWhenNOTAuthenticated).toBeNull();
     });
     it('should display the title from the footer configuration', () => {
-        expect(getElementByInnerText(tTitle)).toBeTruthy();
+        expect(getElementByInnerHTML(tTitle)).toBeTruthy();
     });
     it('should display the email contact from the footer configuration', () => {
-        expect(getElementByInnerText(tEmail)).toBeTruthy();
+        expect(getElementByInnerHTML(tEmail)).toBeTruthy();
     });
     it('should display a link to the homesite github repo', () => {
-        const gitRef = getElementByInnerText<HTMLAnchorElement>('homesite');
+        const gitRef = getElementByInnerHTML<HTMLAnchorElement>('homesite');
         expect(gitRef).toBeTruthy('Error: the reference to homesite should exist');
         expect(gitRef.href.includes('github.com/dmcgrandle/homesite'))
             .toBeTruthy('Error: there should be a link to the github for "homesite".');

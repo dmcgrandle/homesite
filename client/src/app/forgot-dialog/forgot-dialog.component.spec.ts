@@ -1,9 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogModule, MatFormFieldModule, 
          MatToolbarModule, MatInputModule, MatProgressSpinnerModule} from '@angular/material';
 import { FormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
 
@@ -13,14 +11,14 @@ import { AuthService } from '../_services/auth.service';
 import { ForgotDialogComponent, DialogData } from './forgot-dialog.component';
 import { HttpErrorResponse } from '@angular/common/http';
 
-describe('ForgotDialogComponent', () => {
+xdescribe('ForgotDialogComponent', () => {
 
     const mockDialogRef = jasmine.createSpyObj('MatDialogRef', {
         close: null,
         afterClosed: of({})
     });
-    const mockDialogData: DialogData = { username: 'tUser'};
     const mockDialog = jasmine.createSpyObj('MatDialog', { open: mockDialogRef });
+    const mockDialogData: DialogData = { username: 'tUser'};
     const tEmail = 'foo@bar.com';
     let authSpy = jasmine.createSpyObj('AuthService', ['authForgot']);
     authSpy.user = new User({email: ''});
@@ -82,11 +80,11 @@ describe('ForgotDialogComponent', () => {
             expect(page.submitButton).toBeTruthy('Err: Submit button does not exist.');
             expect(page.submitButton.disabled).toBeTruthy('Err: Submit button should be disabled to start.');
         });
-        it('should close the component if cancel is clicked', () => {
-            mockDialogRef.close.calls.reset();
-            page.cancelButton.click();
-            expect(mockDialogRef.close).toHaveBeenCalled();
-        });
+    it('should close the component and pass back correct data if cancel is clicked', () => {
+        mockDialogRef.close.calls.reset();
+        page.cancelButton.click();
+        expect(mockDialogRef.close).toHaveBeenCalledWith(true);
+    });
         it('should still have a disabled submit button if too few characters entered', () => {
             expect(page.emailInput).toBeTruthy('Err: Email input does not exist.');
             expect(page.submitButton.disabled).toBeTruthy();
@@ -119,9 +117,8 @@ describe('ForgotDialogComponent', () => {
             authSpy.user.email = '';
         });
         it('should display alert on non-404 error from backend api when submit button is clicked', () => {
-            authSpy.authForgot.and.returnValue(throwError(
-                new HttpErrorResponse({status: 403, statusText: 'Forbidden'})
-            ));
+            const errResp = new HttpErrorResponse({status: 403, statusText: 'Forbidden'});
+            authSpy.authForgot.and.returnValue(throwError(errResp));
             setEmailInput(tEmail);
             page.submitButton.click();
             expect(authSpy.authForgot).toHaveBeenCalled();
