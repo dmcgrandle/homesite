@@ -15,6 +15,6 @@ export class Video {
     filename: string;         // filename without path
     fullPath: string;         // full path and filename of video
     posterPath: string;       // full path and filename of poster (video thumbnail)
-    caption: string;          // optional caption for video
+    caption?: string;          // optional caption for video
 };
   

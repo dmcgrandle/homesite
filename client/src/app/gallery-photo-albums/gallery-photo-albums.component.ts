@@ -14,7 +14,7 @@ import { PhotoAlbum, Photo } from '../_classes/photo-classes';
 })
 export class GalleryPhotoAlbumsComponent implements OnInit {
 
-    displayAlbums: Array<PhotoAlbum>;
+    displayAlbums: PhotoAlbum[];
     photosDisplayName: string;
 
     constructor(private media: MediaService,
@@ -28,11 +28,7 @@ export class GalleryPhotoAlbumsComponent implements OnInit {
         this.media.getPhotoAlbumsByURL(this.route.url).subscribe(
             (albums) => {
                 this.displayAlbums = albums;
-                if (this.media.curPhotoAlbum._id > 0) {
-                    this.photosDisplayName = this.media.curPhotoAlbum.name;
-                } else {
-                    this.photosDisplayName = ""
-                }
+                this.photosDisplayName = (this.media.curPhotoAlbum._id > 0) ? this.media.curPhotoAlbum.name: "";
             },
             (err) => this.errAlert('Problem getting albums!', err)
         );

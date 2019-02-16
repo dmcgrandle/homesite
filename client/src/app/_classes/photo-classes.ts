@@ -15,5 +15,5 @@ export class PhotoAlbum {
     filename: string;         // filename without path
     fullPath: string;         // full path and filename of photo
     thumbPath: string;        // full path and filename of thumbnail
-    caption: string;          // optional caption for photo
+    caption?: string;          // optional caption for photo
     };
