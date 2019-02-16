@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute, ParamMap, UrlTree } from '@angular/router';
 
-import { MediaService } from '../_services/media.service';
+import { MediaService } from '../shared/_services/media.service';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
 import { FullscreenOverlayContainer } from '../../../node_modules/@angular/cdk/overlay';
-import { Video } from '../_classes/video-classes';
-import { AuthService } from '../_services/auth.service';
+import { Video } from '../shared/_classes/video-classes';
+import { AuthService } from '../shared/_services/auth.service';
 
 
 @Component({

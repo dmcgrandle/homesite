@@ -11,8 +11,8 @@ import { take } from 'rxjs/operators';
 import * as fsaver from 'file-saver'; // import differently so we can spyOn methods more easily
 
 import { DownloadsComponent } from './downloads.component';
-import { DlFile } from '../_classes/fs-classes';
-import { AuthService } from '../_services/auth.service';
+import { DlFile } from '../shared/_classes/fs-classes';
+import { AuthService } from '../shared/_services/auth.service';
 import { map, elementAt } from 'rxjs/operators';
 import { DownloadProgressBarComponent } from '../download-progress-bar/download-progress-bar.component';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';

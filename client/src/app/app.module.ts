@@ -31,25 +31,28 @@ import { ManageUsersComponent } from './manage-users/manage-users.component';
 import { EditUserDialogComponent } from './edit-user-dialog/edit-user-dialog.component';
 import { AlertMessageDialogComponent } from './alert-message-dialog/alert-message-dialog.component';
 import { RegisterComponent } from './register/register.component';
-import { EqualDirective } from './_helpers/equal-validator';
+import { EqualDirective } from './shared/_helpers/equal-validator';
 import { ForgotDialogComponent } from './forgot-dialog/forgot-dialog.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { GalleryComponent } from './gallery/gallery.component';
-import { GalleryPhotoAlbumsComponent } from './gallery-photo-albums/gallery-photo-albums.component';
-import { GalleryPhotoPhotosComponent } from './gallery-photo-photos/gallery-photo-photos.component';
+
+import { PhotoModule } from './photo/photo.module';
+import { SharedModule } from './shared/shared.module';
+
+// import { GalleryPhotoAlbumsComponent } from './gallery-photo-albums/gallery-photo-albums.component';
+// import { GalleryPhotoPhotosComponent } from './gallery-photo-photos/gallery-photo-photos.component';
 import { GalleryVideoAlbumsComponent } from './gallery-video-albums/gallery-video-albums.component';
 import { GalleryVideoVideosComponent } from './gallery-video-videos/gallery-video-videos.component';
 import { GalleryVideoVideoComponent } from './gallery-video-video/gallery-video-video.component';
-import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
 import { AboutComponent } from './about/about.component';
 import { DownloadsComponent } from './downloads/downloads.component';
 
-import { MediaService } from './_services/media.service';
-import { AuthService } from './_services/auth.service';
-import { UrlHelperService } from './_services/url-helper.service';
+import { MediaService } from './shared/_services/media.service';
+import { AuthService } from './shared/_services/auth.service';
+import { UrlHelperService } from './shared/_services/url-helper.service';
+import { JwtInterceptor } from './shared/_services/jwt-interceptor';
 
-import { JwtInterceptor } from './_helpers/jwt-interceptor';
-import { SecurePipe } from './_helpers/secure.pipe';
 import { DownloadProgressBarComponent } from './download-progress-bar/download-progress-bar.component';
 
 
@@ -65,20 +68,20 @@ import { DownloadProgressBarComponent } from './download-progress-bar/download-p
         ForgotDialogComponent,
         ChangePasswordComponent,
         GalleryComponent,
-        GalleryPhotoAlbumsComponent,
-        GalleryPhotoPhotosComponent,
+        // GalleryPhotoAlbumsComponent,
+        // GalleryPhotoPhotosComponent,
         GalleryVideoAlbumsComponent,
         GalleryVideoVideosComponent,
         GalleryVideoVideoComponent,
-        PageNotFoundComponent,
         AboutComponent,
         DownloadsComponent,
-        SecurePipe,
         ManageUsersComponent,
         EditUserDialogComponent,
         DownloadProgressBarComponent
     ],
     imports: [
+        /* PhotoModule, */ // Lazy loaded
+        SharedModule.forRoot(),
         AppRoutingModule,
         BrowserModule,
         BrowserAnimationsModule,

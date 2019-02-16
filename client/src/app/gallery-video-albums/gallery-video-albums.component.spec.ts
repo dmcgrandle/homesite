@@ -4,7 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { SecurePipe } from '../_helpers/secure.pipe';
+import { SecurePipe } from '../shared/_helpers/secure.pipe';
 import { GalleryVideoAlbumsComponent } from './gallery-video-albums.component';
 
 // describe('GalleryVideoAlbumsComponent', () => {

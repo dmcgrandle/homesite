@@ -2,21 +2,21 @@ import { Component, EventEmitter, Directive, Output, OnInit, HostListener } from
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { VERSION } from '@angular/material';
+import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
 
-import { MediaService } from '../_services/media.service';
-import { AuthService } from '../_services/auth.service';
-import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
-import { FullscreenOverlayContainer } from '../../../node_modules/@angular/cdk/overlay';
-import { Photo } from '../_classes/photo-classes';
-import { KEY_CODE } from '../_classes/key-code-enum';
+import { MediaService } from '../../shared/_services/media.service';
+import { AuthService } from '../../shared/_services/auth.service';
+import { AlertMessageDialogComponent } from '../../alert-message-dialog/alert-message-dialog.component';
+import { Photo } from '../../shared/_classes/photo-classes';
+import { KEY_CODE } from '../../shared/_classes/key-code-enum';
 
 @Component({
-    selector: 'app-gallery-photo-photos',
-    templateUrl: './gallery-photo-photos.component.html',
-    styleUrls: ['./gallery-photo-photos.component.scss']
+    selector: 'photo-photos',
+    templateUrl: './photos.component.html',
+    styleUrls: ['./photos.component.scss']
 })
 
-export class GalleryPhotoPhotosComponent implements OnInit {
+export class PhotosComponent implements OnInit {
 
     //  version = VERSION;
     photos: Photo[];

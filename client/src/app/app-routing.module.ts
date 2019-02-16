@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { AuthService } from './_services/auth.service';
+import { AuthService } from './shared/_services/auth.service';
 import { LoginComponent } from './login/login.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { ManageUsersComponent } from './manage-users/manage-users.component';
@@ -9,22 +9,24 @@ import { GalleryComponent } from './gallery/gallery.component';
 import { GalleryVideoAlbumsComponent } from './gallery-video-albums/gallery-video-albums.component';
 import { GalleryVideoVideosComponent } from './gallery-video-videos/gallery-video-videos.component';
 import { GalleryVideoVideoComponent } from './gallery-video-video/gallery-video-video.component';
-import { GalleryPhotoAlbumsComponent } from './gallery-photo-albums/gallery-photo-albums.component';
-import { GalleryPhotoPhotosComponent } from './gallery-photo-photos/gallery-photo-photos.component';
-import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+// import { GalleryPhotoAlbumsComponent } from './gallery-photo-albums/gallery-photo-albums.component';
+// import { GalleryPhotoPhotosComponent } from './gallery-photo-photos/gallery-photo-photos.component';
+import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
 import { AboutComponent } from './about/about.component';
 import { DownloadsComponent } from './downloads/downloads.component';
 
 
-const appRoutes: Routes = [
+const routes: Routes = [
     { path: 'gallery', component: GalleryComponent, canActivate: [AuthService] },
-    { path: 'photoAlbums', component: GalleryPhotoAlbumsComponent, canActivate: [AuthService] }, 
+    { path: 'photo', loadChildren: './photo/photo.module#PhotoModule' },
+/*    { path: 'photoAlbums', component: GalleryPhotoAlbumsComponent, canActivate: [AuthService] }, 
     { path: 'photoAlbums', children: [
         { path: '**', component: GalleryPhotoAlbumsComponent, canActivate: [AuthService]}
     ]},
     { path: 'photos', children: [
         { path: '**', component: GalleryPhotoPhotosComponent, canActivate: [AuthService]}
     ]},
+*/
     { path: 'videoAlbums', component: GalleryVideoAlbumsComponent, canActivate: [AuthService] },
     { path: 'videoAlbums', children: [
         { path: '**', component: GalleryVideoAlbumsComponent, canActivate: [AuthService]}
@@ -47,13 +49,7 @@ const appRoutes: Routes = [
   ];
 
   @NgModule({
-    imports: [
-        RouterModule.forRoot(
-            appRoutes
-        )
-    ],
-    exports: [
-        RouterModule
-    ]
+    imports: [ RouterModule.forRoot(routes) ],
+    exports: [ RouterModule ]
   })
   export class AppRoutingModule {}

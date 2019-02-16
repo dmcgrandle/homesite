@@ -5,7 +5,7 @@ import { tap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpResponse, HttpEvent, HttpParams, HttpRequest } from '@angular/common/http';
 import { AES } from 'crypto-ts';
 
-import { AppConfig } from '../app.config';
+import { AppConfig } from '../../app.config';
 import { PhotoAlbum, Photo } from '../_classes/photo-classes';
 import { User } from '../_classes/user-classes';
 import { DlFile } from '../_classes/fs-classes';

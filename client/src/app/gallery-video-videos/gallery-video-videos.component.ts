@@ -3,11 +3,11 @@ import { Component, EventEmitter, Directive, Output, OnInit, HostListener } from
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
-import { MediaService } from '../_services/media.service';
+import { MediaService } from '../shared/_services/media.service';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
 import { FullscreenOverlayContainer } from '../../../node_modules/@angular/cdk/overlay';
-import { Video } from '../_classes/video-classes';
-import { KEY_CODE } from '../_classes/key-code-enum';
+import { Video } from '../shared/_classes/video-classes';
+import { KEY_CODE } from '../shared/_classes/key-code-enum';
 import { ParseTreeResult } from '../../../node_modules/@angular/compiler';
 
 @Component({

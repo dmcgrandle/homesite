@@ -6,11 +6,11 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
-import { MediaService } from '../_services/media.service';
+import { MediaService } from '../../shared/_services/media.service';
 import { MockMediaService, tPhoto, tPhotoAlbum, tVideo, tVideoAlbum } from './mock-media-service';
-import { PhotoAlbum, Photo } from '../_classes/photo-classes';
-import { VideoAlbum, Video } from '../_classes/video-classes';
-import { GalleryPhotoAlbumsComponent } from './gallery-photo-albums.component';
+import { PhotoAlbum, Photo } from '../../shared/_classes/photo-classes';
+import { VideoAlbum, Video } from '../../shared/_classes/video-classes';
+import { AlbumsComponent } from './albums.component';
 
 @Component({selector: 'blank', template: ``}) 
 class BlankComp {}
@@ -18,18 +18,18 @@ class BlankComp {}
 @Pipe({ name: 'secure' })
 class MockSecurePipe implements PipeTransform { transform(s) { return s } }
 
-describe('GalleryPhotoAlbumsListComponent', () => {
+describe('PhotoAlbumsListComponent', () => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate', 'createUrlTree']);
     let mockFlex = jasmine.createSpyObj({isActive: true, asObservable: of({mqAlias: 'lg'})});
     const spyParamMap = jasmine.createSpyObj({get: null});
     const mockActivatedRoute = { paramMap: of(spyParamMap), url: '' };
     let reloadSpy: jasmine.Spy;
-    let component: GalleryPhotoAlbumsComponent;
-    let fixture: ComponentFixture<GalleryPhotoAlbumsComponent>;
+    let component: AlbumsComponent;
+    let fixture: ComponentFixture<AlbumsComponent>;
     let page: Page;
 
     function createComponent(): Promise<any> {
-        fixture = TestBed.createComponent(GalleryPhotoAlbumsComponent);
+        fixture = TestBed.createComponent(AlbumsComponent);
         component = fixture.componentInstance;
         page = new Page(fixture);
         fixture.detectChanges();
@@ -38,7 +38,7 @@ describe('GalleryPhotoAlbumsListComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [GalleryPhotoAlbumsComponent, MockSecurePipe, BlankComp],
+            declarations: [AlbumsComponent, MockSecurePipe, BlankComp],
             imports: [MatCardModule, MatProgressSpinnerModule, MatDialogModule, HttpClientModule,
                       RouterTestingModule.withRoutes([
                         { path: 'photoAlbums', component: BlankComp },
@@ -65,9 +65,9 @@ class Page {
     get photoTitle() { return this.queryText<HTMLElement>('photo gallery'); }
     get videoTitle() { return this.queryText<HTMLElement>('video gallery'); }
 
-    private fixture: ComponentFixture<GalleryPhotoAlbumsComponent>;
+    private fixture: ComponentFixture<AlbumsComponent>;
   
-    constructor(fixture: ComponentFixture<GalleryPhotoAlbumsComponent>) {
+    constructor(fixture: ComponentFixture<AlbumsComponent>) {
         this.fixture = fixture;
     }
   

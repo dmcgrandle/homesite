@@ -2,9 +2,9 @@ import { Component, Inject, OnInit, OnDestroy, ViewEncapsulation, ViewChild } fr
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { NG_VALIDATORS, Validator, FormGroup, ValidatorFn, NgForm } from '@angular/forms';
 
-import { User } from '../_classes/user-classes';
-import { EqualDirective } from '../_helpers/equal-validator';
-import { AuthService } from '../_services/auth.service';
+import { User } from '../shared/_classes/user-classes';
+import { EqualDirective } from '../shared/_helpers/equal-validator';
+import { AuthService } from '../shared/_services/auth.service';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
 import { Subscription } from 'rxjs';
 

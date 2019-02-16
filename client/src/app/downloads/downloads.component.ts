@@ -9,8 +9,8 @@ import { saveAs } from 'file-saver';
 
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
 import { DownloadProgressBarComponent } from '../download-progress-bar/download-progress-bar.component';
-import { DlFile } from '../_classes/fs-classes';
-import { AuthService } from '../_services/auth.service';
+import { DlFile } from '../shared/_classes/fs-classes';
+import { AuthService } from '../shared/_services/auth.service';
 
 
 @Component({

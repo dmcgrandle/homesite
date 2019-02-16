@@ -9,7 +9,7 @@ import { AuthService } from './auth.service';
 import { User } from '../_classes/user-classes';
 import { DlFile } from '../_classes/fs-classes';
 import { LoginResponse } from '../_classes/server-response-classes';
-import { AppConfig } from '../app.config';
+import { AppConfig } from '../../app.config';
 import { RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
 
 // Mock classes

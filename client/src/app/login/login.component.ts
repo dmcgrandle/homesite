@@ -3,8 +3,8 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router } from '@angular/router';
 
 import { AppConfig } from '../app.config';
-import { User } from '../_classes/user-classes';
-import { AuthService } from '../_services/auth.service';
+import { User } from '../shared/_classes/user-classes';
+import { AuthService } from '../shared/_services/auth.service';
 import { RegisterComponent } from '../register/register.component';
 import { ForgotDialogComponent } from '../forgot-dialog/forgot-dialog.component';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';

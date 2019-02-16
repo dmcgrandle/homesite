@@ -7,8 +7,8 @@ import { DOWN_ARROW, ENTER } from '@angular/cdk/keycodes';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
 
-import { User } from '../_classes/user-classes';
-import { AuthService } from '../_services/auth.service';
+import { User } from '../shared/_classes/user-classes';
+import { AuthService } from '../shared/_services/auth.service';
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
 import { EditUserDialogComponent, DialogData } from './edit-user-dialog.component';
 

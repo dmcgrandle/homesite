@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { PhotoAlbum, Photo } from '../_classes/photo-classes';
 import { VideoAlbum, Video } from '../_classes/video-classes';
-import { UrlSegment } from '../../../node_modules/@angular/router';
+import { UrlSegment } from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
@@ -54,7 +54,7 @@ export class MediaService {
 
     public getPhotoAlbumByPath(path: string): Observable<PhotoAlbum> {
         let pathString = '(' + path.split('/').join('+') + ')';
-        if (pathString == '(photoAlbums)') pathString = '()'; // 'photoAlbums' is our root path.
+        if (pathString == '(albums)') pathString = '()'; // 'albums' is our root path.
         return <Observable<PhotoAlbum>>this.http.get('/api/photos/album-by-path/' + pathString);
     };
 

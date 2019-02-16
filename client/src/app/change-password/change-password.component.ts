@@ -2,8 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material';
 
-import { User } from '../_classes/user-classes';
-import { AuthService } from '../_services/auth.service';
+import { User } from '../shared/_classes/user-classes';
+import { AuthService } from '../shared/_services/auth.service';
 import { AlertMessageDialogComponent, DialogData } from '../alert-message-dialog/alert-message-dialog.component';
 import { NgForm } from '@angular/forms';
 

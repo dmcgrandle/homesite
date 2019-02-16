@@ -1,7 +1,7 @@
 import { of } from 'rxjs';
 
-import { PhotoAlbum, Photo } from '../_classes/photo-classes';
-import { VideoAlbum, Video } from '../_classes/video-classes';
+import { PhotoAlbum, Photo } from '../../shared/_classes/photo-classes';
+import { VideoAlbum, Video } from '../../shared/_classes/video-classes';
 
 export const tPhoto: Photo = {
     _id: 0,

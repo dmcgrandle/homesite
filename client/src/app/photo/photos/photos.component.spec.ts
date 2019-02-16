@@ -3,10 +3,10 @@ import { MatIconModule, MatCardModule, MatDialogModule } from '@angular/material
 import { HttpClientModule } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { SecurePipe } from '../_helpers/secure.pipe';
-import { GalleryPhotoPhotosComponent } from './gallery-photo-photos.component';
+import { SecurePipe } from '../../shared/_helpers/secure.pipe';
+import { PhotosComponent } from './photos.component';
 
-// describe('GalleryPhotoPhotosComponent', () => {
+// describe('PhotosComponent', () => {
 //     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
 //     const routeSpy = jasmine.createSpyObj('Route', {
 //         snapshot: {
@@ -20,12 +20,12 @@ import { GalleryPhotoPhotosComponent } from './gallery-photo-photos.component';
 //             }
 //         }
 //     });
-//     let component: GalleryPhotoPhotosComponent;
-//     let fixture: ComponentFixture<GalleryPhotoPhotosComponent>;
+//     let component: PhotosComponent;
+//     let fixture: ComponentFixture<PhotosComponent>;
 
 //     beforeEach(async(() => {
 //         TestBed.configureTestingModule({
-//             declarations: [GalleryPhotoPhotosComponent, SecurePipe],
+//             declarations: [PhotosComponent, SecurePipe],
 //             imports: [MatIconModule, MatCardModule, HttpClientModule, MatDialogModule],
 //             providers: [
 //                 { provide: Router, useValue: routerSpy },
@@ -36,7 +36,7 @@ import { GalleryPhotoPhotosComponent } from './gallery-photo-photos.component';
 //     }));
 
 //     beforeEach(() => {
-//         fixture = TestBed.createComponent(GalleryPhotoPhotosComponent);
+//         fixture = TestBed.createComponent(PhotosComponent);
 //         component = fixture.componentInstance;
 // //        fixture.detectChanges();
 //     });

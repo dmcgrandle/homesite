@@ -6,8 +6,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
 
-import { AuthService } from '../_services/auth.service';
-import { User } from '../_classes/user-classes';
+import { AuthService } from '../shared/_services/auth.service';
+import { User } from '../shared/_classes/user-classes';
 import { ChangePasswordComponent } from './change-password.component';
 import { of, throwError } from 'rxjs';
 
