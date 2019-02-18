@@ -1,10 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
-    MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatPaginatorModule,
-    MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
-    MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MatMenuModule,
-    MatTableModule, MatSortModule, MatProgressBarModule, MatTabsModule, MatExpansionModule
+import { MatCardModule, MatIconModule, MatProgressSpinnerModule
 } from '@angular/material';
 // import { MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
 //     MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatPaginatorModule,
@@ -39,9 +35,6 @@ import { PhotosComponent } from './photos/photos.component';
         // MatMenuModule, MatPaginatorModule, MatProgressSpinnerModule, MatSortModule,
         // MatProgressBarModule, MatTabsModule, MatExpansionModule
     ],
-    declarations: [
-        AlbumsComponent,
-        PhotosComponent
-    ]
+    declarations: [ AlbumsComponent, PhotosComponent ]
 })
 export class PhotoModule { }

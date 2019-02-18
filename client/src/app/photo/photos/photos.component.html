@@ -1,6 +1,6 @@
 <div id="full-screen" *ngIf="photos">
   <div class="title" fxLayout="row">
-      <h2><span>{{media.curPhotoAlbum.name}}:</span></h2>
+      <h2><span>{{api.curAlbum.name}}:</span></h2>
       <span class="fill-space"></span>
       <a fxHide.xs [download]="photos[curPhotoIndex].filename" [href]="photos[curPhotoIndex].fullPath | secure">
           <mat-icon>vertical_align_bottom</mat-icon>

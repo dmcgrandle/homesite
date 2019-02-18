@@ -3,22 +3,22 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Location } from '@angular/common';
 
-import { MediaService } from '../shared/_services/media.service';
-import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
-import { VideoAlbum, Video } from '../shared/_classes/video-classes';
+import { APIService } from '../_services/api.service';
+import { AlertMessageDialogComponent } from '../../alert-message-dialog/alert-message-dialog.component';
+import { VideoAlbum, Video } from '../_helpers/classes';
 
 
 @Component({
-    selector: 'app-gallery-video-albums',
-    templateUrl: './gallery-video-albums.component.html',
-    styleUrls: ['./gallery-video-albums.component.scss']
+    selector: 'video-albums',
+    templateUrl: './albums.component.html',
+    styleUrls: ['./albums.component.scss']
 })
-export class GalleryVideoAlbumsComponent implements OnInit, AfterViewInit {
+export class AlbumsComponent implements OnInit, AfterViewInit {
 
     displayAlbums: Array<VideoAlbum>;
     videosDisplayName: string;
 
-    constructor(private media: MediaService,
+    constructor(private api: APIService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog,
@@ -26,11 +26,11 @@ export class GalleryVideoAlbumsComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         // this observable changes on init, or when nav button hit (back or fwd)
-        this.media.getVideoAlbumsByURL(this.route.url).subscribe(
+        this.api.getVideoAlbumsByURL(this.route.url).subscribe(
             (albums) => {
                 this.displayAlbums = albums;
-                if (this.media.curVideoAlbum._id > 0) {
-                    this.videosDisplayName = this.media.curVideoAlbum.name;
+                if (this.api.curVideoAlbum._id > 0) {
+                    this.videosDisplayName = this.api.curVideoAlbum.name;
                 } else {
                     this.videosDisplayName = ""
                 }
@@ -44,12 +44,12 @@ export class GalleryVideoAlbumsComponent implements OnInit, AfterViewInit {
     }
 
     public updateDisplayAlbum(album: VideoAlbum) {
-        this.media.curVideoAlbum = album; // go down one level (directory).
+        this.api.curVideoAlbum = album; // go down one level (directory).
         if (album.albumIds.length > 0) {// means this album contains other albums
-            this.media.getVideoAlbumsByIdArray(album.albumIds).subscribe(
+            this.api.getVideoAlbumsByIdArray(album.albumIds).subscribe(
                 (albums) => { // get the albums array for this new album
                     this.displayAlbums = albums; // set albums to display
-                    const url = 'videoAlbums' + this.router.createUrlTree([album.path]).toString();
+                    const url = 'video/albums' + this.router.createUrlTree([album.path]).toString();
                     this.location.go(url); // Update the URL in the browser window without navigating.
                 },
                 (err) => this.errAlert('Problem getting albums!', err)
@@ -60,7 +60,7 @@ export class GalleryVideoAlbumsComponent implements OnInit, AfterViewInit {
     };
 
     public navToVideos(album: VideoAlbum) {
-        return this.router.navigate(['/videos/' + album.path]);
+        return this.router.navigate(['/video/videos/' + album.path]);
     }
 
     private errAlert(msg: string, err) {

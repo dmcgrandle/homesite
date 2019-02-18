@@ -6,10 +6,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
-import { MediaService } from '../../shared/_services/media.service';
-import { MockMediaService, tPhoto, tPhotoAlbum, tVideo, tVideoAlbum } from './mock-media-service';
-import { PhotoAlbum, Photo } from '../../shared/_classes/photo-classes';
-import { VideoAlbum, Video } from '../../shared/_classes/video-classes';
+import { APIService } from '../_services/api.service';
+import { MockAPIService, tPhoto, tAlbum } from '../_services/mock-api-service';
+import { Album, Photo } from '../_helpers/classes';
 import { AlbumsComponent } from './albums.component';
 
 @Component({selector: 'blank', template: ``}) 
@@ -18,7 +17,7 @@ class BlankComp {}
 @Pipe({ name: 'secure' })
 class MockSecurePipe implements PipeTransform { transform(s) { return s } }
 
-describe('PhotoAlbumsListComponent', () => {
+describe('AlbumsListComponent', () => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate', 'createUrlTree']);
     let mockFlex = jasmine.createSpyObj({isActive: true, asObservable: of({mqAlias: 'lg'})});
     const spyParamMap = jasmine.createSpyObj({get: null});
@@ -41,11 +40,11 @@ describe('PhotoAlbumsListComponent', () => {
             declarations: [AlbumsComponent, MockSecurePipe, BlankComp],
             imports: [MatCardModule, MatProgressSpinnerModule, MatDialogModule, HttpClientModule,
                       RouterTestingModule.withRoutes([
-                        { path: 'photoAlbums', component: BlankComp },
+                        { path: 'albums', component: BlankComp },
                         { path: 'videoAlbums', component: BlankComp },
                     ])],
             providers: [
-                { provide: MediaService, useClass: MockMediaService },
+                { provide: APIService, useClass: MockAPIService },
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
                 { provide: Router, useValue: routerSpy }
             ]

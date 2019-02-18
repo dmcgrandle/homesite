@@ -1,11 +1,15 @@
+// imports from Angular and other libraries:
 import { Component, OnInit, HostListener } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Location } from '@angular/common';
 
-import { MediaService } from '../../shared/_services/media.service';
+// imports from homesite outside of photo module:
 import { AlertMessageDialogComponent } from '../../alert-message-dialog/alert-message-dialog.component';
-import { PhotoAlbum, Photo } from '../../shared/_classes/photo-classes';
+
+// imports from within photo module:
+import { APIService } from '../_services/api.service';
+import { Album, Photo } from '../_helpers/classes';
 
 @Component({
     selector: 'photo-albums',
@@ -14,10 +18,10 @@ import { PhotoAlbum, Photo } from '../../shared/_classes/photo-classes';
 })
 export class AlbumsComponent implements OnInit {
 
-    displayAlbums: PhotoAlbum[];
+    displayAlbums: Album[];
     photosDisplayName: string;
 
-    constructor(private media: MediaService,
+    constructor(private api: APIService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog,
@@ -25,19 +29,19 @@ export class AlbumsComponent implements OnInit {
 
     ngOnInit() {
         // this observable changes on init, or when nav button hit (back or fwd)
-        this.media.getPhotoAlbumsByURL(this.route.url).subscribe(
+        this.api.getAlbumsByURL(this.route.url).subscribe(
             (albums) => {
                 this.displayAlbums = albums;
-                this.photosDisplayName = (this.media.curPhotoAlbum._id > 0) ? this.media.curPhotoAlbum.name: "";
+                this.photosDisplayName = (this.api.curAlbum._id > 0) ? this.api.curAlbum.name: "";
             },
             (err) => this.errAlert('Problem getting albums!', err)
         );
     };
 
-    public updateDisplayAlbum(album: PhotoAlbum) {
-        this.media.curPhotoAlbum = album; // go down one level (directory).
+    public updateDisplayAlbum(album: Album) {
+        this.api.curAlbum = album; // go down one level (directory).
         if (album.albumIds.length > 0) {// means this album contains other albums
-            this.media.getPhotoAlbumsByIdArray(album.albumIds).subscribe(
+            this.api.getAlbumsByIdArray(album.albumIds).subscribe(
                 (albums) => { // get the albums array for this new album
                     this.displayAlbums = albums; // set albums to display
                     const url = 'photo/albums' + this.router.createUrlTree([album.path]).toString();
@@ -50,7 +54,7 @@ export class AlbumsComponent implements OnInit {
         }
     };
 
-    public navToPhotos(album: PhotoAlbum) {
+    public navToPhotos(album: Album) {
         return this.router.navigate(['/photo/photos/' + album.path]);
     }
 

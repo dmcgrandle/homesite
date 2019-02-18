@@ -6,7 +6,7 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpEvent, HttpParams, HttpReque
 import { AES } from 'crypto-ts';
 
 import { AppConfig } from '../../app.config';
-import { PhotoAlbum, Photo } from '../_classes/photo-classes';
+// import { PhotoAlbum, Photo } from '../../photo/_helpers/photo-classes';
 import { User } from '../_classes/user-classes';
 import { DlFile } from '../_classes/fs-classes';
 import { LoginResponse } from '../_classes/server-response-classes';

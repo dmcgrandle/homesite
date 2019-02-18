@@ -7,8 +7,8 @@
         <mat-menu class="gallery-menu" #galleryMenu="matMenu">
             <button mat-menu-item routerLink="/">Gallery Home</button>
             <mat-divider class="indent-both"></mat-divider>
-            <button mat-menu-item routerLink="/videoAlbums">Video Gallery</button>
-            <button mat-menu-item routerLink="/photoAlbums">Photo Gallery</button>
+            <button mat-menu-item routerLink="/video/albums">Video Gallery</button>
+            <button mat-menu-item routerLink="/photo/albums">Photo Gallery</button>
         </mat-menu>
         <a mat-button routerLink="/about" routerLinkActive="active">About</a>
     </div>
@@ -25,8 +25,8 @@
     <mat-menu #xsMenu="matMenu" fxLayout="column">
         <button mat-menu-item routerLink="/gallery" routerLinkActive="active">Home</button>
         <mat-divider class="indent-both"></mat-divider>
-        <button mat-menu-item routerLink="/photoAlbums" routerLinkActive="active">Photo Gallery</button>
-        <button mat-menu-item routerLink="/videoAlbums" routerLinkActive="active">Video Gallery</button>
+        <button mat-menu-item routerLink="/photo/albums" routerLinkActive="active">Photo Gallery</button>
+        <button mat-menu-item routerLink="/video/albums" routerLinkActive="active">Video Gallery</button>
         <button mat-menu-item routerLink="/downloads" routerLinkActive="active">Downloads</button>
         <mat-divider class="indent-both"></mat-divider>
         <button mat-menu-item routerLink="/about" routerLinkActive="active">About</button>

@@ -41,14 +41,14 @@ import { SharedModule } from './shared/shared.module';
 
 // import { GalleryPhotoAlbumsComponent } from './gallery-photo-albums/gallery-photo-albums.component';
 // import { GalleryPhotoPhotosComponent } from './gallery-photo-photos/gallery-photo-photos.component';
-import { GalleryVideoAlbumsComponent } from './gallery-video-albums/gallery-video-albums.component';
-import { GalleryVideoVideosComponent } from './gallery-video-videos/gallery-video-videos.component';
-import { GalleryVideoVideoComponent } from './gallery-video-video/gallery-video-video.component';
+// import { GalleryVideoAlbumsComponent } from './gallery-video-albums/gallery-video-albums.component';
+// import { GalleryVideoVideosComponent } from './gallery-video-videos/gallery-video-videos.component';
+// import { GalleryVideoVideoComponent } from './gallery-video-video/gallery-video-video.component';
 import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
 import { AboutComponent } from './about/about.component';
 import { DownloadsComponent } from './downloads/downloads.component';
 
-import { MediaService } from './shared/_services/media.service';
+// import { MediaService } from './shared/_services/media.service';
 import { AuthService } from './shared/_services/auth.service';
 import { UrlHelperService } from './shared/_services/url-helper.service';
 import { JwtInterceptor } from './shared/_services/jwt-interceptor';
@@ -68,11 +68,6 @@ import { DownloadProgressBarComponent } from './download-progress-bar/download-p
         ForgotDialogComponent,
         ChangePasswordComponent,
         GalleryComponent,
-        // GalleryPhotoAlbumsComponent,
-        // GalleryPhotoPhotosComponent,
-        GalleryVideoAlbumsComponent,
-        GalleryVideoVideosComponent,
-        GalleryVideoVideoComponent,
         AboutComponent,
         DownloadsComponent,
         ManageUsersComponent,
@@ -81,6 +76,7 @@ import { DownloadProgressBarComponent } from './download-progress-bar/download-p
     ],
     imports: [
         /* PhotoModule, */ // Lazy loaded
+        /* VideoModule, */ // Lazy loaded
         SharedModule.forRoot(),
         AppRoutingModule,
         BrowserModule,

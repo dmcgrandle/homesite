@@ -1,14 +1,19 @@
+// imports from Angular and other libraries:
 import { Component, EventEmitter, Directive, Output, OnInit, HostListener } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { VERSION } from '@angular/material';
 import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
 
-import { MediaService } from '../../shared/_services/media.service';
+// imports from homesite outside of photo module:
 import { AuthService } from '../../shared/_services/auth.service';
-import { AlertMessageDialogComponent } from '../../alert-message-dialog/alert-message-dialog.component';
-import { Photo } from '../../shared/_classes/photo-classes';
 import { KEY_CODE } from '../../shared/_classes/key-code-enum';
+import { AlertMessageDialogComponent } from '../../alert-message-dialog/alert-message-dialog.component';
+
+// imports from within photo module:
+import { Photo } from '../_helpers/classes';
+import { APIService } from '../_services/api.service';
+
 
 @Component({
     selector: 'photo-photos',
@@ -22,19 +27,19 @@ export class PhotosComponent implements OnInit {
     photos: Photo[];
     curPhotoIndex: number;
 
-    constructor(private media: MediaService,
+    constructor(private api: APIService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog) { }
 
     ngOnInit() {
         // If called from gallery-photo-albums component then the
-        // media.curPhotoAlbum variable will already be set up. If not
+        // api.curAlbum variable will already be set up. If not
         // we were probably called by a browser typed link or refresh.
-        if (this.media.curPhotoAlbum) {
-            this.setCurrentValues(this.media.curPhotoAlbum.photoIds);
+        if (this.api.curAlbum) {
+            this.setCurrentValues(this.api.curAlbum.photoIds);
         } else {// We need to load the curAlbum from the url sent.
-            this.media.getPhotoAlbumByURL(this.route.url).subscribe(
+            this.api.getAlbumByURL(this.route.url).subscribe(
                 (album) => this.setCurrentValues(album.photoIds),
                 (err) => this.errAlert('Problem getting albums!', err)
             );
@@ -42,7 +47,7 @@ export class PhotosComponent implements OnInit {
     }
 
     private setCurrentValues(photoIds: number[]) {
-        this.media.getPhotosByIdArray(photoIds).subscribe(photos => this.photos = photos);
+        this.api.getPhotosByIdArray(photoIds).subscribe(photos => this.photos = photos);
         this.curPhotoIndex = 0; //start at first photo
     }
 
@@ -62,7 +67,7 @@ export class PhotosComponent implements OnInit {
             const numThumbsDisplayed = windowWidth / thumbWidth - 1;
             const numThumbsToLeftOfCenter = this.curPhotoIndex - numThumbsDisplayed / 2;
             thumbsE.scrollLeft = numThumbsToLeftOfCenter * thumbWidth;
-            //      thumbE.scrollIntoView({behavior: "instant", block: "center", inline: "center"})
+            // thumbE.scrollIntoView({behavior: "instant", block: "center", inline: "center"})
             return "selected"; // changes the id property of this element so css styles can outline it
         }
         return null;
@@ -75,14 +80,14 @@ export class PhotosComponent implements OnInit {
             switch (event.keyCode) { // set nextIndex to where we are going next
                 case KEY_CODE.RIGHT_ARROW:
                 case KEY_CODE.DOWN_ARROW:
-                    nextIndex = (this.curPhotoIndex === this.media.curPhotoAlbum.photoIds.length - 1) ? 0 : this.curPhotoIndex + 1;
+                    nextIndex = (this.curPhotoIndex === this.api.curAlbum.photoIds.length - 1) ? 0 : this.curPhotoIndex + 1;
                     break;
                 case KEY_CODE.LEFT_ARROW:
                 case KEY_CODE.UP_ARROW:
-                    nextIndex = (this.curPhotoIndex === 0) ? this.media.curPhotoAlbum.photoIds.length - 1 : this.curPhotoIndex - 1;
+                    nextIndex = (this.curPhotoIndex === 0) ? this.api.curAlbum.photoIds.length - 1 : this.curPhotoIndex - 1;
                     break;
                 case KEY_CODE.END:
-                    nextIndex = this.media.curPhotoAlbum.photoIds.length - 1;
+                    nextIndex = this.api.curAlbum.photoIds.length - 1;
                     break;
                 case KEY_CODE.HOME:
                     nextIndex = 0;
@@ -95,7 +100,7 @@ export class PhotosComponent implements OnInit {
                     break;
             }
             this.curPhotoIndex = nextIndex;
-            //      this.media.getPhotoById(this.media.curPhotoAlbum.photoIds[nextIndex])
+            //      this.api.getPhotoById(this.api.curAlbum.photoIds[nextIndex])
             //        .subscribe(photo => this.curPhotoIndex = photo);
         }
     }

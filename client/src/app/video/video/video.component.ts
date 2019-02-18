@@ -1,25 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute, ParamMap, UrlTree } from '@angular/router';
+import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
 
-import { MediaService } from '../shared/_services/media.service';
-import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
-import { FullscreenOverlayContainer } from '../../../node_modules/@angular/cdk/overlay';
-import { Video } from '../shared/_classes/video-classes';
-import { AuthService } from '../shared/_services/auth.service';
+import { AlertMessageDialogComponent } from '../../alert-message-dialog/alert-message-dialog.component';
+// import { AuthService } from '../../shared/_services/auth.service';
 
+import { APIService } from '../_services/api.service';
+import { Video } from '../_helpers/classes';
 
 @Component({
-    selector: 'app-gallery-video-video',
-    templateUrl: './gallery-video-video.component.html',
-    styleUrls: ['./gallery-video-video.component.scss']
+    selector: 'video-video',
+    templateUrl: './video.component.html',
+    styleUrls: ['./video.component.scss']
 })
-export class GalleryVideoVideoComponent implements OnInit {
+export class VideoComponent implements OnInit {
 
     video: Video;
     loading: boolean = true;
 
-    constructor(private media: MediaService,
+    constructor(private api: APIService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog) { }
@@ -33,13 +33,13 @@ export class GalleryVideoVideoComponent implements OnInit {
             console.log('segments passed were: ');
             console.log(segments);
         })
-        if (this.media.curVideo) {
-            this.video = this.media.curVideo;
+        if (this.api.curVideo) {
+            this.video = this.api.curVideo;
             console.log('video is: ');
             console.log(this.video);
             this.loading = false;
         } else {// We need to load video from the url sent.
-            this.media.getVideoByURL(this.route.url).subscribe(
+            this.api.getVideoByURL(this.route.url).subscribe(
                 (video) => {
                     this.video = video;
                     this.loading = false;
