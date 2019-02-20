@@ -6,8 +6,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
 
-import { AuthService } from '../shared/_services/auth.service';
-import { User } from '../shared/_classes/user-classes';
+import { AuthService } from '../_services/auth.service';
+import { User } from '../_helpers/classes';
 import { ChangePasswordComponent } from './change-password.component';
 import { of, throwError } from 'rxjs';
 
@@ -146,7 +146,7 @@ xdescribe('ChangePasswordComponent', () => {
         });
         it('should successfully try to navigate back to login when dialog closes', () => {
             expect(router.navigate).toHaveBeenCalled();
-            expect(router.navigate).toHaveBeenCalledWith(['/login']);
+            expect(router.navigate).toHaveBeenCalledWith(['/user/login']);
         });
     });
 

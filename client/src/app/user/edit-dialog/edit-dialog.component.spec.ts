@@ -7,23 +7,23 @@ import { DOWN_ARROW, ENTER } from '@angular/cdk/keycodes';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
 
-import { User } from '../shared/_classes/user-classes';
-import { AuthService } from '../shared/_services/auth.service';
-import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
-import { EditUserDialogComponent, DialogData } from './edit-user-dialog.component';
+import { User } from '../_helpers/classes';
+import { AuthService } from '../_services/auth.service';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
+import { EditDialogComponent, DialogData } from './edit-dialog.component';
 
-xdescribe('EditUserDialogComponent', () => {
+xdescribe('EditDialogComponent', () => {
     const testUser: User = new User();
     const mockDialogRef = jasmine.createSpyObj('mockDialogRef', ['close']);
     const mockDialogData: DialogData = { user: testUser};
     const authSpy = jasmine.createSpyObj({ authUpdateUser: of(testUser) });
-    let component: EditUserDialogComponent;
-    let fixture: ComponentFixture<EditUserDialogComponent>;
+    let component: EditDialogComponent;
+    let fixture: ComponentFixture<EditDialogComponent>;
     let dialogSpy: jasmine.Spy;
     let page: Page; // declared at the end of this file
 
     function createComponent(): Promise<any> {
-        fixture = TestBed.createComponent(EditUserDialogComponent);
+        fixture = TestBed.createComponent(EditDialogComponent);
         component = fixture.componentInstance;
         page = new Page(fixture);
         // 1st change detection triggers ngOnInit
@@ -36,7 +36,7 @@ xdescribe('EditUserDialogComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [EditUserDialogComponent],
+            declarations: [EditDialogComponent],
             providers: [
                 { provide: MatDialogRef, useValue: mockDialogRef },
                 { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
@@ -47,7 +47,7 @@ xdescribe('EditUserDialogComponent', () => {
         });
         TestBed.overrideModule(BrowserDynamicTestingModule, {
             set: {
-                entryComponents: [EditUserDialogComponent]
+                entryComponents: [EditDialogComponent]
             }
         })
         .compileComponents();
@@ -60,7 +60,7 @@ xdescribe('EditUserDialogComponent', () => {
     });
 
     it('should create', () => {
-        fixture = TestBed.createComponent(EditUserDialogComponent);
+        fixture = TestBed.createComponent(EditDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
         expect(component).toBeTruthy();
@@ -68,7 +68,7 @@ xdescribe('EditUserDialogComponent', () => {
 
     describe('Methods', () => {
         beforeEach(() => {
-            fixture = TestBed.createComponent(EditUserDialogComponent);
+            fixture = TestBed.createComponent(EditDialogComponent);
             component = fixture.componentInstance;
             fixture.detectChanges();
         });
@@ -221,9 +221,9 @@ class Page {
     get verifyPassInput()  { return this.queryAllInputs('verify'); }
     get dialogContainer()  { return this.queryParentAll<HTMLElement>('.edit-user-container'); }
 
-    private fixture: ComponentFixture<EditUserDialogComponent>;
+    private fixture: ComponentFixture<EditDialogComponent>;
   
-    constructor(fixture: ComponentFixture<EditUserDialogComponent>) {
+    constructor(fixture: ComponentFixture<EditDialogComponent>) {
         this.fixture = fixture;
     }
   

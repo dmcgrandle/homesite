@@ -3,16 +3,16 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subject } from 'rxjs';
 
-import { User } from '../shared/_classes/user-classes';
-import { AuthService } from '../shared/_services/auth.service';
-import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
+import { User } from '../_helpers/classes';
+import { AuthService } from '../_services/auth.service';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
 export interface DialogData {
     username: string;
 }
 
 @Component({
-    selector: 'app-forgot-dialog',
+    selector: 'users-forgot-dialog',
     templateUrl: './forgot-dialog.component.html',
     styleUrls: ['./forgot-dialog.component.scss']
 })

@@ -5,7 +5,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Location } from '@angular/common';
 
 // imports from homesite outside of photo module:
-import { AlertMessageDialogComponent } from '../../alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
 // imports from within photo module:
 import { APIService } from '../_services/api.service';

@@ -7,9 +7,9 @@ import { AES } from 'crypto-ts';
 
 import { AppConfig } from '../../app.config';
 // import { PhotoAlbum, Photo } from '../../photo/_helpers/photo-classes';
-import { User } from '../_classes/user-classes';
-import { DlFile } from '../_classes/fs-classes';
-import { LoginResponse } from '../_classes/server-response-classes';
+import { User } from '../_helpers/classes';
+import { DlFile } from '../../shared/_classes/fs-classes';
+import { LoginResponse } from '../../shared/_classes/server-response-classes';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService implements CanActivate {
@@ -34,7 +34,7 @@ export class AuthService implements CanActivate {
             return true;
         }
         this.setAttemptedURL(state.url); // save URL user was trying to nav to ...
-        this.router.navigate(['/login']);
+        this.router.navigate(['/user/login']);
         return false;
     }
 

@@ -2,13 +2,13 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material';
 
-import { User } from '../shared/_classes/user-classes';
-import { AuthService } from '../shared/_services/auth.service';
-import { AlertMessageDialogComponent, DialogData } from '../alert-message-dialog/alert-message-dialog.component';
+import { User } from '../_helpers/classes';
+import { AuthService } from '../_services/auth.service';
+import { AlertMessageDialogComponent, DialogData } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 import { NgForm } from '@angular/forms';
 
 @Component({
-    selector: 'app-change-password',
+    selector: 'users-change-password',
     templateUrl: './change-password.component.html',
     styleUrls: ['./change-password.component.scss']
 })
@@ -77,7 +77,7 @@ export class ChangePasswordComponent implements OnInit {
         const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
             data: { alertMessage: err.error, showCancel: false }
         });
-        dialogRef.afterClosed().subscribe(() => this.router.navigate(['/login']));
+        dialogRef.afterClosed().subscribe(() => this.router.navigate(['/user/login']));
     }
 }
 /* Note: this form is simple to validate without using the built in angular

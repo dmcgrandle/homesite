@@ -4,7 +4,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 // import { ParseTreeResult } from '@angular/compiler';
 
 import { APIService } from '../_services/api.service';
-import { AlertMessageDialogComponent } from '../../alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
 import { Video } from '../_helpers/classes';
 import { KEY_CODE } from '../../shared/_classes/key-code-enum';

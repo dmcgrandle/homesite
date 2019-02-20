@@ -6,8 +6,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { AppConfig } from '../app.config';
-import { ManageUsersComponent } from './manage-users.component';
+import { AppConfig } from '../../app.config';
+import { ManageComponent } from './manage.component';
 
 // describe('ManageUsersComponent', () => {
 //     const configSpy = jasmine.createSpyObj({

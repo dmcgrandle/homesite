@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { OverlayModule, OverlayContainer, FullscreenOverlayContainer } from '@angular/cdk/overlay';
+
 import { MatCardModule, MatIconModule, MatProgressSpinnerModule
 } from '@angular/material';
 // import { MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
@@ -11,6 +13,7 @@ import { MatCardModule, MatIconModule, MatProgressSpinnerModule
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { SharedModule } from '../shared/shared.module';
+
 import { PhotoRoutingModule } from './photo-routing.module';
 import { AlbumsComponent } from './albums/albums.component';
 import { PhotosComponent } from './photos/photos.component';
@@ -35,6 +38,12 @@ import { PhotosComponent } from './photos/photos.component';
         // MatMenuModule, MatPaginatorModule, MatProgressSpinnerModule, MatSortModule,
         // MatProgressBarModule, MatTabsModule, MatExpansionModule
     ],
-    declarations: [ AlbumsComponent, PhotosComponent ]
+    declarations: [ AlbumsComponent, PhotosComponent ],
+    providers: [
+        {
+            provide: OverlayContainer,
+            useClass: FullscreenOverlayContainer
+        },
+    ]
 })
 export class PhotoModule { }

@@ -6,7 +6,7 @@
         "start": "node ./bin/www",
         "test": "jest .",
         "coverage": "jest --collectCoverageFrom=services/**.js --collectCoverageFrom=routes/**.js --collectCoverageFrom=app.js --coverage .",
-        "devstart": "nodemon ./bin/www"
+        "devstart": "nodemon --inspect=3001 ./bin/www"
     },
     "dependencies": {
         "bcrypt": "^3.0.0",

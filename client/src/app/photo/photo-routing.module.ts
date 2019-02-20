@@ -2,8 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AlbumsComponent } from './albums/albums.component';
 import { PhotosComponent } from './photos/photos.component';
-import { AuthService } from '../shared/_services/auth.service';
-import { PageNotFoundComponent } from '../shared/page-not-found/page-not-found.component';
+import { AuthService } from '../user/_services/auth.service';
 
 const routes: Routes = [
   { path: 'albums', component: AlbumsComponent, canActivate: [AuthService] }, 
@@ -13,7 +12,6 @@ const routes: Routes = [
   { path: 'photos', children: [
       { path: '**', component: PhotosComponent, canActivate: [AuthService]}
   ]},
-  { path: '**', component: PageNotFoundComponent }
 ];
 
 @NgModule({

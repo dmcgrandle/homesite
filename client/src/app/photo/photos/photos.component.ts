@@ -6,9 +6,9 @@ import { VERSION } from '@angular/material';
 import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
 
 // imports from homesite outside of photo module:
-import { AuthService } from '../../shared/_services/auth.service';
+import { AuthService } from '../../user/_services/auth.service';
 import { KEY_CODE } from '../../shared/_classes/key-code-enum';
-import { AlertMessageDialogComponent } from '../../alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
 // imports from within photo module:
 import { Photo } from '../_helpers/classes';

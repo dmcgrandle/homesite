@@ -11,7 +11,7 @@ export interface DialogData {
 }
 
 @Component({
-    selector: 'app-alert-message-dialog',
+    selector: 'shared-alert-message-dialog',
     templateUrl: './alert-message-dialog.component.html',
     styleUrls: ['./alert-message-dialog.component.scss']
 })

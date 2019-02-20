@@ -12,10 +12,10 @@ import * as fsaver from 'file-saver'; // import differently so we can spyOn meth
 
 import { DownloadsComponent } from './downloads.component';
 import { DlFile } from '../shared/_classes/fs-classes';
-import { AuthService } from '../shared/_services/auth.service';
+import { AuthService } from '../user/_services/auth.service';
 import { map, elementAt } from 'rxjs/operators';
 import { DownloadProgressBarComponent } from '../download-progress-bar/download-progress-bar.component';
-import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../shared/alert-message-dialog/alert-message-dialog.component';
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 
 xdescribe('DownloadsComponent', () => {

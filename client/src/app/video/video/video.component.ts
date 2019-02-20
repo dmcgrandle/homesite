@@ -3,7 +3,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute, ParamMap, UrlTree } from '@angular/router';
 import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
 
-import { AlertMessageDialogComponent } from '../../alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 // import { AuthService } from '../../shared/_services/auth.service';
 
 import { APIService } from '../_services/api.service';
@@ -60,7 +60,7 @@ export class VideoComponent implements OnInit {
         });
         dialogRef.afterClosed().subscribe(result => { });
         console.log(err);
-        this.router.navigate(['/login']);
+        this.router.navigate(['/user/login']);
     };
 
 

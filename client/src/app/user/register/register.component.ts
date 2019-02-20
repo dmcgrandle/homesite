@@ -2,17 +2,17 @@ import { Component, OnInit, Inject, Directive, Input } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { NG_VALIDATORS, Validator, FormGroup, AbstractControl, ValidatorFn, FormControl } from '@angular/forms';
 
-import { User } from '../shared/_classes/user-classes';
-import { AuthService } from '../shared/_services/auth.service';
-import { EqualDirective } from '../shared/_helpers/equal-validator';
-import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
+import { User } from '../_helpers/classes';
+import { AuthService } from '../_services/auth.service';
+import { EqualDirective } from '../../shared/_helpers/equal-validator';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
 export interface DialogData {
     alertMessage: string;
 }
 
 @Component({
-    selector: 'app-register',
+    selector: 'users-register',
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.scss']
 })

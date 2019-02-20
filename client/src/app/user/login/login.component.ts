@@ -2,15 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router } from '@angular/router';
 
-import { AppConfig } from '../app.config';
-import { User } from '../shared/_classes/user-classes';
-import { AuthService } from '../shared/_services/auth.service';
+import { AppConfig } from '../../app.config';
+import { User } from '../_helpers/classes';
+import { AuthService } from '../_services/auth.service';
 import { RegisterComponent } from '../register/register.component';
 import { ForgotDialogComponent } from '../forgot-dialog/forgot-dialog.component';
-import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
 @Component({
-    selector: 'app-login',
+    selector: 'users-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss']
 })
@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit {
                 });
                 dialogRef.afterClosed().subscribe(result => { });
                 console.log(err);
-                this.router.navigate(['/login']);
+                this.router.navigate(['/user/login']);
             },
             () => { }
         );

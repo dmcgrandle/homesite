@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { tap, finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
-import { AuthService } from './auth.service';
+import { AuthService } from '../../user/_services/auth.service';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
@@ -29,7 +29,7 @@ export class JwtInterceptor implements HttpInterceptor {
                     error => { // called on any error
                         if (error.status === 401) {
                             console.log('Need to log in again ...');
-                            this.router.navigate(['/login']);
+                            this.router.navigate(['/user/login']);
                         } else {
                             console.log('Response Error!  Here is the error object:');
                             console.log(error);

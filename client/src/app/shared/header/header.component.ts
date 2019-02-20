@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { MatMenuModule } from '@angular/material';
 
-import { AuthService } from '../shared/_services/auth.service';
-import { AppConfig } from '../app.config';
+import { AuthService } from '../../user/_services/auth.service';
+import { AppConfig } from '../../app.config';
 
 @Component({
-    selector: 'app-header',
+    selector: 'shared-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss']
 })

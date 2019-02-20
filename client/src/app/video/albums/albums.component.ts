@@ -4,7 +4,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { APIService } from '../_services/api.service';
-import { AlertMessageDialogComponent } from '../../alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 import { VideoAlbum, Video } from '../_helpers/classes';
 
 

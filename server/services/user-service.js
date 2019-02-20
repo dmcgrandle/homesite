@@ -251,7 +251,7 @@ exports.emailReset = async (user) => {
     /* eslint-disable no-useless-concat */
     text: 'Dear ' + user.name + ',\n\n' + 'This is the reminder email ' + 'you requested.  Your username is "'
       + user.username + '".  To log in with this username, click the following link:\n\n' + cfg.server_url
-      + '/login\n\nIf however you have forgotten your password, then please click the following link to reset it.  '
+      + '/user/login\n\nIf however you have forgotten your password, then please click the following link to reset it.  '
       + 'Please note this link will expire in 1 hour.\n\n' + cfg.server_url + '/changepass/' + user.username
       + '/' + token + '\n\n' + 'Best regards,\n' + cfg.mail.smtp_config.auth.user,
     /* eslint-enable no-useless-concat */

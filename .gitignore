@@ -1,10 +1,10 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output and static content
-/dist
+/client/dist
 /public
-/tmp
-/out-tsc
+/client/tmp
+/server/tmp
 
 # dependencies
 /client/node_modules
@@ -12,7 +12,6 @@
 
 # Angular build target
 /server/public
-/server/public/*
 
 # Angular coverage data
 /client/coverage/*
@@ -21,28 +20,16 @@
 /server/coverage
 
 # test .jpgs and .mp4s
-/server/protected/images
-/server/protected/videos
-/server/protected/downloads
-
-# IDEs and editors
-/.idea
-.vscode
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
+/server/protected/*
 
 # Any packet captures
 *.pcap
 
 # IDE - VSCode
-.vscode/*
+#.vscode/*
 !.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
+#!.vscode/tasks.json
+#!.vscode/launch.json
 !.vscode/extensions.json
 
 # misc

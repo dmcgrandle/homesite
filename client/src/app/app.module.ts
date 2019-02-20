@@ -2,15 +2,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { OverlayModule, OverlayContainer, FullscreenOverlayContainer } from '@angular/cdk/overlay';
-//import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 //for configuration file read during initialization:
 import { APP_INITIALIZER } from '@angular/core';
 
-//import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-//import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
     MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatPaginatorModule,
@@ -24,33 +21,13 @@ import 'hammerjs';
 import { AppConfig } from './app.config';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { HeaderComponent } from './header/header.component';
-import { FooterComponent } from './footer/footer.component';
-import { LoginComponent } from './login/login.component';
-import { ManageUsersComponent } from './manage-users/manage-users.component';
-import { EditUserDialogComponent } from './edit-user-dialog/edit-user-dialog.component';
-import { AlertMessageDialogComponent } from './alert-message-dialog/alert-message-dialog.component';
-import { RegisterComponent } from './register/register.component';
-import { EqualDirective } from './shared/_helpers/equal-validator';
-import { ForgotDialogComponent } from './forgot-dialog/forgot-dialog.component';
-import { ChangePasswordComponent } from './change-password/change-password.component';
+
 import { GalleryComponent } from './gallery/gallery.component';
 
-import { PhotoModule } from './photo/photo.module';
 import { SharedModule } from './shared/shared.module';
-
-// import { GalleryPhotoAlbumsComponent } from './gallery-photo-albums/gallery-photo-albums.component';
-// import { GalleryPhotoPhotosComponent } from './gallery-photo-photos/gallery-photo-photos.component';
-// import { GalleryVideoAlbumsComponent } from './gallery-video-albums/gallery-video-albums.component';
-// import { GalleryVideoVideosComponent } from './gallery-video-videos/gallery-video-videos.component';
-// import { GalleryVideoVideoComponent } from './gallery-video-video/gallery-video-video.component';
-import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
+import { UserModule } from './user/user.module';
 import { AboutComponent } from './about/about.component';
 import { DownloadsComponent } from './downloads/downloads.component';
-
-// import { MediaService } from './shared/_services/media.service';
-import { AuthService } from './shared/_services/auth.service';
-import { UrlHelperService } from './shared/_services/url-helper.service';
 import { JwtInterceptor } from './shared/_services/jwt-interceptor';
 
 import { DownloadProgressBarComponent } from './download-progress-bar/download-progress-bar.component';
@@ -59,24 +36,15 @@ import { DownloadProgressBarComponent } from './download-progress-bar/download-p
 @NgModule({
     declarations: [
         AppComponent,
-        HeaderComponent,
-        FooterComponent,
-        LoginComponent,
-        AlertMessageDialogComponent,
-        RegisterComponent,
-        EqualDirective,
-        ForgotDialogComponent,
-        ChangePasswordComponent,
         GalleryComponent,
         AboutComponent,
         DownloadsComponent,
-        ManageUsersComponent,
-        EditUserDialogComponent,
         DownloadProgressBarComponent
     ],
     imports: [
         /* PhotoModule, */ // Lazy loaded
         /* VideoModule, */ // Lazy loaded
+        UserModule.forRoot(), // not lazy loaded since all modules need logon and user info.
         SharedModule.forRoot(),
         AppRoutingModule,
         BrowserModule,
@@ -97,20 +65,17 @@ import { DownloadProgressBarComponent } from './download-progress-bar/download-p
             deps: [AppConfig],
             multi: true
         },
-        {
-            provide: OverlayContainer,
-            useClass: FullscreenOverlayContainer
-        },
+        // {
+        //     provide: OverlayContainer,
+        //     useClass: FullscreenOverlayContainer
+        // },
         {
             provide: HTTP_INTERCEPTORS,
             useClass: JwtInterceptor,
             multi: true
         }
     ],
-    entryComponents: [
-        RegisterComponent, ForgotDialogComponent, AlertMessageDialogComponent,
-        EditUserDialogComponent, DownloadProgressBarComponent
-    ],
+    entryComponents: [DownloadProgressBarComponent],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

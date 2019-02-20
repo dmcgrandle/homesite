@@ -6,21 +6,19 @@ import { Location } from '@angular/common';
 import { Observable, BehaviorSubject, of, observable } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
-// import { MediaService } from '../shared/_services/media.service';
-import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 // import { PhotoAlbum, Photo } from '../photo/_helpers/photo-classes';
-import { User } from '../shared/_classes/user-classes';
-import { AuthService } from '../shared/_services/auth.service';
-import { catchError, finalize, tap, startWith, switchMap } from '../../../node_modules/rxjs/operators';
-import { EditUserDialogComponent } from '../edit-user-dialog/edit-user-dialog.component';
-import { nextTick } from '../../../node_modules/@types/q';
+import { User } from '../_helpers/classes';
+import { AuthService } from '../_services/auth.service';
+import { catchError, finalize, tap, startWith, switchMap } from 'rxjs/operators';
+import { EditDialogComponent } from '../edit-dialog/edit-dialog.component';
 
 @Component({
-    selector: 'app-manage-users',
-    templateUrl: './manage-users.component.html',
-    styleUrls: ['./manage-users.component.scss']
+    selector: 'users-manage',
+    templateUrl: './manage.component.html',
+    styleUrls: ['./manage.component.scss']
 })
-export class ManageUsersComponent implements OnInit {
+export class ManageComponent implements OnInit {
 
     loading$ = new BehaviorSubject<boolean>(true); // will be getting initial table
     displayedColumns: string[] = ['userId', 'name', 'username', 'email', 'level'];
@@ -44,7 +42,7 @@ export class ManageUsersComponent implements OnInit {
     }
 
     onRowClicked(row) {
-        const dialogRef = this.dialog.open(EditUserDialogComponent, {
+        const dialogRef = this.dialog.open(EditDialogComponent, {
             width: '350px',
             data: { user: row }
         });

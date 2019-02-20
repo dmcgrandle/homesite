@@ -2,10 +2,10 @@ import { Component, Inject, OnInit, OnDestroy, ViewEncapsulation, ViewChild } fr
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { NG_VALIDATORS, Validator, FormGroup, ValidatorFn, NgForm } from '@angular/forms';
 
-import { User } from '../shared/_classes/user-classes';
-import { EqualDirective } from '../shared/_helpers/equal-validator';
-import { AuthService } from '../shared/_services/auth.service';
-import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
+import { User } from '../_helpers/classes';
+import { EqualDirective } from '../../shared/_helpers/equal-validator';
+import { AuthService } from '../_services/auth.service';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 import { Subscription } from 'rxjs';
 
 export interface DialogData {
@@ -13,12 +13,12 @@ export interface DialogData {
 }
 
 @Component({
-    selector: 'app-edit-user-dialog',
-    templateUrl: './edit-user-dialog.component.html',
-    styleUrls: ['./edit-user-dialog.component.scss'],
+    selector: 'users-edit-dialog',
+    templateUrl: './edit-dialog.component.html',
+    styleUrls: ['./edit-dialog.component.scss'],
     encapsulation: ViewEncapsulation.None // Had to turn off to CSS style fieldset ... ?
 })
-export class EditUserDialogComponent implements OnInit, OnDestroy {
+export class EditDialogComponent implements OnInit, OnDestroy {
 
     hidePass: boolean;
     hideRetype: boolean;
@@ -26,7 +26,7 @@ export class EditUserDialogComponent implements OnInit, OnDestroy {
     saveUser: User;
     authSub: Subscription;
 
-    constructor(public dialogRef: MatDialogRef<EditUserDialogComponent>,
+    constructor(public dialogRef: MatDialogRef<EditDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: DialogData,
         public auth: AuthService,
         public dialog: MatDialog
