@@ -7,7 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { AppConfig } from '../app.config';
+import { AppConfig } from '../../app.config';
 import { RegisterComponent } from './register.component';
 
 // describe('RegisterComponent', () => {

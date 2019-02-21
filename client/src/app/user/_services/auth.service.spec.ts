@@ -6,9 +6,8 @@ import { Router } from '@angular/router';
 import { AES, enc as ENC } from 'crypto-ts';
 
 import { AuthService } from './auth.service';
-import { User } from '../_helpers/classes';
+import { User, LoginResponse } from '../_helpers/classes';
 import { DlFile } from '../../shared/_classes/fs-classes';
-import { LoginResponse } from '../../shared/_classes/server-response-classes';
 import { AppConfig } from '../../app.config';
 import { RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
 

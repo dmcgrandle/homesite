@@ -2,14 +2,12 @@ import { Injectable } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { HttpClient, HttpHeaders, HttpResponse, HttpEvent, HttpParams, HttpRequest } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpParams, HttpRequest } from '@angular/common/http';
 import { AES } from 'crypto-ts';
 
 import { AppConfig } from '../../app.config';
-// import { PhotoAlbum, Photo } from '../../photo/_helpers/photo-classes';
-import { User } from '../_helpers/classes';
+import { User, LoginResponse } from '../_helpers/classes';
 import { DlFile } from '../../shared/_classes/fs-classes';
-import { LoginResponse } from '../../shared/_classes/server-response-classes';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService implements CanActivate {
@@ -19,7 +17,6 @@ export class AuthService implements CanActivate {
     constructor(private http: HttpClient,
         public CFG: AppConfig,
         private router: Router) {
-        // set up default starting values
         if (!this.user && this.isAuthenticated()) {// user must have refreshed, so reset user
             this.user = new User;
             this.user.username = this.lastLoggedInUsername();

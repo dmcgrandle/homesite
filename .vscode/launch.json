@@ -10,8 +10,8 @@
             "name": "Launch Homesite node server via NPM",
             "cwd": "${workspaceFolder}/server",
             "env": {"DEBUG": "homesite:*"},
-            "runtimeExecutable": "npm",
             "console": "integratedTerminal",
+            "runtimeExecutable": "npm",
             "runtimeArgs": [
                 "run",
                 "devstart"
@@ -28,17 +28,34 @@
             // "preLaunchTask": "Echo vars"
         },
         {
+            "name": "ng test",
+            "type": "chrome",
+            "request": "launch",
+            "preLaunchTask": "Echo vars",
+            // "runtimeExecutable": "ng",
+            // "runtimeArgs": ["test"],
+            "url": "http://localhost:9876/debug.html",
+            "webRoot": "${workspaceFolder}/client",
+            // "sourceMaps": true,
+            // "sourceMapPathOverrides": {
+            //   "/./*": "${webRoot}/*",
+            //   "/src/*": "${webRoot}/*",
+            //   "/*": "*",
+            //   "/./~/*": "${webRoot}/node_modules/*"
+            // }
+        },
+        {
+            "name": "ng e2e",
             "type": "node",
-            "request": "attach",
-            "name": "Attach by Process ID",
-            "processId": "${command:PickProcess}",
-//            "diagnosticLogging": true,
-//            "webRoot": "${workspaceFolder}/server",
+            "request": "launch",
+            "program": "${workspaceFolder}/node_modules/protractor/bin/protractor",
+            "protocol": "inspector",
+            "args": ["${workspaceFolder}/e2e/protractor.conf.js"]
         },
         {
             "type": "chrome",
             "request": "attach",
-            "name": "Debug client tests",
+            "name": "old - Debug client tests",
             "port": 9876,
             "url": "http://localhost:9876",
             "webRoot": "${workspaceFolder}/client"

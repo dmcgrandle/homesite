@@ -3,7 +3,7 @@ import { MatDividerModule, MatMenuModule, MatIconModule, MatToolbarModule } from
 import { HttpClientModule } from '@angular/common/http';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { AppConfig } from '../app.config';
+import { AppConfig } from '../../app.config';
 import { HeaderComponent } from './header.component';
 
 // describe('HeaderComponent', () => {

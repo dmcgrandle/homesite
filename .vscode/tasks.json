@@ -13,10 +13,17 @@
             "label": "Echo vars",
             "command": "echo",
             "args": [
-              "${env:USERNAME}",
-              "workspaceFolder = ${workspaceFolder}"
+                "${env:USERNAME}",
+                "workspaceFolder = ${workspaceFolder}"
             ],
             "type": "shell"
-         },
+        },
+        {
+            "label": "npm test",
+            "type": "npm",
+            "script": "test",
+            "path": "client/",
+            "problemMatcher": []
+        }
     ]
 }

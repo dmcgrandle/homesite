@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AppConfig } from '../app.config';
-import { AuthService } from '../shared/_services/auth.service';
+import { AppConfig } from '../../app.config';
+import { AuthService } from '../../user/_services/auth.service';
 import { FooterComponent } from './footer.component';
 
 xdescribe('FooterComponent', () => {

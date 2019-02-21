@@ -5,9 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
 
-import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
-import { User } from '../shared/_classes/user-classes';
-import { AuthService } from '../shared/_services/auth.service';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
+import { User } from '../_helpers/classes';
+import { AuthService } from '../_services/auth.service';
 import { ForgotDialogComponent, DialogData } from './forgot-dialog.component';
 import { HttpErrorResponse } from '@angular/common/http';
 
