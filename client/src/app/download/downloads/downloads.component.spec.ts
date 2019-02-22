@@ -17,7 +17,7 @@ import { map, elementAt } from 'rxjs/operators';
 import { ProgressBarComponent } from '../../shared/progress-bar/progress-bar.component';
 import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
-xdescribe('DownloadsComponent', () => {
+describe('DownloadsComponent', () => {
     const testDlData: DlFile[] = 
         [ 
             {

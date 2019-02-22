@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material';
 
 import { User } from '../_helpers/classes';
 import { AuthService } from '../_services/auth.service';
-import { AlertMessageDialogComponent, DialogData } from '../../shared/alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent, AlertData } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 import { NgForm } from '@angular/forms';
 
 @Component({
@@ -64,7 +64,7 @@ export class ChangePasswordComponent implements OnInit {
 
     successfulChange(user: User) {
         const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-            data: <DialogData>{
+            data: <AlertData>{
                 alertMessage: `Password changed for user: ${user.username}`,
                 showCancel: false
             }
