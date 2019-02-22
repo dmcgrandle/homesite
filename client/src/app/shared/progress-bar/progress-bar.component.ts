@@ -3,19 +3,19 @@ import { MatDialog, MatProgressBar, MatDialogRef, MAT_DIALOG_DATA } from '@angul
 import { BehaviorSubject } from 'rxjs';
 
 export interface ProgressData {
-    heading: string;                          // Heading for dialog box
-    stopText: string;                         // Text to use for Stop button (default: 'STOP')
+    heading?: string;                         // Heading for dialog box
+    stopText?: string;                        // Text to use for Stop button (default: 'STOP')
     progress$: BehaviorSubject<number>;       // Observable for progress updates
 }
 
 @Component({
-    selector: 'app-download-progress-bar',
-    templateUrl: './download-progress-bar.component.html',
-    styleUrls: ['./download-progress-bar.component.scss']
+    selector: 'download-progress-bar',
+    templateUrl: './progress-bar.component.html',
+    styleUrls: ['./progress-bar.component.scss']
 })
-export class DownloadProgressBarComponent implements OnInit {
+export class ProgressBarComponent implements OnInit {
 
-    constructor(public dialogRef: MatDialogRef<DownloadProgressBarComponent>,
+    constructor(public dialogRef: MatDialogRef<ProgressBarComponent>,
         @Inject(MAT_DIALOG_DATA) public data: ProgressData) { }
 
     ngOnInit() {

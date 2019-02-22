@@ -7,7 +7,7 @@ import { AES } from 'crypto-ts';
 
 import { AppConfig } from '../../app.config';
 import { User, LoginResponse } from '../_helpers/classes';
-import { DlFile } from '../../shared/_classes/fs-classes';
+import { DlFile } from '../../download/_helpers/classes';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService implements CanActivate {
@@ -147,6 +147,7 @@ export class AuthService implements CanActivate {
     }
 
     private encryptPass(password): string {
+        console.log('encrypted password is', AES.encrypt(password, this.CFG.const.auth.password_secret).toString());
         return AES.encrypt(password, this.CFG.const.auth.password_secret).toString();
     }
 

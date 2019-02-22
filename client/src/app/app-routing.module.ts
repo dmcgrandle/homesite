@@ -9,8 +9,8 @@ import { GalleryComponent } from './gallery/gallery.component';
 // import { GalleryPhotoAlbumsComponent } from './gallery-photo-albums/gallery-photo-albums.component';
 // import { GalleryPhotoPhotosComponent } from './gallery-photo-photos/gallery-photo-photos.component';
 import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
-import { AboutComponent } from './about/about.component';
-import { DownloadsComponent } from './downloads/downloads.component';
+// import { AboutComponent } from './about/about.component';
+// import { DownloadsComponent } from './downloads/downloads.component';
 
 
 const routes: Routes = [
@@ -18,6 +18,8 @@ const routes: Routes = [
     { path: 'photo', loadChildren: './photo/photo.module#PhotoModule' },
     { path: 'video', loadChildren: './video/video.module#VideoModule' },
     { path: 'user', loadChildren: './user/user.module#UserModule'},
+    { path: 'download', loadChildren: './download/download.module#DownloadModule'},
+    { path: 'family', loadChildren: './family/family.module#FamilyModule'},
 /*    { path: 'photoAlbums', component: GalleryPhotoAlbumsComponent, canActivate: [AuthService] }, 
     { path: 'photoAlbums', children: [
         { path: '**', component: GalleryPhotoAlbumsComponent, canActivate: [AuthService]}
@@ -35,15 +37,15 @@ const routes: Routes = [
     { path: 'video', children: [
         { path: '**', component: GalleryVideoVideoComponent, canActivate: [AuthService]}
     ]},
-*/
+
     { path: 'downloads', component: DownloadsComponent, canActivate: [AuthService] },
     { path: 'downloads/:download', component: DownloadsComponent, canActivate: [AuthService] },
-/*
+
     { path: 'changepass/:username/:token', component: ChangePasswordComponent },
     { path: 'manage', component: ManageUsersComponent, canActivate: [AuthService] },
     { path: 'login', component: LoginComponent },
-*/
     { path: 'about', component: AboutComponent, canActivate: [AuthService] },
+*/
     { path: '', redirectTo: 'user/login', pathMatch: 'full' },
     { path: '**', component: PageNotFoundComponent }
   ];

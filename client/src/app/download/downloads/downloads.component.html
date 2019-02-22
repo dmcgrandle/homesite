@@ -13,7 +13,7 @@
         <span class="fill-space"></span>
         <!-- For file upload: set up a hidden input and 'click' it when the "upload" icon is clicked -->
         <input hidden="true" type="file" #file (change)="uploadPickedFile($event)">
-        <mat-icon *ngIf="auth.lastLoggedInUserLevel() > 2" class="upload-icon clickable" (click)="file.click()" 
+        <mat-icon *ngIf="api.lastLoggedInUserLevel() > 2" class="upload-icon clickable" (click)="file.click()" 
             matTooltip="Upload A File" matTooltipPosition="left" matTooltipShowDelay="1000">
             publish
         </mat-icon>

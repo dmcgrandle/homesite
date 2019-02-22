@@ -6,6 +6,12 @@
     "configurations": [
         {
             "type": "node",
+            "request": "attach",
+            "name": "Attach to running Homesite server",
+            "port": 3001
+        },
+        {
+            "type": "node",
             "request": "launch",
             "name": "Launch Homesite node server via NPM",
             "cwd": "${workspaceFolder}/server",
@@ -24,8 +30,8 @@
             "name": "Launch Homesite Angular client in Chrome",
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}/client",
-            "sourceMaps": true
-            // "preLaunchTask": "Echo vars"
+            "sourceMaps": true,
+            // "preLaunchTask": "npm start"
         },
         {
             "name": "ng test",

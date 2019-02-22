@@ -11,12 +11,11 @@ import { take } from 'rxjs/operators';
 import * as fsaver from 'file-saver'; // import differently so we can spyOn methods more easily
 
 import { DownloadsComponent } from './downloads.component';
-import { DlFile } from '../shared/_classes/fs-classes';
-import { AuthService } from '../user/_services/auth.service';
+import { DlFile } from '../_helpers/classes';
+import { APIService } from '../_services/api.service';
 import { map, elementAt } from 'rxjs/operators';
-import { DownloadProgressBarComponent } from '../download-progress-bar/download-progress-bar.component';
-import { AlertMessageDialogComponent } from '../shared/alert-message-dialog/alert-message-dialog.component';
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
+import { ProgressBarComponent } from '../../shared/progress-bar/progress-bar.component';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
 xdescribe('DownloadsComponent', () => {
     const testDlData: DlFile[] = 
@@ -44,7 +43,7 @@ xdescribe('DownloadsComponent', () => {
         ];
     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate', 'createUrlTree']);
     const testBlob: Blob = new Blob(['test blob content'], {type : 'text/plain'});
-    const mockAuth = jasmine.createSpyObj('AuthService', {
+    const mockAPI = jasmine.createSpyObj('APIService', {
         lastLoggedInUserLevel: 3,
         authGetDownloads: of(testDlData),
         downloadFile: of(testBlob),
@@ -82,7 +81,7 @@ xdescribe('DownloadsComponent', () => {
             providers: [
                 { provide: Router, useValue: routerSpy },
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
-                { provide: AuthService, useValue: mockAuth },
+                { provide: APIService, useValue: mockAPI },
                 { provide: ObservableMedia, useValue: mockFlex }
             ]
         })
@@ -122,11 +121,11 @@ xdescribe('DownloadsComponent', () => {
             reloadSpy.and.stub(); 
         });
         it('ngOnInit Technique 2: displayedColumns should NOT contain deleteIcon if user level < 3', () => {
-            mockAuth.lastLoggedInUserLevel.and.returnValue(2);
+            mockAPI.lastLoggedInUserLevel.and.returnValue(2);
             fixture.detectChanges();
             expect(dlComponent.displayedColumns).toEqual(['fileId', 'downloadIcon', 'linkIcon', 'filename', 
                 'icon', 'type', 'sizeHR']);
-            mockAuth.lastLoggedInUserLevel.and.returnValue(3); // set back to default
+            mockAPI.lastLoggedInUserLevel.and.returnValue(3); // set back to default
             });
         it('ngOnInit Technique 2: displayedColumns should be minimal on xs screen width (< 600px)', () => {
             mockFlex.asObservable.and.returnValue(of({mqAlias: 'xs'}));
@@ -153,23 +152,23 @@ xdescribe('DownloadsComponent', () => {
             beforeEach(() => {
                 dialogSpy = spyOn(TestBed.get(MatDialog), 'open');
                 spySave = spyOn(fsaver, 'saveAs');
-                mockAuth.downloadFile.calls.reset();
+                mockAPI.downloadFile.calls.reset();
             });
             it('should save the given file as a blob', () => {
                 dlComponent.onDownloadClicked(testDlData[0]);
-                expect(mockAuth.downloadFile).toHaveBeenCalled();
+                expect(mockAPI.downloadFile).toHaveBeenCalled();
                 expect(spySave).toHaveBeenCalledWith(testBlob, 'tFilename1.pdf');
                 expect(dialogSpy).toHaveBeenCalled();
             });
             it('should log errors to the console', () => {
-                mockAuth.downloadFile.and.returnValue(throwError('tError'));
+                mockAPI.downloadFile.and.returnValue(throwError('tError'));
                 const spyConsole = spyOn(console, 'log');
                 dlComponent.onDownloadClicked(testDlData[0]);
-                expect(mockAuth.downloadFile).toHaveBeenCalled();
+                expect(mockAPI.downloadFile).toHaveBeenCalled();
                 expect(spySave).not.toHaveBeenCalled();
                 expect(spyConsole).toHaveBeenCalledWith('tError');
                 expect(dialogSpy).not.toHaveBeenCalled();
-                mockAuth.downloadFile.and.returnValue(of(testBlob)); // reset
+                mockAPI.downloadFile.and.returnValue(of(testBlob)); // reset
             });
         });
         it('editFilename()) should edit the filename of the clicked download', () => {
@@ -204,7 +203,7 @@ xdescribe('DownloadsComponent', () => {
                 reloadSpy.calls.reset(); // clear calls so we can test it
                 dlComponent.onDeleteClicked(testDlData[0])
                 expect(dialogSpy).toHaveBeenCalled();
-                expect(mockAuth.deleteFile).not.toHaveBeenCalled();
+                expect(mockAPI.deleteFile).not.toHaveBeenCalled();
                 expect(reloadSpy).not.toHaveBeenCalled();
             });
             it('should call auth.deleteFile() and reloadDownloads() if user confirms', () => {
@@ -213,7 +212,7 @@ xdescribe('DownloadsComponent', () => {
                 let spyConsole = spyOn(console, 'log');
                 dlComponent.onDeleteClicked(testDlData[0]);
                 expect(dialogSpy).toHaveBeenCalled();
-                expect(mockAuth.deleteFile).toHaveBeenCalledWith(testDlData[0]);
+                expect(mockAPI.deleteFile).toHaveBeenCalledWith(testDlData[0]);
                 expect(spyConsole).toHaveBeenCalledWith('Deleted file tFilename1.pdf');
                 expect(reloadSpy).toHaveBeenCalled();
             });
@@ -226,16 +225,16 @@ xdescribe('DownloadsComponent', () => {
                 dialogSpy = spyOn(TestBed.get(MatDialog), 'open').and.returnValue(dialogReturnObj);
             });
             afterEach(() => {
-                mockAuth.uploadFile.calls.reset(); // reset counters to eliminate test order dependency
+                mockAPI.uploadFile.calls.reset(); // reset counters to eliminate test order dependency
             })
             it('should display a progress dialog box and send a progress$ observable to that dialog', () => {
                 dlComponent.uploadPickedFile(eventMock);
-                expect(dialogSpy).toHaveBeenCalledWith(DownloadProgressBarComponent,
+                expect(dialogSpy).toHaveBeenCalledWith(ProgressBarComponent,
                     { width: '360px', data: { progress$: jasmine.any(Observable) } });
-                expect(mockAuth.uploadFile).toHaveBeenCalledTimes(1); // This is the first spec it is called in ...
+                expect(mockAPI.uploadFile).toHaveBeenCalledTimes(1); // This is the first spec it is called in ...
                 });
             it('should update progress$ observable properly with info from UploadProgress events', fakeAsync(() => {
-                mockAuth.uploadFile.and.returnValue(interval(100).pipe(take(10),map(i => {
+                mockAPI.uploadFile.and.returnValue(interval(100).pipe(take(10),map(i => {
                     return {type: HttpEventType.UploadProgress, loaded: i+1, total: 100}
                 }))); // mock of uploadFile will return an Observable of UploadProgress slowly incrementing
                 dialogSpy.and.callFake((comp, params) => { // set up an observer to react to progress$ changes
@@ -249,7 +248,7 @@ xdescribe('DownloadsComponent', () => {
                 dlComponent.uploadPickedFile(eventMock);
                 tick(1000); // let all the intervals above resolve and settle
                 expect(dialogSpy).toHaveBeenCalledTimes(1);
-                expect(mockAuth.uploadFile).toHaveBeenCalledTimes(1);
+                expect(mockAPI.uploadFile).toHaveBeenCalledTimes(1);
                 expect(reloadSpy).not.toHaveBeenCalled();
                 expect(dialogReturnObj.close).not.toHaveBeenCalled();
             }));
@@ -258,7 +257,7 @@ xdescribe('DownloadsComponent', () => {
                 let spyConsole: jasmine.Spy;
                 beforeEach(() => {
                     spyConsole = spyOn(console, 'log');
-                    mockAuth.uploadFile.and.returnValue(of(tRes));
+                    mockAPI.uploadFile.and.returnValue(of(tRes));
                     dlComponent.uploadPickedFile(eventMock);
                 })
                 it('should log the uploaded file to console', () => {
@@ -272,7 +271,7 @@ xdescribe('DownloadsComponent', () => {
                 });
                 it('should display an alert showing the upload was successful', () => {
                     expect(dialogSpy).toHaveBeenCalledTimes(2);
-                    expect(dialogSpy.calls.argsFor(0)).toContain(DownloadProgressBarComponent); // 1st call
+                    expect(dialogSpy.calls.argsFor(0)).toContain(ProgressBarComponent); // 1st call
                     expect(dialogSpy.calls.argsFor(1)).toContain(AlertMessageDialogComponent, 'successfully uploaded');
                 });
             });
@@ -280,7 +279,7 @@ xdescribe('DownloadsComponent', () => {
                 let spyConsole: jasmine.Spy;
                 beforeEach(() => {
                     spyConsole = spyOn(console, 'log');
-                    mockAuth.uploadFile.and.returnValue(throwError({message: 'network error'}));
+                    mockAPI.uploadFile.and.returnValue(throwError({message: 'network error'}));
                     dlComponent.uploadPickedFile(eventMock);
                 })
                 it('should close the previous dialog', () => {
@@ -291,7 +290,7 @@ xdescribe('DownloadsComponent', () => {
                 });
                 it('should display a new Alert Message dialog indicating the xfer was aborted', () => {
                     expect(dialogSpy).toHaveBeenCalledTimes(2);
-                    expect(dialogSpy.calls.argsFor(0)).toContain(DownloadProgressBarComponent); // 1st call
+                    expect(dialogSpy.calls.argsFor(0)).toContain(ProgressBarComponent); // 1st call
                     expect(dialogSpy.calls.argsFor(1)).toContain(AlertMessageDialogComponent, 'Upload Error!');
                 });
             });
@@ -300,7 +299,7 @@ xdescribe('DownloadsComponent', () => {
                 const uploadSubscribe = jasmine.createSpyObj({unsubscribe: null}); // prepare mock for subscribe
                 beforeEach(() => {
                     dialogSpy.and.returnValue(newR); // change mocked response from dialog to have clicked "STOP"
-                    mockAuth.uploadFile.and.returnValue({ subscribe: () => uploadSubscribe}); // return our mock
+                    mockAPI.uploadFile.and.returnValue({ subscribe: () => uploadSubscribe}); // return our mock
                     dlComponent.uploadPickedFile(eventMock);
                 });
     
@@ -309,7 +308,7 @@ xdescribe('DownloadsComponent', () => {
                 });
                 it('should display a new Alert Message dialog indicating the xfer was aborted', () => {
                     expect(dialogSpy).toHaveBeenCalledTimes(2);
-                    expect(dialogSpy.calls.argsFor(0)).toContain(DownloadProgressBarComponent); // 1st call
+                    expect(dialogSpy.calls.argsFor(0)).toContain(ProgressBarComponent); // 1st call
                     expect(dialogSpy.calls.argsFor(1)).toContain(AlertMessageDialogComponent, 'Transfer was aborted.');
                 });
             });
@@ -328,9 +327,9 @@ xdescribe('DownloadsComponent', () => {
                 dlComponent.reloadDownloads();
             });
             it('should call authGetDownloads() to refresh with new data', () => {
-                mockAuth.authGetDownloads.calls.reset();
+                mockAPI.authGetDownloads.calls.reset();
                 dlComponent.reloadDownloads();
-                expect(mockAuth.authGetDownloads).toHaveBeenCalled();
+                expect(mockAPI.authGetDownloads).toHaveBeenCalled();
                 expect(dlComponent.dataSource.data).toEqual(testDlData);
             }); 
         });

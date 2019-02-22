@@ -5,7 +5,7 @@ import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AboutComponent } from './about.component';
-import { AppConfig } from '../app.config';
+import { AppConfig } from '../../app.config';
 
 // Mock class
 @Injectable()

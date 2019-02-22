@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule, MatToolbarModule, MatProgressBarModule } from '@angular/material';
 import { BehaviorSubject } from 'rxjs';
 
-import { DownloadProgressBarComponent } from './download-progress-bar.component';
+import { ProgressBarComponent } from './progress-bar.component';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 
 xdescribe('DownloadProgressBarComponent', () => {
@@ -12,13 +12,13 @@ xdescribe('DownloadProgressBarComponent', () => {
         stopText: 'tStop',
         progress$: new BehaviorSubject<number>(0)
     };
-    let dlProgressBarComp: DownloadProgressBarComponent;
-    let dlProgressBarEl: HTMLElement;
-    let fixture: ComponentFixture<DownloadProgressBarComponent>;
+    let progressBarComp: ProgressBarComponent;
+    let progressBarEl: HTMLElement;
+    let fixture: ComponentFixture<ProgressBarComponent>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [DownloadProgressBarComponent],
+            declarations: [ProgressBarComponent],
             providers: [
                 { provide: MatDialogRef, useValue: mockDialogRef },
                 { provide: MAT_DIALOG_DATA, useValue: mockDialogData }
@@ -27,39 +27,39 @@ xdescribe('DownloadProgressBarComponent', () => {
         })
         TestBed.overrideModule(BrowserDynamicTestingModule, {
             set: {
-                entryComponents: [DownloadProgressBarComponent]
+                entryComponents: [ProgressBarComponent]
             }
         })
         .compileComponents();
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(DownloadProgressBarComponent);
-        dlProgressBarComp = fixture.componentInstance;
-        dlProgressBarEl = fixture.nativeElement;
+        fixture = TestBed.createComponent(ProgressBarComponent);
+        progressBarComp = fixture.componentInstance;
+        progressBarEl = fixture.nativeElement;
         fixture.detectChanges();
     });
 
     it('should be creatable', () => {
-        expect(dlProgressBarComp).toBeTruthy();
+        expect(progressBarComp).toBeTruthy();
     });
     it('#onStopClick should close the dialog', () => {
-        dlProgressBarComp.onStopClick();
+        progressBarComp.onStopClick();
         expect(mockDialogRef.close).toHaveBeenCalled();
     });
     it('should display heading and stopText sent to it', () => {
-        const heading = dlProgressBarEl.querySelector('h3').textContent;
-        const button = dlProgressBarEl.querySelector('button').textContent;
+        const heading = progressBarEl.querySelector('h3').textContent;
+        const button = progressBarEl.querySelector('button').textContent;
         expect(heading).toEqual('tHeading');
         expect(button).toEqual('tStop');
     });
     it('should display defaults if not passed anything', () => {
-        dlProgressBarComp.data.heading = null;
-        dlProgressBarComp.data.stopText = null;
-        dlProgressBarComp.ngOnInit();
+        progressBarComp.data.heading = null;
+        progressBarComp.data.stopText = null;
+        progressBarComp.ngOnInit();
         fixture.detectChanges(); // Update UI
-        const heading = dlProgressBarEl.querySelector('h3').textContent;
-        const button = dlProgressBarEl.querySelector('button').textContent;
+        const heading = progressBarEl.querySelector('h3').textContent;
+        const button = progressBarEl.querySelector('button').textContent;
         expect(heading).toEqual('Upload');
         expect(button).toEqual('STOP');
     });
@@ -67,7 +67,7 @@ xdescribe('DownloadProgressBarComponent', () => {
         for (let i=50;i<60;i++) {
             mockDialogData.progress$.next(i);
             fixture.detectChanges();
-            const progressIndicator = dlProgressBarEl.querySelector('p').textContent;
+            const progressIndicator = progressBarEl.querySelector('p').textContent;
             expect(progressIndicator).toBe(`${i}%`);
         };
     });

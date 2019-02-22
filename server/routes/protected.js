@@ -17,6 +17,15 @@ router.use((req, res, next) => {
 });
 // This is the authentication check for the protected files
 router.use(tokenSvc.middlewareCheck());
+
+// Set content-length header for get requests
+router.use((req, res, next) => {
+  // console.log(res.body)
+  // const len = Buffer.byteLength(res.body);
+  // res.header('content-length', Buffer.byteLength(body));
+  next();
+})
+
 // Last middleware: serve all files here statically.  Note the need for '..'
 // since being inside the router also changes directory to the 'routes' dir,
 // so we first have to go back up one level before we can find 'protected'.

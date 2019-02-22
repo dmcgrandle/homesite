@@ -2,7 +2,7 @@
     <span>{{CFG.const.header.title}}</span>
     <div fxShow fxHide.xs fxLayout='row'>
         <a mat-button routerLink="/gallery" routerLinkActive="active" fxFlexOffset="1">Home</a>
-        <a mat-button routerLink="/downloads" routerLinkActive="active">Downloads</a>
+        <a mat-button routerLink="/download" routerLinkActive="active">Downloads</a>
         <button mat-button [matMenuTriggerFor]="galleryMenu">Gallery Menu</button>
         <mat-menu class="gallery-menu" #galleryMenu="matMenu">
             <button mat-menu-item routerLink="/">Gallery Home</button>
@@ -10,7 +10,7 @@
             <button mat-menu-item routerLink="/video/albums">Video Gallery</button>
             <button mat-menu-item routerLink="/photo/albums">Photo Gallery</button>
         </mat-menu>
-        <a mat-button routerLink="/about" routerLinkActive="active">About</a>
+        <a mat-button routerLink="/family" routerLinkActive="active">Family</a>
     </div>
     <span class="fill-space"></span>
     <button mat-button [matMenuTriggerFor]="userMenu">{{auth.user.username}}</button>
@@ -27,8 +27,8 @@
         <mat-divider class="indent-both"></mat-divider>
         <button mat-menu-item routerLink="/photo/albums" routerLinkActive="active">Photo Gallery</button>
         <button mat-menu-item routerLink="/video/albums" routerLinkActive="active">Video Gallery</button>
-        <button mat-menu-item routerLink="/downloads" routerLinkActive="active">Downloads</button>
+        <button mat-menu-item routerLink="/download" routerLinkActive="active">Downloads</button>
         <mat-divider class="indent-both"></mat-divider>
-        <button mat-menu-item routerLink="/about" routerLinkActive="active">About</button>
+        <button mat-menu-item routerLink="/family" routerLinkActive="active">Family</button>
     </mat-menu>
 </mat-toolbar>

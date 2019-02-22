@@ -7,14 +7,14 @@ import { take, map } from 'rxjs/operators';
 import { ObservableMedia, MediaChange } from '@angular/flex-layout';
 import { saveAs } from 'file-saver';
 
-import { AlertMessageDialogComponent } from '../shared/alert-message-dialog/alert-message-dialog.component';
-import { DownloadProgressBarComponent } from '../download-progress-bar/download-progress-bar.component';
-import { DlFile } from '../shared/_classes/fs-classes';
-import { AuthService } from '../user/_services/auth.service';
+import { AlertMessageDialogComponent, AlertData } from '../../shared/alert-message-dialog/alert-message-dialog.component';
+import { ProgressBarComponent, ProgressData } from '../../shared/progress-bar/progress-bar.component';
+import { DlFile } from '../_helpers/classes';
+import { APIService } from '../_services/api.service';
 
 
 @Component({
-    selector: 'app-downloads',
+    selector: 'download-downloads',
     templateUrl: './downloads.component.html',
     styleUrls: ['./downloads.component.scss']
 })
@@ -30,7 +30,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
 
-    constructor(public auth: AuthService,
+    constructor(public api: APIService,
         public dialog: MatDialog,
         private route: ActivatedRoute,
         private router: Router,
@@ -45,7 +45,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
             if (this.dlFilename) { // technique 1
                 this.onDownloadClicked(<DlFile>{fullPath: `/protected/downloads/${this.dlFilename}`, 
                     filename: this.dlFilename});
-                this.router.navigate(['/downloads']); // Enter again (re-Init) without file specified
+                this.router.navigate(['/download']); // Enter again (re-Init) without file specified
             } else { // technique 2
                 this.flexMediaWatcher = this.flexMedia.asObservable().subscribe((change: MediaChange) => {
                     this.currentScreenWidth = change.mqAlias;
@@ -62,7 +62,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
 
     setupDownloadsTable() {
         this.displayedColumns = ['fileId', 'downloadIcon'];
-        if (this.auth.lastLoggedInUserLevel() >= 3) { // add the delete Icon if user level is high enough
+        if (this.api.lastLoggedInUserLevel() >= 3) { // add the delete Icon if user level is high enough
             this.displayedColumns.push('deleteIcon');
         }
         if (this.currentScreenWidth === 'xs') { // only display a few icons
@@ -73,7 +73,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         }
         if (this.sort && this.dataSource.data.length === 0) { // only need to load defaults on first init
             this.dataSource.paginator = this.paginator;
-            this.sort.sort(<MatSortable>{ id: 'filename', start: 'asc' });
+            this.sort.sort(<MatSortable>{ id: 'filename', start: 'desc' });
             this.dataSource.sort = this.sort;
             this.reloadDownloads();
         };
@@ -85,18 +85,51 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     };
 
     onDownloadClicked(file: DlFile) {
-        this.auth.downloadFile(file).subscribe(
-            blob => saveAs(blob, file.filename),
-            err => console.log(err),
-            () =>  this.dialog.open(AlertMessageDialogComponent, {
-                data: {
-                    heading: 'Download Complete',
-                    alertMessage: 'You downloaded the file:',
-                    alertMessage2: file.filename,
-                    showCancel: false,
+        let download: Subscription;
+        let progress$ = new BehaviorSubject<number>(0); // start with zero progress
+        const pData: ProgressData = { heading: 'Download', progress$: progress$ };
+        const dialogRef = this.dialog.open(ProgressBarComponent, { data: pData });
+        download = this.api.downloadFile(file).subscribe(
+            event => {
+                console.log('event is ', event)
+                if (event.type == HttpEventType.DownloadProgress) {
+                    const percentDone = Math.round(100 * event.loaded / event.total);
+                    progress$.next(percentDone); // update progress bar via observable
+                    // console.log(`File is ${percentDone}% downloaded.`);
+                } else if (event instanceof HttpResponse) { // All done!
+                    console.log('Downloaded file :', file.filename);
+                    saveAs(event.body, file.filename);
+                    dialogRef.close(); // close the progress bar
+                    const alertData: AlertData = {
+                        heading: 'Download Complete',
+                        alertMessage: 'You successfully downloaded the file:',
+                        alertMessage2: file.filename,
+                        showCancel: false,
+                    };
+                    this.dialog.open(AlertMessageDialogComponent, { data: alertData });
                 }
-            })
+            },
+            err => {
+                dialogRef.close();
+                console.log('Download Error:', err);
+                const alertData: AlertData = {
+                    heading: 'Upload Error!', 
+                    alertMessage: err.message,
+                    showCancel: false 
+                };
+                this.dialog.open(AlertMessageDialogComponent, { data: alertData });
+            }
         );
+        dialogRef.afterClosed().subscribe(data => {
+            if (data && data.stopClicked) {
+                download.unsubscribe(); // abort the upload.
+                const message = 'Transfer was aborted.';
+                this.dialog.open(AlertMessageDialogComponent, {
+                    width: '340px',
+                    data: { heading: 'Alert!', alertMessage: message, showCancel: false }
+                });
+            }
+        });
     };
 
     editFilename(file: DlFile) {
@@ -143,7 +176,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         });
         dialogRef.afterClosed().subscribe(data => {
             if (data.okClicked) {
-                this.auth.deleteFile(file).subscribe(
+                this.api.deleteFile(file).subscribe(
                     file => {
                         console.log('Deleted file ' + file.filename);
                         this.reloadDownloads();
@@ -156,11 +189,9 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     uploadPickedFile(event) {// Upload clicked and file selected
         let upload: Subscription;
         let progress$ = new BehaviorSubject<number>(0); // start with zero progress
-        const dialogRef = this.dialog.open(DownloadProgressBarComponent, {
-            width: '360px',
-            data: { progress$: progress$ }
-        });
-        upload = this.auth.uploadFile(event.target.files[0]).subscribe(
+        const pData: ProgressData = { heading: 'Download', progress$: progress$ };
+        const dialogRef = this.dialog.open(ProgressBarComponent, { width: '360px', data: pData });
+        upload = this.api.uploadFile(event.target.files[0]).subscribe(
             event => { // called as upload progresses
                 if (event.type == HttpEventType.UploadProgress) {
                     const percentDone = Math.round(100 * event.loaded / event.total);
@@ -203,7 +234,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
 
     reloadDownloads() {
         this.loading$.next(true);
-        this.auth.authGetDownloads().subscribe(downloads => {
+        this.api.authGetDownloads().subscribe(downloads => {
             this.dataSource.data = downloads;
             this.loading$.next(false);
         })

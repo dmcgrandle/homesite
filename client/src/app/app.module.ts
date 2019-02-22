@@ -26,24 +26,26 @@ import { GalleryComponent } from './gallery/gallery.component';
 
 import { SharedModule } from './shared/shared.module';
 import { UserModule } from './user/user.module';
-import { AboutComponent } from './about/about.component';
-import { DownloadsComponent } from './downloads/downloads.component';
+// import { AboutComponent } from './about/about.component';
+// import { DownloadsComponent } from './downloads/downloads.component';
 import { JwtInterceptor } from './shared/_services/jwt-interceptor';
 
-import { DownloadProgressBarComponent } from './download-progress-bar/download-progress-bar.component';
+// import { DownloadProgressBarComponent } from './download-progress-bar/download-progress-bar.component';
 
 
 @NgModule({
     declarations: [
         AppComponent,
         GalleryComponent,
-        AboutComponent,
-        DownloadsComponent,
-        DownloadProgressBarComponent
+        // AboutComponent,
+        // DownloadsComponent,
+        // DownloadProgressBarComponent
     ],
     imports: [
+        /* DownloadModule, */ // Lazy loaded
         /* PhotoModule, */ // Lazy loaded
         /* VideoModule, */ // Lazy loaded
+        /* FamilyModule, */ // Lazy loaded
         UserModule.forRoot(), // not lazy loaded since all modules need logon and user info.
         SharedModule.forRoot(),
         AppRoutingModule,
@@ -75,7 +77,7 @@ import { DownloadProgressBarComponent } from './download-progress-bar/download-p
             multi: true
         }
     ],
-    entryComponents: [DownloadProgressBarComponent],
+    entryComponents: [/*DownloadProgressBarComponent*/],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

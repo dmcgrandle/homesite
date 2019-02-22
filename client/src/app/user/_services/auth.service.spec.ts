@@ -7,7 +7,7 @@ import { AES, enc as ENC } from 'crypto-ts';
 
 import { AuthService } from './auth.service';
 import { User, LoginResponse } from '../_helpers/classes';
-import { DlFile } from '../../shared/_classes/fs-classes';
+import { DlFile } from '../../download/_helpers/classes';
 import { AppConfig } from '../../app.config';
 import { RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
 
