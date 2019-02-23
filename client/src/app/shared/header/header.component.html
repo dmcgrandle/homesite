@@ -17,7 +17,7 @@
     <mat-menu #userMenu="matMenu">
         <button mat-menu-item routerLink="/" routerLinkActive="active" (click)="auth.authLogout()">Logout</button>
         <mat-divider class="indent-both"></mat-divider>
-        <button mat-menu-item routerLink="/changepass">Change Password</button>
+        <button mat-menu-item routerLink="/user/changepass">Change Password</button>
         <button *ngIf="(auth.user.level > 3)" mat-menu-item routerLink="/user/manage">Manage Users</button>
     </mat-menu>
     <!-- Responsive menu - only appears on xs screens -->

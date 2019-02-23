@@ -7,14 +7,18 @@ import { LoginComponent } from './login/login.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 
 const routes: Routes = [
-  { path: 'changepass', component: ChangePasswordComponent, canActivate: [AuthService] },
-  { path: 'changepass/:username/:token', component: ChangePasswordComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'manage', component: ManageComponent, canActivate: [AuthService] },
+    {
+        path: 'user', children: [ // since not lazy loaded, need to define child routes explicitly
+            { path: 'changepass', component: ChangePasswordComponent, canActivate: [AuthService] },
+            { path: 'changepass/:username/:token', component: ChangePasswordComponent },
+            { path: 'login', component: LoginComponent },
+            { path: 'manage', component: ManageComponent, canActivate: [AuthService] },
+        ]
+    },
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule]
 })
 export class UsersRoutingModule { }
