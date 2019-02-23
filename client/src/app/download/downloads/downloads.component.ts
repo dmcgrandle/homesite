@@ -73,7 +73,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         }
         if (this.sort && this.dataSource.data.length === 0) { // only need to load defaults on first init
             this.dataSource.paginator = this.paginator;
-            this.sort.sort(<MatSortable>{ id: 'filename', start: 'desc' });
+            // this.sort.sort(<MatSortable>{ id: 'filename', start: 'asc' });
             this.dataSource.sort = this.sort;
             this.reloadDownloads();
         };
@@ -91,13 +91,14 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         const dialogRef = this.dialog.open(ProgressBarComponent, { data: pData });
         download = this.api.downloadFile(file).subscribe(
             event => {
-                console.log('event is ', event)
+                // console.log('event is ', event)
                 if (event.type == HttpEventType.DownloadProgress) {
                     const percentDone = Math.round(100 * event.loaded / event.total);
                     progress$.next(percentDone); // update progress bar via observable
                     // console.log(`File is ${percentDone}% downloaded.`);
                 } else if (event instanceof HttpResponse) { // All done!
                     console.log('Downloaded file :', file.filename);
+                    // console.log('event is ', event);
                     saveAs(event.body, file.filename);
                     dialogRef.close(); // close the progress bar
                     const alertData: AlertData = {
@@ -113,7 +114,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
                 dialogRef.close();
                 console.log('Download Error:', err);
                 const alertData: AlertData = {
-                    heading: 'Upload Error!', 
+                    heading: 'Download Error!', 
                     alertMessage: err.message,
                     showCancel: false 
                 };
@@ -123,9 +124,8 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         dialogRef.afterClosed().subscribe(data => {
             if (data && data.stopClicked) {
                 download.unsubscribe(); // abort the upload.
-                const message = 'Transfer was aborted.';
+                const message = 'Download was aborted.';
                 this.dialog.open(AlertMessageDialogComponent, {
-                    width: '340px',
                     data: { heading: 'Alert!', alertMessage: message, showCancel: false }
                 });
             }
@@ -190,7 +190,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         let upload: Subscription;
         let progress$ = new BehaviorSubject<number>(0); // start with zero progress
         const pData: ProgressData = { heading: 'Download', progress$: progress$ };
-        const dialogRef = this.dialog.open(ProgressBarComponent, { width: '360px', data: pData });
+        const dialogRef = this.dialog.open(ProgressBarComponent, { data: pData });
         upload = this.api.uploadFile(event.target.files[0]).subscribe(
             event => { // called as upload progresses
                 if (event.type == HttpEventType.UploadProgress) {

@@ -8,7 +8,7 @@ export class Directory { // This is a future class, currently unused
     description: string;
     fileIds: Array<number>;
     dirIds: Array<number>;
-    };
+};
 
 export class DlFile {
     _id: number;              // id of this File
@@ -19,4 +19,16 @@ export class DlFile {
     size: number;             // file size in bytes
     sizeHR: string;           // size in Human Readable string format
     icon: string;             // icon from fiv-viv icons to display
-    };
+
+    constructor(iFile?: Partial<DlFile>) {
+        this._id = (iFile && iFile._id !== undefined) ? iFile._id : -1;
+        this.filename = (iFile && iFile.filename !== undefined) ? iFile.filename : '';
+        this.fullPath = (iFile && iFile.fullPath !== undefined) ? iFile.fullPath : '';
+        this.suffix = (iFile && iFile.suffix !== undefined) ? iFile.suffix : '';
+        this.type = (iFile && iFile.type !== undefined) ? iFile.type : '';
+        this.size = (iFile && iFile.size !== undefined) ? iFile.size : 0;
+        this.sizeHR = (iFile && iFile.sizeHR !== undefined) ? iFile.sizeHR : '';
+        this.icon = (iFile && iFile.icon !== undefined) ? iFile.icon : '';
+    }
+};
+

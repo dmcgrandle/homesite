@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { TestBed, inject, async } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpEvent, HttpProgressEvent, HttpEventType, HttpResponse } from '@angular/common/http';
+import { HttpEvent, HttpClient, HttpProgressEvent, HttpEventType, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { AES, enc as ENC } from 'crypto-ts';
+import { of } from 'rxjs';
 
 import { APIService } from './api.service';
 import { DlFile } from '../_helpers/classes';
@@ -26,7 +26,7 @@ export class MockRouter {
     navigate(url: string[]) {};
 }
 
-xdescribe('AuthService', () => {
+xdescribe('Download Module APIService', () => {
     let api: APIService;
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -42,7 +42,7 @@ xdescribe('AuthService', () => {
     });
     it('should be createable', () => expect(api).toBeTruthy());
 
-    describe('Downloads Methods', () => {
+    describe('Methods', () => {
         let httpMock: HttpTestingController;
         let tFile: DlFile;
         beforeEach(() => {
@@ -56,13 +56,15 @@ xdescribe('AuthService', () => {
             expect(req.request.method).toEqual('GET');
             req.flush(testList);
         }));
-        it('should successfully download a file', async(() => {
-            const testBlob: Blob = new Blob(['test blob content'], {type : 'text/plain'});
-            api.downloadFile(tFile).subscribe(blob => expect(blob.type).toEqual('text/plain'));
-            let req = httpMock.expectOne(`${tFile.fullPath}`);
-            expect(req.request.method).toEqual('GET');
-            expect(req.request.responseType).toEqual('blob');
-            req.flush(testBlob);
+        it('should successfully initiate the download of a file', async(() => {
+            // const testBlob: Blob = new Blob(['test blob content'], {type : 'text/plain'});
+            const testEvent: HttpProgressEvent =  { type: HttpEventType.DownloadProgress, loaded: 18 };
+            let http = TestBed.get(HttpClient);
+            spyOn(http, 'request').and.returnValue(of(testEvent));
+            api.downloadFile(tFile).subscribe(() => {
+                expect(http.request).toHaveBeenCalledWith(jasmine.objectContaining({responseType: 'blob'}));
+            });
+            http.request.and.callThrough();
         }));
         it('should successfully delete a file', async(() => {
             api.deleteFile(tFile).subscribe(file => expect(file).toEqual(tFile));

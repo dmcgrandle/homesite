@@ -2,12 +2,12 @@ import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testi
 import { MatDialogRef, MatDialogModule, MatToolbarModule, MAT_DIALOG_DATA } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 
-import { AlertMessageDialogComponent, DialogData } from './alert-message-dialog.component';
+import { AlertMessageDialogComponent, AlertData } from './alert-message-dialog.component';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 
 xdescribe('AlertMessageDialogComponent with data', () => {
     const mockDialogRef = jasmine.createSpyObj('mockDialogRef', ['close']);
-    const mockDialogData: Partial<DialogData> = {
+    const mockDialogData: Partial<AlertData> = {
         heading: 'Testing',
         showCancel: true,
         cancelText: 'tCancel'
@@ -62,7 +62,7 @@ xdescribe('AlertMessageDialogComponent with data', () => {
 
 xdescribe('AlertMessageDialogComponent without data', () => {
     const mockDialogRef = jasmine.createSpyObj('mockDialogRef', ['close']);
-    const mockDialogData: Partial<DialogData> = {};
+    const mockDialogData: Partial<AlertData> = {};
     let component: AlertMessageDialogComponent;
     let fixture: ComponentFixture<AlertMessageDialogComponent>;
 
