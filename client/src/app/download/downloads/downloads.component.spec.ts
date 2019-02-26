@@ -19,30 +19,29 @@ import { map, elementAt } from 'rxjs/operators';
 import { ProgressBarComponent } from '../../shared/progress-bar/progress-bar.component';
 import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
-xdescribe('DownloadsComponent', () => {
-    const testDlData: DlFile[] = 
-        [ 
-            {
-                _id: 1,
-                filename: 'tFilename1.pdf',
-                fullPath: 'tFullPath1',
-                suffix: 'tSuffix1',
-                type: 'pdf',
-                size: 1000,
-                sizeHR: '1K',
-                icon: 'tIcon1'
-            },
-            {
-                _id: 2,
-                filename: 'tFilename2.zip',
-                fullPath: 'tFullPath2',
-                suffix: 'tSuffix2',
-                type: 'zip',
-                size: 2000000,
-                sizeHR: '2M',
-                icon: 'tIcon2'
-            },
-        ];
+describe('DownloadsComponent', () => {
+    const tFile1 = {
+        _id: 1,
+        filename: 'tFilename1.pdf',
+        fullPath: 'tFullPath1',
+        suffix: 'tSuffix1',
+        type: 'pdf',
+        size: 1000,
+        sizeHR: '1K',
+        icon: 'tIcon1'
+    };
+    const tFile2 = 
+    {
+        _id: 2,
+        filename: 'tFilename2.zip',
+        fullPath: 'tFullPath2',
+        suffix: 'tSuffix2',
+        type: 'zip',
+        size: 2000000,
+        sizeHR: '2M',
+        icon: 'tIcon2'
+    };
+    const testDlData: DlFile[] = [tFile1, tFile2];
     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate', 'createUrlTree']);
     const testBlob: Blob = new Blob(['test blob content'], {type : 'text/plain'});
     const mockAPI = jasmine.createSpyObj('APIService', {
@@ -50,8 +49,8 @@ xdescribe('DownloadsComponent', () => {
         authGetDownloads: of(testDlData),
         downloadFile: of({type: new HttpResponse(), body: testBlob}),
         uploadFile: of({type: HttpEventType.UploadProgress, loaded: 1, total: 100}),
-        renameFile: of(testDlData[0]),
-        deleteFile: of(testDlData[0])
+        renameFile: of(tFile1),
+        deleteFile: of(tFile1)
     });
     let mockFlex = jasmine.createSpyObj({isActive: true, asObservable: of({mqAlias: 'lg'})});
     const spyParamMap = jasmine.createSpyObj({get: null});
@@ -242,14 +241,17 @@ xdescribe('DownloadsComponent', () => {
             });
         });
         it('onFilenameChange()) should send new FilenameChangedObj to api service and confirm with an alert message dialog', () => {
-            const tFilenameChanged: FilenameChangedObj = {_id: 0, oldFilename: 'oFile', newFilename: 'tFilename1.pdf'};
+            const tFilenameChanged: FilenameChangedObj = {_id: 0, oldFilename: 'oFile', newFilename: 'nFile'};
+            const newFileExpected = {...tFile1, filename: 'nFile'};
             const dialogSpy = spyOn(TestBed.get(MatDialog), 'open');
-            mockAPI.renameFile.calls.reset();
+            mockAPI.renameFile.and.returnValue(of(newFileExpected));
             dlComponent.onFilenameChange(tFilenameChanged);
             expect(dialogSpy).toHaveBeenCalledWith(
                 AlertMessageDialogComponent, 
                 { data: jasmine.objectContaining({heading: 'Rename Successful' })}
             );
+            const i = dlComponent.dataSource.data.findIndex(el => el._id === tFilenameChanged._id);
+            expect(dlComponent.dataSource.data[i]).toEqual(newFileExpected);
         });
 
         it('onLinkClicked() should copy data to the clipboard', () => {
@@ -257,7 +259,7 @@ xdescribe('DownloadsComponent', () => {
             const dialogSpy = spyOn(TestBed.get(MatDialog), 'open');
             let execSpy = spyOn(document, 'execCommand').and.callThrough();
             fixture.detectChanges();
-            dlComponent.onLinkClicked(testDlData[0]); 
+            dlComponent.onLinkClicked(tFile1); 
             expect(routerSpy.createUrlTree).toHaveBeenCalled();
             expect(execSpy).toHaveBeenCalled();
             expect(dialogSpy).toHaveBeenCalled();
@@ -269,13 +271,13 @@ xdescribe('DownloadsComponent', () => {
                     .returnValue({ afterClosed : () => of({}) }); // Cancel clicked
             });
             it('should first display a confirmation dialog box', () => {
-                dlComponent.onDeleteClicked(testDlData[0])
+                dlComponent.onDeleteClicked(tFile1)
                 expect(dialogSpy).toHaveBeenCalled();
 
             });
             it('should not call auth.deleteFile() or reloadDownloads() if user clicks cancel', () => {
                 reloadSpy.calls.reset(); // clear calls so we can test it
-                dlComponent.onDeleteClicked(testDlData[0])
+                dlComponent.onDeleteClicked(tFile1)
                 expect(dialogSpy).toHaveBeenCalled();
                 expect(mockAPI.deleteFile).not.toHaveBeenCalled();
                 expect(reloadSpy).not.toHaveBeenCalled();
@@ -284,9 +286,9 @@ xdescribe('DownloadsComponent', () => {
                 reloadSpy.calls.reset();
                 dialogSpy.and.returnValue({ afterClosed : () => of({okClicked: true}) });
                 let spyConsole = spyOn(console, 'log');
-                dlComponent.onDeleteClicked(testDlData[0]);
+                dlComponent.onDeleteClicked(tFile1);
                 expect(dialogSpy).toHaveBeenCalled();
-                expect(mockAPI.deleteFile).toHaveBeenCalledWith(testDlData[0]);
+                expect(mockAPI.deleteFile).toHaveBeenCalledWith(tFile1);
                 expect(spyConsole).toHaveBeenCalledWith('Deleted file tFilename1.pdf');
                 expect(reloadSpy).toHaveBeenCalled();
             });
@@ -465,7 +467,6 @@ xdescribe('DownloadsComponent', () => {
             expect(page.filenames[0].textContent).toEqual(' Filename '); // 0 is column title
             expect(page.filenames[1].querySelector('input').value).toEqual('tFilename1.pdf'); // inside a nested input element
             expect(page.filenames[2].querySelector('input').value).toEqual('tFilename2.zip');
-            console.log('page.filenames[1] is:', page.filenames[1]);
         });
         it('should display fileType column properly', () => {
             expect(page.fileTypes[0].textContent).toEqual(' Type ');
