@@ -17,7 +17,7 @@ class BlankComp {}
 @Pipe({ name: 'secure' })
 class MockSecurePipe implements PipeTransform { transform(s) { return s } }
 
-xdescribe('AlbumsListComponent', () => {
+describe('AlbumsListComponent', () => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate', 'createUrlTree']);
     let mockFlex = jasmine.createSpyObj({isActive: true, asObservable: of({mqAlias: 'lg'})});
     const spyParamMap = jasmine.createSpyObj({get: null});

@@ -1,7 +1,6 @@
 import { Component, Pipe, PipeTransform } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material';
-import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
@@ -25,7 +24,6 @@ xdescribe('HomeComponent', () => {
         }
     };
     let location: Location;
-    let router: Router;
     let component: HomeComponent;
     let fixture: ComponentFixture<HomeComponent>;
     let page: Page;
@@ -43,14 +41,13 @@ xdescribe('HomeComponent', () => {
             declarations: [ HomeComponent, BlankComp, MockSecurePipe ],
             imports: [ MatCardModule, HttpClientModule, 
                 RouterTestingModule.withRoutes([
-                    { path: 'photoAlbums', component: BlankComp },
-                    { path: 'videoAlbums', component: BlankComp },
+                    { path: 'photo/albums', component: BlankComp },
+                    { path: 'video/albums', component: BlankComp },
                 ]) ],
             providers: [
                 { provide: AppConfig, useValue: configMock }
             ]
         }).compileComponents();
-        router = TestBed.get(Router);
         location = TestBed.get(Location);
         createComponent();
     }));
@@ -67,12 +64,12 @@ xdescribe('HomeComponent', () => {
     it('should navigate to photo albums if photoImage is clicked', fakeAsync(() => {
         page.photoImage.click();
         tick();
-        expect(location.path()).toEqual('/photoAlbums')
+        expect(location.path()).toEqual('/photo/albums')
     }));
     it('should navigate to video albums if videoImage is clicked', fakeAsync(() => {
         page.videoImage.click();
         tick();
-        expect(location.path()).toEqual('/videoAlbums')
+        expect(location.path()).toEqual('/video/albums')
     }));
 
 });

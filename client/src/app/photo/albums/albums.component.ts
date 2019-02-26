@@ -1,4 +1,4 @@
-// imports from Angular and other libraries:
+// imports from Angular and other external libraries:
 import { Component, OnInit, HostListener } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
