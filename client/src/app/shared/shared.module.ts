@@ -2,14 +2,14 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ModuleWithProviders } from '@angular/compiler/src/core';
-import { MatToolbarModule, MatMenuModule, MatListModule, MatIconModule, MatButtonModule, MatProgressBarModule
+import { 
+    MatToolbarModule, 
+    MatMenuModule, 
+    MatListModule, 
+    MatIconModule, 
+    MatButtonModule, 
+    MatProgressBarModule
 } from '@angular/material';
-// import { MatCardModule, MatIconModule, MatProgressSpinnerModule, MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
-//     MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatPaginatorModule,
-//     MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
-//     MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MatMenuModule,
-//     MatTableModule, MatSortModule, MatProgressBarModule, MatTabsModule, MatExpansionModule
-// } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { SecurePipe } from './_helpers/secure.pipe';

@@ -1,34 +1,28 @@
 <mat-toolbar *ngIf="auth.isAuthenticated()" class="toolbar" fxFlex>
-    <span>{{CFG.const.header.title}}</span>
+    <a mat-stroked-button routerLink="/home" routerLinkActive="active-link">{{CFG.const.header.title}}</a>
     <div fxShow fxHide.xs fxLayout='row'>
-        <a mat-button routerLink="/gallery" routerLinkActive="active" fxFlexOffset="1">Home</a>
-        <a mat-button routerLink="/download" routerLinkActive="active">Downloads</a>
-        <button mat-button [matMenuTriggerFor]="galleryMenu">Gallery Menu</button>
-        <mat-menu class="gallery-menu" #galleryMenu="matMenu">
-            <button mat-menu-item routerLink="/">Gallery Home</button>
-            <mat-divider class="indent-both"></mat-divider>
-            <button mat-menu-item routerLink="/video/albums">Video Gallery</button>
-            <button mat-menu-item routerLink="/photo/albums">Photo Gallery</button>
-        </mat-menu>
-        <a mat-button routerLink="/family" routerLinkActive="active">Family</a>
+        <a mat-button routerLink="/download" routerLinkActive="active-link" fxFlexOffset="5">Downloads</a>
+        <a mat-button routerLink="/video/albums" routerLinkActive="active-link">Video Gallery</a>
+        <a mat-button routerLink="/photo/albums" routerLinkActive="active-link">Photo Gallery</a>
+        <a mat-button routerLink="/family" routerLinkActive="active-link">Family</a>
     </div>
     <span class="fill-space"></span>
     <button mat-button [matMenuTriggerFor]="userMenu">{{auth.user.username}}</button>
     <mat-menu #userMenu="matMenu">
-        <button mat-menu-item routerLink="/" routerLinkActive="active" (click)="auth.authLogout()">Logout</button>
+        <button mat-menu-item routerLink="/" (click)="auth.authLogout()">Logout</button>
         <mat-divider class="indent-both"></mat-divider>
-        <button mat-menu-item routerLink="/user/changepass">Change Password</button>
-        <button *ngIf="(auth.user.level > 3)" mat-menu-item routerLink="/user/manage">Manage Users</button>
+        <button mat-menu-item routerLink="/user/changepass"  routerLinkActive="active-menu">Change Password</button>
+        <button *ngIf="(auth.user.level > 3)" mat-menu-item routerLink="/user/manage"  routerLinkActive="active-menu">Manage Users</button>
     </mat-menu>
     <!-- Responsive menu - only appears on xs screens -->
     <button fxHide fxShow.xs mat-button [matMenuTriggerFor]="xsMenu"><mat-icon>menu</mat-icon></button>
     <mat-menu #xsMenu="matMenu" fxLayout="column">
-        <button mat-menu-item routerLink="/gallery" routerLinkActive="active">Home</button>
+        <button mat-menu-item routerLink="/home" routerLinkActive="active-menu">Home</button>
         <mat-divider class="indent-both"></mat-divider>
-        <button mat-menu-item routerLink="/photo/albums" routerLinkActive="active">Photo Gallery</button>
-        <button mat-menu-item routerLink="/video/albums" routerLinkActive="active">Video Gallery</button>
-        <button mat-menu-item routerLink="/download" routerLinkActive="active">Downloads</button>
+        <button mat-menu-item routerLink="/photo/albums" routerLinkActive="active-menu">Photo Gallery</button>
+        <button mat-menu-item routerLink="/video/albums" routerLinkActive="active-menu">Video Gallery</button>
+        <button mat-menu-item routerLink="/download" routerLinkActive="active-menu">Downloads</button>
         <mat-divider class="indent-both"></mat-divider>
-        <button mat-menu-item routerLink="/family" routerLinkActive="active">Family</button>
+        <button mat-menu-item routerLink="/family" routerLinkActive="active-menu">Family</button>
     </mat-menu>
 </mat-toolbar>

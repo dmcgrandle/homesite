@@ -8,8 +8,7 @@ import { AboutComponent } from './about.component';
 import { AppConfig } from '../../app.config';
 
 // Mock class
-@Injectable()
-export class MockAppConfig {
+class MockAppConfig {
     const: Object = {
         about: {
             family : {

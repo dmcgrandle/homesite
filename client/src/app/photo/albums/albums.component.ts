@@ -66,7 +66,7 @@ export class AlbumsComponent implements OnInit {
         });
         dialogRef.afterClosed().subscribe(result => { });
         console.log(err);
-        this.router.navigate(['/gallery']);
+        this.router.navigate(['/home']);
     };
 
 }

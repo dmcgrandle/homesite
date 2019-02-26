@@ -6,8 +6,8 @@ import { Location } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 
-import { AppConfig } from '../app.config';
-import { GalleryComponent } from './gallery.component';
+import { AppConfig } from '../../app.config';
+import { HomeComponent } from './home.component';
 
 @Component({selector: 'blank', template: ``}) 
 class BlankComp {}
@@ -15,8 +15,8 @@ class BlankComp {}
 @Pipe({ name: 'secure' })
 class MockSecurePipe implements PipeTransform { transform(s) { return s } }
 
-xdescribe('GalleryComponent', () => {
-    const configMock = { 
+xdescribe('HomeComponent', () => {
+    const configMock = {
         const: { 
             gallery: {
                 featuredMedia: { filename: 'assets/tests/lion-sml.jpg' },
@@ -26,12 +26,12 @@ xdescribe('GalleryComponent', () => {
     };
     let location: Location;
     let router: Router;
-    let component: GalleryComponent;
-    let fixture: ComponentFixture<GalleryComponent>;
+    let component: HomeComponent;
+    let fixture: ComponentFixture<HomeComponent>;
     let page: Page;
 
     function createComponent(): Promise<any> {
-        fixture = TestBed.createComponent(GalleryComponent);
+        fixture = TestBed.createComponent(HomeComponent);
         component = fixture.componentInstance;
         page = new Page(fixture);
         fixture.detectChanges();
@@ -40,7 +40,7 @@ xdescribe('GalleryComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [ GalleryComponent, BlankComp, MockSecurePipe ],
+            declarations: [ HomeComponent, BlankComp, MockSecurePipe ],
             imports: [ MatCardModule, HttpClientModule, 
                 RouterTestingModule.withRoutes([
                     { path: 'photoAlbums', component: BlankComp },
@@ -84,9 +84,9 @@ class Page {
     get photoTitle() { return this.queryText<HTMLElement>('photo gallery'); }
     get videoTitle() { return this.queryText<HTMLElement>('video gallery'); }
 
-    private fixture: ComponentFixture<GalleryComponent>;
+    private fixture: ComponentFixture<HomeComponent>;
   
-    constructor(fixture: ComponentFixture<GalleryComponent>) {
+    constructor(fixture: ComponentFixture<HomeComponent>) {
         this.fixture = fixture;
     }
   

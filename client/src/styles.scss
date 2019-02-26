@@ -1,4 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
+// @import '~@angular/material/theming';
 @import '~@angular/material/prebuilt-themes/indigo-pink.css';
 
 // From coolers.co: 5 compatible colors with 'dark turquoise':
@@ -9,6 +10,12 @@
 // #034748 -                   - sort of a forest green
 // #1481BA -                   - McGrandle blue!
 // #3CDBD3 -                   - light turquoise
+
+// Alternative all-blue:
+// #070D59 - dark blue, nearly black
+// #1f3c88 - medium dark
+// #5893d4 - light, nearly sky blue
+// #ceddef - very light almost grey
 
 $text-color-dark: #001021;
 $text-color-floral-white: #FFFAF0;

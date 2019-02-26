@@ -2,12 +2,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { AuthService } from './user/_services/auth.service';
-import { GalleryComponent } from './gallery/gallery.component';
 import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
 
 
 const routes: Routes = [
-    { path: 'gallery', component: GalleryComponent, canActivate: [AuthService] },
     { path: 'photo', loadChildren: './photo/photo.module#PhotoModule' },
     { path: 'video', loadChildren: './video/video.module#VideoModule' },
     { path: 'download', loadChildren: './download/download.module#DownloadModule'},

@@ -126,7 +126,7 @@ xdescribe('ChangePasswordComponent', () => {
         });
         it('should successfully try to navigate back to gallery when dialog closes', () => {
             expect(router.navigate).toHaveBeenCalled();
-            expect(router.navigate).toHaveBeenCalledWith(['/gallery']);
+            expect(router.navigate).toHaveBeenCalledWith(['/home']);
         });
     });
 

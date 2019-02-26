@@ -69,7 +69,7 @@ export class ChangePasswordComponent implements OnInit {
                 showCancel: false
             }
         });
-        dialogRef.afterClosed().subscribe(() => this.router.navigate(['/gallery']));
+        dialogRef.afterClosed().subscribe(() => this.router.navigate(['/home']));
     }
 
     errorChange(err) {

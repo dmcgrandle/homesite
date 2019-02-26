@@ -71,7 +71,7 @@ export class AlbumsComponent implements OnInit, AfterViewInit {
         });
         dialogRef.afterClosed().subscribe(result => { });
         console.log(err);
-        this.router.navigate(['/gallery']);
+        this.router.navigate(['/home']);
     };
 
 }

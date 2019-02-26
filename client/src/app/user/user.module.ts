@@ -3,15 +3,16 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ModuleWithProviders } from '@angular/compiler/src/core';
 import {
-    MatToolbarModule, MatProgressSpinnerModule, MatInputModule, MatTableModule, MatPaginatorModule,
-    MatIconModule, MatSelectModule, MatButtonModule
+    MatToolbarModule, 
+    MatProgressSpinnerModule, 
+    MatInputModule, 
+    MatTableModule, 
+    MatPaginatorModule,
+    MatIconModule, 
+    MatSelectModule, 
+    MatButtonModule,
+    MatDialogModule
 } from '@angular/material';
-// import { MatCardModule, MatIconModule, MatProgressSpinnerModule, MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
-//     MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatPaginatorModule,
-//     MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
-//     MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MatMenuModule,
-//     MatTableModule, MatSortModule, MatProgressBarModule, MatTabsModule, MatExpansionModule
-// } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { SharedModule } from '../shared/shared.module';
@@ -29,6 +30,7 @@ import { EditDialogComponent } from './edit-dialog/edit-dialog.component';
     imports: [
         CommonModule,
         UsersRoutingModule,
+        SharedModule,
         FormsModule,
         FlexLayoutModule,
         MatToolbarModule,
@@ -39,20 +41,7 @@ import { EditDialogComponent } from './edit-dialog/edit-dialog.component';
         MatIconModule,
         MatSelectModule,
         MatButtonModule,
-        // MatCardModule, MatProgressSpinnerModule, MatIconModule,
-        // MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
-        // MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatTableModule,
-        // MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
-        // , , , MatDialogModule,
-        // MatMenuModule, MatPaginatorModule, MatProgressSpinnerModule, MatSortModule,
-        // MatProgressBarModule, MatTabsModule, MatExpansionModule,
-        // MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
-        // MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatTableModule,
-        // MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
-        // MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule,
-        // MatMenuModule, MatPaginatorModule, MatProgressSpinnerModule, MatSortModule,
-        // MatProgressBarModule, MatTabsModule, MatExpansionModule
-        SharedModule,
+        MatDialogModule
     ],
     declarations: [
         ManageComponent,
@@ -62,7 +51,11 @@ import { EditDialogComponent } from './edit-dialog/edit-dialog.component';
         RegisterComponent,
         EditDialogComponent
     ],
-    entryComponents: [EditDialogComponent, RegisterComponent, ForgotDialogComponent]
+    entryComponents: [
+        EditDialogComponent, 
+        RegisterComponent, 
+        ForgotDialogComponent
+    ]
 })
 export class UserModule {
     static forRoot(): ModuleWithProviders {

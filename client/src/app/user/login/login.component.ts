@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
             // go ahead and auto-login with those saved credentials.
             this.auth.user['username'] = this.auth.lastLoggedInUsername();
             this.auth.user['level'] = Number(this.auth.lastLoggedInUserLevel());
-            this.router.navigate(['/gallery']);
+            this.router.navigate(['/home']);
             console.log('Auto-login for user ' + this.auth.user['username']);
         }
     };
@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
                     this.auth.clearAttemptedURL();
                     this.router.navigate([earlierAttempt]); // now we can load it!
                 } else {
-                    this.router.navigate(['/gallery']);
+                    this.router.navigate(['/home']);
                 }
             },
             (err) => {
