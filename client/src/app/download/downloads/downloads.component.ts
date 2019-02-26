@@ -142,7 +142,8 @@ export class DownloadsComponent implements OnInit, OnDestroy {
                 showCancel: false,
             };
             this.dialog.open(AlertMessageDialogComponent, { data: alertData });
-            this.dataSource.data[filenameChanged._id] = file;
+            const i = this.dataSource.data.findIndex(el => el._id === filenameChanged._id);
+            this.dataSource.data[i] = file;
         })
     }
 
