@@ -50,18 +50,18 @@ const multerConf = {
 const multerUpload = multer(multerConf).single('upload');
 exports.upload = (req, res, next) => {
   req.on('aborted', () => {
-    console.log('Upload aborted by client.');
+    logDS('Upload aborted by client.');
   });
   req.on('close', () => {
-    console.log('finished uploading.');
+    logDS('finished uploading.');
     if (req.file) {
-      console.log(Date(Date.now()) + ' : File Uploaded: "' + req.file.filename + '"');
+      logDS(`${Date(Date.now())} : File Uploaded: "${req.file.filename}"`);
     }
   });
   // Middleware function to upload - define next to handle errors
   multerUpload(req, res, (err) => {
     if (err) {
-      console.log(err);
+      logDS(err);
       return res.status(422).send('Error uploading file.');
     }
     next();
@@ -92,7 +92,7 @@ function grepPromise(search) {
     grep.stderr.on('data', (data) => { dataErr += data; });
     grep.on('close', (returnCode) => {
       if (dataErr && (returnCode !== 0)) {
-        console.log('grepPromise Error! Return code is: ' + returnCode);
+        logDS('grepPromise Error! Return code is: ' + returnCode);
         reject(dataErr);
       } else {
         resolve(dataOut);
@@ -209,6 +209,7 @@ exports.delete = async (dlName) => {
     { filename: dlName },
   );
   if (result.lastErrorObject.n !== 1) {
+    logDS('Serious error: exports.delete in download-service.js file deleted ok, but not found in db.');
     throw new Error('404 Eror deleting file - File not found in database.');
   }
   return result.value;
@@ -216,21 +217,27 @@ exports.delete = async (dlName) => {
 
 exports.renameFile = async (filenameChanged) => {
   const originalDl = await getDownloadById(filenameChanged._id);
-  try {
-    const newFileFullPath = `.${cfg.DOWNLOAD_DIR.PATH}${filenameChanged.newFilename}`;
-    await fileSvc.renameFile(`.${originalDl.fullPath}`, newFileFullPath);
-  } catch (err) {
-    throw new Error(`404 Error renaming file on disk - Original File "${originalDl.filename}" not found.`);
+  if (filenameChanged.newFilename !== originalDl.filename) {//only rename if needed
+    try {
+      const newFileFullPath = `.${cfg.DOWNLOAD_DIR.PATH}${filenameChanged.newFilename}`;
+      await fileSvc.renameFile(`.${originalDl.fullPath}`, newFileFullPath);
+    } catch (err) {
+      throw new Error(`404 Error renaming file on disk - Original File "${originalDl.filename}" not found.`);
+    }
+    const result = await db.collection(cfg.DB_COLLECTION_NAME).findOneAndUpdate(
+      { _id: filenameChanged._id },
+      { $set: { 
+        filename: filenameChanged.newFilename, 
+        fullPath: `${cfg.DOWNLOAD_DIR.PATH}${filenameChanged.newFilename}` 
+      }}
+    );
+    if (result.lastErrorObject.n !== 1) {
+      throw new Error('404 Error renaming file in db - Unknown File Id.  Please report this error.');
+    }
+    // result returns OLD record, so now get the new one from db:
+    const newDl = await getDownloadById(filenameChanged._id);
+    return newDl;
+  } else {
+    return originalDl;
   }
-  const result = await db.collection(cfg.DB_COLLECTION_NAME).findOneAndUpdate(
-    { _id: filenameChanged._id },
-    { $set: { 
-      filename: filenameChanged.newFilename, 
-      fullPath: `${cfg.DOWNLOAD_DIR.PATH}${filenameChanged.newFilename}` 
-    }}
-  );
-  if (result.lastErrorObject.n !== 1) {
-    throw new Error('404 Error renaming file in db - Unknown File Id.  Please report this error.');
-  }
-  return result.value;
 }

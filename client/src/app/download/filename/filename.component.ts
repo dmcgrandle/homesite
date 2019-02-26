@@ -23,6 +23,7 @@ export class FilenameComponent {
                 newFilename: name
             };
             this.changed.emit(filenameChanged);
+            this.filename = name;
         }
     }
 

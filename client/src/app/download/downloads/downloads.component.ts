@@ -134,22 +134,21 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     };
 
     onFilenameChange(filenameChanged: FilenameChangedObj) {
-        // console.log(filenameChanged);
         this.api.renameFile(filenameChanged).subscribe((file: DlFile) => {
             const alertData: AlertData = {
                 heading: 'Rename Successful',
-                alertMessage: `  file: ${filenameChanged.oldFilename}`,
+                alertMessage: `old file: ${filenameChanged.oldFilename}`,
                 alertMessage2: `is now: ${file.filename}`,
                 showCancel: false,
             };
             this.dialog.open(AlertMessageDialogComponent, { data: alertData });
-            // console.log(file);
+            this.dataSource.data[filenameChanged._id] = file;
         })
     }
 
     onLinkClicked(file: DlFile) {
         // This whole function is such a hack.  It's amazing there isn't a better way
-        // to access the clipboard in Angular ...
+        // to access the clipboard in Angular ... that I could find ...
         let url = document.URL + this.router.createUrlTree([file.filename]).toString();
         // create a "fake" textarea to store text and then copy to clipboard from
         let clipArea = document.createElement('textarea');
