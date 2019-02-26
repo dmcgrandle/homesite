@@ -32,3 +32,9 @@ export class DlFile {
     }
 };
 
+export class FilenameChangedObj {
+    _id: number;
+    oldFilename: string;
+    newFilename: string;
+}
+

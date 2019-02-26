@@ -5,6 +5,7 @@
 const fs = require('fs-extra');
 const klaw = require('klaw');
 const through2 = require('through2');
+const logFS = require('debug')('homesite:file-service');
 
 // Project Imports:
 // const cfg = require('../config').fileService;
@@ -112,5 +113,10 @@ fSvc.downloadFiles = (dir, testFunc) => new Promise((resolve, reject) => {
 });
 
 fSvc.deleteFile = file => fs.unlink(file);
+
+fSvc.renameFile = (oldFile, newFile) => {
+  logFS('Renaming file: "', oldFile, '" to be "', newFile, '"');
+  return fs.rename(oldFile, newFile);
+};
 
 module.exports = fSvc;

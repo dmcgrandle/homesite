@@ -12,9 +12,10 @@ import { SharedModule } from '../shared/shared.module';
 import { DownloadRoutingModule } from './download-routing.module';
 // import { ProgressBarComponent } from './progress-bar/progress-bar.component';
 import { DownloadsComponent } from './downloads/downloads.component';
+import { FilenameComponent } from './filename/filename.component';
 
 @NgModule({
-    declarations: [ DownloadsComponent ],
+    declarations: [ DownloadsComponent, FilenameComponent ],
     imports: [
         CommonModule,
         SharedModule,

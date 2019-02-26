@@ -57,7 +57,11 @@
                 <!-- Filename Column -->
             <ng-container matColumnDef="filename">
                 <th mat-header-cell class="indent" *matHeaderCellDef mat-sort-header> Filename </th>
-                <td mat-cell class="indent" *matCellDef="let file" (click)="editFilename(file)"> {{file.filename}} </td>
+                <td mat-cell class="indent" *matCellDef="let file">
+                        <!-- [(ngModel)]="existingPass" {{file.filename}} #file="ngModel"-->
+                        <download-filename [filename]="file.filename" [id]="file._id" (changed)="onFilenameChange($event)">
+                        </download-filename>
+                </td>
             </ng-container>
 
             <!-- Icon Column -->

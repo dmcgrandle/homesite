@@ -32,12 +32,20 @@ router.get('/list', (req, res) => {
 /*  POST: upload a file to the downloads directory.  Needs level 3+ access
     Set this up a little differently than other router handlers: set up a middleware
     chain by defining 3 "next" functions that get called in order. */
-router.post('/upload', userSvc.testLevelForUpload, dlSvc.upload, (req, res) => {
+router.post('/upload', userSvc.testLevelAtOrAbove3, dlSvc.upload, (req, res) => {
   dlSvc.updateDownloadsDB(req.file)
     .then(reply => res.status(200).json(reply))
     .catch(err => errSvc.processError(err, res));
 });
 
+/*  POST: rename an existing file in the downloads directory.  Needs level 3+ access */
+router.post('/rename', (req, res) => {
+  userSvc.isValidLevel(req.user, 3)
+    .then(() => dlSvc.renameFile(req.body))
+    .then(reply => res.status(200).json(reply))
+    .catch(err => errSvc.processError(err, res));
+});
+    
 /* DELETE: delete a download.  Needs level 3+ access */
 router.delete('/:filename', (req, res) => {
   userSvc.isValidLevel(req.user, 3)

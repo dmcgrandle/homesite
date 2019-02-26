@@ -4,7 +4,7 @@ import { HttpClient, HttpEvent, HttpParams, HttpRequest } from '@angular/common/
 
 import { AuthService } from '../../user/_services/auth.service';
 
-import { DlFile } from '../_helpers/classes';
+import { DlFile, FilenameChangedObj } from '../_helpers/classes';
 
 @Injectable({ providedIn: 'root' })
 export class APIService  {
@@ -33,6 +33,10 @@ export class APIService  {
 
     public deleteFile(file: DlFile): Observable<DlFile> {
         return this.http.delete<DlFile>('/api/downloads/' + file.filename)
+    }
+
+    public renameFile(filenameChangedObj: FilenameChangedObj): Observable<DlFile> {
+        return this.http.post<DlFile>('/api/downloads/rename', filenameChangedObj);
     }
 
     public lastLoggedInUserLevel(): number {

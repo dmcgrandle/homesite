@@ -132,8 +132,8 @@ exports.isValidLevel = async (user, level) => {
   return true; // no errors thrown
 };
 
-exports.testLevelForUpload = (req, res, next) => {
-  // Middleware function to test the user level for upload
+exports.testLevelAtOrAbove3 = (req, res, next) => {
+  // Middleware function to test the user level is at or above 3.  Wrapper around 'isValidLevel()'
   exports.isValidLevel(req.user, 3)
     .then(() => next())
     .catch(err => errSvc.processError(err, res));

@@ -1,4 +1,5 @@
 import { async, fakeAsync, tick, flush, ComponentFixture, TestBed } from '@angular/core/testing';
+import { DebugElement } from '@angular/core';
 import { MatFormFieldModule, MatDialogModule, MatPaginatorModule, MatInputModule, MatDialog,
     MatIconModule, MatTableModule, MatProgressSpinnerModule, MatSortModule } from '@angular/material';
 import { HttpEvent, HttpEventType, HttpResponse } from '@angular/common/http';
@@ -11,7 +12,8 @@ import { take } from 'rxjs/operators';
 import * as fsaver from 'file-saver'; // import differently so we can spyOn methods more easily
 
 import { DownloadsComponent } from './downloads.component';
-import { DlFile } from '../_helpers/classes';
+import { FilenameComponent } from '../filename/filename.component';
+import { DlFile, FilenameChangedObj } from '../_helpers/classes';
 import { APIService } from '../_services/api.service';
 import { map, elementAt } from 'rxjs/operators';
 import { ProgressBarComponent } from '../../shared/progress-bar/progress-bar.component';
@@ -48,13 +50,13 @@ xdescribe('DownloadsComponent', () => {
         authGetDownloads: of(testDlData),
         downloadFile: of({type: new HttpResponse(), body: testBlob}),
         uploadFile: of({type: HttpEventType.UploadProgress, loaded: 1, total: 100}),
+        renameFile: of(testDlData[0]),
         deleteFile: of(testDlData[0])
     });
     let mockFlex = jasmine.createSpyObj({isActive: true, asObservable: of({mqAlias: 'lg'})});
     const spyParamMap = jasmine.createSpyObj({get: null});
     const mockActivatedRoute = { paramMap: of(spyParamMap) };
     let dlComponent: DownloadsComponent;
-    let dlElement: HTMLElement;
     let page: Page;
     let fixture: ComponentFixture<DownloadsComponent>;
     let reloadSpy: jasmine.Spy;
@@ -74,7 +76,7 @@ xdescribe('DownloadsComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [DownloadsComponent],
+            declarations: [DownloadsComponent, FilenameComponent],
             imports: [ MatDialogModule, MatTableModule, MatPaginatorModule, MatIconModule, 
                 MatFormFieldModule, MatProgressSpinnerModule, MatSortModule, MatInputModule, 
                 BrowserAnimationsModule],
@@ -239,36 +241,15 @@ xdescribe('DownloadsComponent', () => {
                 });
             });
         });
-        // describe('onDownloadClicked()', () => {
-        //     let dialogSpy: jasmine.Spy;
-        //     let spySave: jasmine.Spy;
-        //     beforeEach(() => {
-        //         dialogSpy = spyOn(TestBed.get(MatDialog), 'open');
-        //         spySave = spyOn(fsaver, 'saveAs');
-        //         mockAPI.downloadFile.calls.reset();
-        //     });
-        //     it('should save the given file as a blob', () => {
-        //         dlComponent.onDownloadClicked(testDlData[0]);
-        //         expect(mockAPI.downloadFile).toHaveBeenCalled();
-        //         expect(spySave).toHaveBeenCalledWith(testBlob, 'tFilename1.pdf');
-        //         expect(dialogSpy).toHaveBeenCalled();
-        //     });
-        //     it('should log errors to the console', () => {
-        //         mockAPI.downloadFile.and.returnValue(throwError('tError'));
-        //         const spyConsole = spyOn(console, 'log');
-        //         dlComponent.onDownloadClicked(testDlData[0]);
-        //         expect(mockAPI.downloadFile).toHaveBeenCalled();
-        //         expect(spySave).not.toHaveBeenCalled();
-        //         expect(spyConsole).toHaveBeenCalledWith('tError');
-        //         expect(dialogSpy).not.toHaveBeenCalled();
-        //         mockAPI.downloadFile.and.returnValue(of(testBlob)); // reset
-        //     });
-        // });
-        it('editFilename()) should edit the filename of the clicked download', () => {
-            const spyConsole = spyOn(console, 'log');
-            dlComponent.editFilename(testDlData[0]);
-            expect(spyConsole).toHaveBeenCalled();
-            // TODO: add the test when the functionality is added
+        it('onFilenameChange()) should send new FilenameChangedObj to api service and confirm with an alert message dialog', () => {
+            const tFilenameChanged: FilenameChangedObj = {_id: 0, oldFilename: 'oFile', newFilename: 'tFilename1.pdf'};
+            const dialogSpy = spyOn(TestBed.get(MatDialog), 'open');
+            mockAPI.renameFile.calls.reset();
+            dlComponent.onFilenameChange(tFilenameChanged);
+            expect(dialogSpy).toHaveBeenCalledWith(
+                AlertMessageDialogComponent, 
+                { data: jasmine.objectContaining({heading: 'Rename Successful' })}
+            );
         });
 
         it('onLinkClicked() should copy data to the clipboard', () => {
@@ -482,8 +463,9 @@ xdescribe('DownloadsComponent', () => {
         });
         it('should display filename column properly', () => {
             expect(page.filenames[0].textContent).toEqual(' Filename '); // 0 is column title
-            expect(page.filenames[1].textContent).toEqual(' tFilename1.pdf '); // 1 is first download
-            expect(page.filenames[2].textContent).toEqual(' tFilename2.zip ');
+            expect(page.filenames[1].querySelector('input').value).toEqual('tFilename1.pdf'); // inside a nested input element
+            expect(page.filenames[2].querySelector('input').value).toEqual('tFilename2.zip');
+            console.log('page.filenames[1] is:', page.filenames[1]);
         });
         it('should display fileType column properly', () => {
             expect(page.fileTypes[0].textContent).toEqual(' Type ');
@@ -521,19 +503,10 @@ class Page {
     get fileTypes()     { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-type') }
     get fileSizes()     { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-sizeHR') }
 
-    // gotoListSpy: jasmine.Spy;
-    // navigateSpy: jasmine.Spy;
     private fixture: ComponentFixture<DownloadsComponent>;
   
     constructor(fixture: ComponentFixture<DownloadsComponent>) {
         this.fixture = fixture;
-        // get the navigate spy from the injected router spy object
-        // const routerSpy = <any> fixture.debugElement.injector.get(Router);
-        // this.navigateSpy = routerSpy.navigate;
-  
-        // spy on component's `gotoList()` method
-        // const component = fixture.componentInstance;
-        // this.gotoListSpy = spyOn(component, 'gotoList').and.callThrough();
     }
   
     //// query helpers ////

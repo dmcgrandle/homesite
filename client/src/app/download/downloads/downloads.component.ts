@@ -9,8 +9,9 @@ import { saveAs } from 'file-saver';
 
 import { AlertMessageDialogComponent, AlertData } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 import { ProgressBarComponent, ProgressData } from '../../shared/progress-bar/progress-bar.component';
-import { DlFile } from '../_helpers/classes';
+import { DlFile, FilenameChangedObj } from '../_helpers/classes';
 import { APIService } from '../_services/api.service';
+import { appInitializerFactory } from '@angular/platform-browser/src/browser/server-transition';
 
 
 @Component({
@@ -132,10 +133,19 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         });
     };
 
-    editFilename(file: DlFile) {
-        console.log(file);
-        // TODO: allow file name to be edited
-    };
+    onFilenameChange(filenameChanged: FilenameChangedObj) {
+        // console.log(filenameChanged);
+        this.api.renameFile(filenameChanged).subscribe((file: DlFile) => {
+            const alertData: AlertData = {
+                heading: 'Rename Successful',
+                alertMessage: `  file: ${filenameChanged.oldFilename}`,
+                alertMessage2: `is now: ${file.filename}`,
+                showCancel: false,
+            };
+            this.dialog.open(AlertMessageDialogComponent, { data: alertData });
+            // console.log(file);
+        })
+    }
 
     onLinkClicked(file: DlFile) {
         // This whole function is such a hack.  It's amazing there isn't a better way

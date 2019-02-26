@@ -4,6 +4,7 @@
 // External Imports:
 const multer = require('multer');
 const spawnProc = require('child_process').spawn;
+const logDS = require('debug')('homesite:download-service');
 
 // Project Imports:
 const cfg = require('../config').downloadService;
@@ -177,6 +178,12 @@ exports.updateDownloadsDB = async (file) => {
   return null;
 };
 
+async function getDownloadById(id) {
+  const dlReturned = await db.collection(cfg.DB_COLLECTION_NAME).findOne({ _id: id });
+  if (!dlReturned) throw new Error('404 Unknown FileId.  Please report this error.');
+  return dlReturned;
+};
+
 exports.getDownload = async (dlName) => {
   const download = await db.collection(cfg.DB_COLLECTION_NAME).findOne({ filename: dlName });
   if (!download) throw new Error('404 Unknown File.');
@@ -193,12 +200,37 @@ exports.getList = async () => {
 
 exports.delete = async (dlName) => {
   await exports.getDownload(dlName); // verify it exists before doing any work
-  await fileSvc.deleteFile('.' + cfg.DOWNLOAD_DIR.PATH + dlName);
+  try {
+    await fileSvc.deleteFile(`.${cfg.DOWNLOAD_DIR.PATH}${dlName}`);
+  } catch (err) {
+    throw new Error(`404 Error deleting file on disk File "${dlName}" not found.`)
+  }
   const result = await db.collection(cfg.DB_COLLECTION_NAME).findOneAndDelete(
     { filename: dlName },
   );
   if (result.lastErrorObject.n !== 1) {
-    throw new Error('404 File not found in database.');
+    throw new Error('404 Eror deleting file - File not found in database.');
   }
   return result.value;
 };
+
+exports.renameFile = async (filenameChanged) => {
+  const originalDl = await getDownloadById(filenameChanged._id);
+  try {
+    const newFileFullPath = `.${cfg.DOWNLOAD_DIR.PATH}${filenameChanged.newFilename}`;
+    await fileSvc.renameFile(`.${originalDl.fullPath}`, newFileFullPath);
+  } catch (err) {
+    throw new Error(`404 Error renaming file on disk - Original File "${originalDl.filename}" not found.`);
+  }
+  const result = await db.collection(cfg.DB_COLLECTION_NAME).findOneAndUpdate(
+    { _id: filenameChanged._id },
+    { $set: { 
+      filename: filenameChanged.newFilename, 
+      fullPath: `${cfg.DOWNLOAD_DIR.PATH}${filenameChanged.newFilename}` 
+    }}
+  );
+  if (result.lastErrorObject.n !== 1) {
+    throw new Error('404 Error renaming file in db - Unknown File Id.  Please report this error.');
+  }
+  return result.value;
+}
