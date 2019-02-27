@@ -5,7 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AlertMessageDialogComponent, AlertData } from './alert-message-dialog.component';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 
-xdescribe('AlertMessageDialogComponent with data', () => {
+xdescribe('Shared Module: AlertMessageDialogComponent with data', () => {
     const mockDialogRef = jasmine.createSpyObj('mockDialogRef', ['close']);
     const mockDialogData: Partial<AlertData> = {
         heading: 'Testing',

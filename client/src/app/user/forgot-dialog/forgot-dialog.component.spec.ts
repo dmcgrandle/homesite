@@ -11,7 +11,7 @@ import { AuthService } from '../_services/auth.service';
 import { ForgotDialogComponent, DialogData } from './forgot-dialog.component';
 import { HttpErrorResponse } from '@angular/common/http';
 
-xdescribe('ForgotDialogComponent', () => {
+xdescribe('User Module: ForgotDialogComponent', () => {
 
     const mockDialogRef = jasmine.createSpyObj('MatDialogRef', {
         close: null,

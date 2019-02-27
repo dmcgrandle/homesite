@@ -6,7 +6,7 @@ import { UrlSegment } from '@angular/router';
 import { APIService } from './api.service';
 import { Album, Photo } from '../_helpers/classes';
 
-xdescribe('APIService for Photo', () => {
+xdescribe('Photo Module: APIService', () => {
     let api: APIService;
     let httpMock: HttpTestingController;
     beforeEach(() => {

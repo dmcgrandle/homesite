@@ -27,7 +27,7 @@ export class MockRouter {
     navigate(url: string[]) {};
 }
 
-xdescribe('AuthService', () => {
+xdescribe('User Module: AuthService', () => {
     let auth: AuthService;
     beforeEach(() => {
         TestBed.configureTestingModule({

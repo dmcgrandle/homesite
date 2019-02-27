@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { AppConfig } from '../../app.config';
 import { LoginComponent } from './login.component';
 
-// describe('LoginComponent', () => {
+// describe('User Module: LoginComponent', () => {
 //     const configSpy = jasmine.createSpyObj({
 //         const: {
 //             header: {

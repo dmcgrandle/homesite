@@ -6,7 +6,7 @@ import { MatDialogModule } from '@angular/material';
 import { SecurePipe } from '../../shared/_helpers/secure.pipe';
 import { VideoComponent } from './video.component';
 
-// describe('GalleryVideoVideoComponent', () => {
+// describe('Video Module: VideoComponent', () => {
 //     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
 //     const routeSpy = jasmine.createSpyObj('Route', {
 //         snapshot: {

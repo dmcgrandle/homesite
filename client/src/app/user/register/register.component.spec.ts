@@ -10,7 +10,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppConfig } from '../../app.config';
 import { RegisterComponent } from './register.component';
 
-// describe('RegisterComponent', () => {
+// describe('User Module: RegisterComponent', () => {
 //     const mockDialogRef = {
 //         close: jasmine.createSpy('close')
 //     };

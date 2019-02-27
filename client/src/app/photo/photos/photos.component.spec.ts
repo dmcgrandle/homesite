@@ -6,7 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { SecurePipe } from '../../shared/_helpers/secure.pipe';
 import { PhotosComponent } from './photos.component';
 
-// describe('PhotosComponent', () => {
+// describe('Photo Module: PhotosComponent', () => {
 //     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
 //     const routeSpy = jasmine.createSpyObj('Route', {
 //         snapshot: {

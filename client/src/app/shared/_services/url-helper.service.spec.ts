@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 
 import { UrlHelperService } from './url-helper.service';
 
-xdescribe('UrlHelperService', () => {
+xdescribe('Shared Module: UrlHelperService', () => {
     let httpMock: HttpTestingController;
     let urlHelper: UrlHelperService;
     beforeEach(() => {

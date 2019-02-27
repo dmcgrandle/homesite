@@ -1,8 +1,9 @@
 // imports from Angular and other external libraries:
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Router, ActivatedRoute, ParamMap, UrlTree } from '@angular/router';
 import { Location } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 // imports from homesite outside of photo module:
 import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
@@ -16,10 +17,11 @@ import { Album, Photo } from '../_helpers/classes';
     templateUrl: './albums.component.html',
     styleUrls: ['./albums.component.scss']
 })
-export class AlbumsComponent implements OnInit {
+export class AlbumsComponent implements OnInit, OnDestroy {
 
     displayAlbums: Album[];
     photosDisplayName: string;
+    getAlbumsSub: Subscription;
 
     constructor(private api: APIService,
         private route: ActivatedRoute,
@@ -29,7 +31,7 @@ export class AlbumsComponent implements OnInit {
 
     ngOnInit() {
         // this observable changes on init, or when nav button hit (back or fwd)
-        this.api.getAlbumsByURL(this.route.url).subscribe(
+        this.getAlbumsSub = this.api.getAlbumsByURL(this.route.url).subscribe(
             (albums) => {
                 this.displayAlbums = albums;
                 this.photosDisplayName = (this.api.curAlbum._id > 0) ? this.api.curAlbum.name: "";
@@ -38,12 +40,16 @@ export class AlbumsComponent implements OnInit {
         );
     };
 
+    ngOnDestroy() {
+        if (this.getAlbumsSub) this.getAlbumsSub.unsubscribe();
+    }
+
     public updateDisplayAlbum(album: Album) {
         this.api.curAlbum = album; // go down one level (directory).
         if (album.albumIds.length > 0) {// means this album contains other albums
             this.api.getAlbumsByIdArray(album.albumIds).subscribe(
-                (albums) => { // get the albums array for this new album
-                    this.displayAlbums = albums; // set albums to display
+                (albums) => {
+                    this.displayAlbums = albums;
                     const url = 'photo/albums' + this.router.createUrlTree([album.path]).toString();
                     this.location.go(url); // Update the URL in the browser window without navigating.
                 },
@@ -64,9 +70,10 @@ export class AlbumsComponent implements OnInit {
             width: '400px',
             data: { alertMessage: alertMessage, showCancel: false }
         });
-        dialogRef.afterClosed().subscribe(result => { });
-        console.log(err);
-        this.router.navigate(['/home']);
+        dialogRef.afterClosed().subscribe(() => {
+            console.log(err);
+            this.router.navigate(['/home']);
+        });
     };
 
 }

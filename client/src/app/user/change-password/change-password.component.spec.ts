@@ -11,7 +11,7 @@ import { User } from '../_helpers/classes';
 import { ChangePasswordComponent } from './change-password.component';
 import { of, throwError } from 'rxjs';
 
-xdescribe('ChangePasswordComponent', () => {
+xdescribe('User Module: ChangePasswordComponent', () => {
     const tUser: Partial<User> = { username: 'tGuest'};
     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate']);
     const mockAuth = jasmine.createSpyObj('AuthService', {

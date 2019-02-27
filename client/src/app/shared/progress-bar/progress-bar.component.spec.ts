@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { ProgressBarComponent } from './progress-bar.component';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 
-xdescribe('DownloadProgressBarComponent', () => {
+xdescribe('Shared Module: ProgressBarComponent', () => {
     const mockDialogRef = jasmine.createSpyObj('DialogRef', ['close']);
     const mockDialogData = {
         heading: 'tHeading',

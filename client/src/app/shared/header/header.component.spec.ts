@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppConfig } from '../../app.config';
 import { HeaderComponent } from './header.component';
 
-// describe('HeaderComponent', () => {
+// describe('Shared Module: HeaderComponent', () => {
 //     const configSpy = jasmine.createSpyObj({
 //         const: {
 //             header: {

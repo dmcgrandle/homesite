@@ -11,21 +11,30 @@ export const tPhoto: Photo = {
 export const tAlbum: Album = {
     _id: 1,
     name: 'tAlbum',
-    path: 'assets/tests',
+    path: 'assets/test1',
     description: 'test Photo Album',
     featuredMedia: tPhoto,
     photoIds: [0, 1, 2],
     albumIds: [2, 3, 4]
+}
+export const tAlbum2: Album = {
+    _id: 2,
+    name: 'tAlbum2',
+    path: 'assets/test2',
+    description: 'test Photo Album 2',
+    featuredMedia: tPhoto,
+    photoIds: [3, 4, 5],
+    albumIds: [5, 6, 7]
 }
 
 export class MockAPIService {
     curPhoto: Photo = tPhoto;
     curAlbum: Album = tAlbum;
 
-    getAlbumsByURL(url) {
-        return of([tAlbum, tAlbum, tAlbum]);
-    }
-    getAlbumsByIdArray(url) {
-        return of([tAlbum, tAlbum, tAlbum]);
-    }
+    getAlbumsByURL = jasmine.createSpy().and.returnValue(
+        of([tAlbum, tAlbum])
+    );
+    getAlbumsByIdArray = jasmine.createSpy().and.returnValue(
+        of([tAlbum2, tAlbum2])
+    )
 }

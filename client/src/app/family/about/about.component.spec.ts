@@ -36,7 +36,7 @@ class MockAppConfig {
     }
 }
 
-xdescribe('AboutComponent', () => {
+xdescribe('Family Module: AboutComponent', () => {
     let aboutComponent: AboutComponent;
     let aboutElement: HTMLElement;
     let fixture: ComponentFixture<AboutComponent>;

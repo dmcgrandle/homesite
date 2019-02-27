@@ -7,7 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { SecurePipe } from '../../shared/_helpers/secure.pipe';
 import { AlbumsComponent } from './albums.component';
 
-// describe('GalleryVideoAlbumsComponent', () => {
+// describe('Video Module: AlbumsComponent', () => {
 //     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
 //     const routeSpy = jasmine.createSpyObj('Route', {
 //         snapshot: {

@@ -9,7 +9,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppConfig } from '../../app.config';
 import { ManageComponent } from './manage.component';
 
-// describe('ManageUsersComponent', () => {
+// describe('User Module: ManageComponent', () => {
 //     const configSpy = jasmine.createSpyObj({
 //         const: {
 //             header: {
