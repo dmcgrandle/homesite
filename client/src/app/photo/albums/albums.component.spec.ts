@@ -11,7 +11,7 @@ import { delay } from 'rxjs/operators';
 import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
 import { APIService } from '../_services/api.service';
-import { MockAPIService, tPhoto, tAlbum, tAlbum2 } from '../_services/mock-api-service.spec';
+import { MockAPIService, tAlbum, tAlbum1, tAlbum2, tAlbum3, tAlbum4 } from './mock-api-service.spec';
 import { Album, Photo } from '../_helpers/classes';
 import { AlbumsComponent } from './albums.component';
 
@@ -22,12 +22,6 @@ class BlankComp {}
 class MockSecurePipe implements PipeTransform { transform(s) { return s } }
 
 describe('Photo Module: AlbumsListComponent', () => {
-    const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate', 'createUrlTree']);
-    let mockFlex = jasmine.createSpyObj({isActive: true, asObservable: of({mqAlias: 'lg'})});
-    const spyParamMap = jasmine.createSpyObj({get: null});
-    const mockActivatedRoute = { paramMap: of(spyParamMap), url: '' };
-    const locationSpy = jasmine.createSpyObj('Location', ['go']);
-    let reloadSpy: jasmine.Spy;
     let component: AlbumsComponent;
     let location: Location;
     let api: MockAPIService;
@@ -46,21 +40,28 @@ describe('Photo Module: AlbumsListComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [AlbumsComponent, MockSecurePipe, BlankComp],
-            imports: [MatCardModule, MatProgressSpinnerModule, MatDialogModule, HttpClientModule,
-                      RouterTestingModule.withRoutes([
-                        { path: 'photo/albums', component: BlankComp },
-                        { path: 'photo/photos', component: BlankComp },
-                        { path: 'home', component: BlankComp },
-                    ])],
+            imports: [
+                MatCardModule, 
+                MatProgressSpinnerModule, 
+                MatDialogModule, 
+                HttpClientModule,
+                RouterTestingModule.withRoutes([
+                    // { path: 'photo/albums', component: BlankComp },
+                    { path: 'photo/photos', component: AlbumsComponent },
+                    { path: 'photo/photos', children: [
+                        { path: '**', component: AlbumsComponent }
+                    ]},
+                    { path: 'home', component: BlankComp },
+                ])
+            ],
             providers: [
                 { provide: APIService, useClass: MockAPIService },
-                { provide: ActivatedRoute, useValue: mockActivatedRoute },
-                // { provide: Router, useValue: routerSpy },
             ]
         }).compileComponents();
     }));
     beforeEach(() => {
         location = TestBed.get(Location);
+        location.go('photo/albums/tAlbum'); // setup initial test URL
         api = TestBed.get(APIService);
         router = TestBed.get(Router);
         spyOn(router, 'navigate').and.callThrough();
@@ -98,12 +99,12 @@ describe('Photo Module: AlbumsListComponent', () => {
                 expect(page.galleryCard).toBeDefined();
             });
             it('should display a picture link for each album nested inside this album', () => {
-                expect(page.allCards.length).toEqual(3);
+                expect(page.allCards.length).toEqual(4);
             });
             it('should call updateDisplayAlbum() when an albumCard is clicked', () => {
                 spyOn(component, 'updateDisplayAlbum');
                 page.albumCard1.click();
-                expect(component.updateDisplayAlbum).toHaveBeenCalledWith(tAlbum);
+                expect(component.updateDisplayAlbum).toHaveBeenCalledWith(tAlbum1);
             });
             it('should popup alert msg and navigate to /home if getAlbumsByIdArray() returns error', () => {
                 const mockRef = jasmine.createSpyObj({ afterClosed: of('true') });
@@ -114,16 +115,22 @@ describe('Photo Module: AlbumsListComponent', () => {
                 expect(router.navigate).toHaveBeenCalledWith(['/home']);
             });
             it('should update URL in browser window and display new album when an albumCard is clicked', () => {
-                routerSpy.createUrlTree.and.returnValue(['tAlbum']);
-                expect(component.displayAlbums).toEqual([tAlbum, tAlbum]);
-                expect(location.path()).toEqual('');
+                expect(component.displayAlbums).toEqual([tAlbum1, tAlbum2, tAlbum3]);
+                expect(location.path()).toEqual('/photo/albums/tAlbum');
                 page.albumCard1.click();
-                expect(location.path()).toEqual('/photo/albums/assets/test1');
-                expect(component.displayAlbums).toEqual([tAlbum2, tAlbum2]);
-                expect(page.tAlbum2Name).not.toBeDefined();
+                expect(location.path()).toEqual('/photo/albums/tAlbum/tAlbum1');
+                expect(component.displayAlbums).toEqual([tAlbum4]);
+                expect(page.anyElementWithText(tAlbum4.name)).not.toBeDefined();
                 fixture.detectChanges();
-                expect(page.tAlbum2Name).toBeDefined();
+                expect(page.anyElementWithText(tAlbum4.name)).toBeDefined();
             });
+            it('should navigate to /photo/photos/<album> when album with only photos is clicked', fakeAsync(() => {
+                expect(component.displayAlbums).toEqual([tAlbum1, tAlbum2, tAlbum3]);
+                expect(location.path()).toEqual('/photo/albums/tAlbum');
+                page.albumCard2.click();
+                flush();
+                expect(location.path()).toEqual('/photo/photos/tAlbum/tAlbum2');
+            }));
         })
 
     });
@@ -134,8 +141,8 @@ class Page {
     get allCards()    { return this.queryAll<HTMLElement>('mat-card'); }
     get galleryCard() { return this.allCards[0]; }
     get albumCard1()  { return this.allCards[1]; }
+    get albumCard2()  { return this.allCards[2]; }
     get spinner()     { return this.query<HTMLElement>('mat-spinner'); }
-    get tAlbum2Name() { return this.queryText<HTMLElement>(tAlbum2.name); }
 
     private fixture: ComponentFixture<AlbumsComponent>;
   
@@ -143,6 +150,10 @@ class Page {
         this.fixture = fixture;
     }
   
+    public anyElementWithText<T>(search: string) : T {
+        return this.queryText<T>(search);
+    }
+
     /* query helpers */
     private query<T>(selector: string): T {
         return this.fixture.nativeElement.querySelector(selector);

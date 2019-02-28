@@ -60,7 +60,7 @@ xdescribe('Shared Module: AlertMessageDialogComponent with data', () => {
     });
 });
 
-xdescribe('AlertMessageDialogComponent without data', () => {
+xdescribe('Shared Module: AlertMessageDialogComponent without data', () => {
     const mockDialogRef = jasmine.createSpyObj('mockDialogRef', ['close']);
     const mockDialogData: Partial<AlertData> = {};
     let component: AlertMessageDialogComponent;

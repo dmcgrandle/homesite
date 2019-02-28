@@ -45,6 +45,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
     }
 
     public updateDisplayAlbum(album: Album) {
+        console.log('ids length: ', album.albumIds.length);
         this.api.curAlbum = album; // go down one level (directory).
         if (album.albumIds.length > 0) {// means this album contains other albums
             this.api.getAlbumsByIdArray(album.albumIds).subscribe(
@@ -71,7 +72,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
             data: { alertMessage: alertMessage, showCancel: false }
         });
         dialogRef.afterClosed().subscribe(() => {
-            console.log(err);
+            console.log(msg, err);
             this.router.navigate(['/home']);
         });
     };
