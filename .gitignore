@@ -22,6 +22,9 @@
 # test .jpgs and .mp4s
 /server/protected/*
 
+# Docker temp stuff
+docker.run
+
 # Any packet captures
 *.pcap
 

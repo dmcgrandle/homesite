@@ -3,12 +3,21 @@
 #
 # usage is as follows:
 # docker build -t homesite:0.1 .
+# then:
+# docker run --name=homesite -v <path to homesite/server/protected>:/homesite/protected -p3000:3000 -d homesite:0.1
 
 # We first need a temporary container to build vips-dev (needed by sharp) and install all node modules
 FROM node:10-alpine
 WORKDIR /homesite
-RUN apk update && apk add build-base
-RUN apk add vips-dev fftw-dev --update-cache --repository https://dl-3.alpinelinux.org/alpine/edge/testing/
+RUN apk update
+
+# The following is no longer needed since sharp now has pre-compiled binaries:
+# RUN apk add vips-dev fftw-dev build-base gcc make python2 --update-cache \
+#  --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ \
+#  --repository http://dl-3.alpinelinux.org/alpine/edge/main
+
+# We do still need a 2-stage process since bcrypt requires building from source
+RUN apk add build-base  python2 --update-cache
 COPY ./server/package.json /homesite
 RUN npm install --only=production
 
@@ -20,11 +29,12 @@ RUN mkdir -p /homesite/logs /homesite/protected /homesite/db
 COPY ./supervisord.conf/* /etc/supervisor/conf.d/
 
 # Need to install necessary packages
-RUN apk update && apk add mongodb supervisor ffmpeg 
+RUN apk update && apk add mongodb mongodb-tools supervisor ffmpeg 
 COPY ./server/package.json /homesite
 
 # Copy the node modules and /usr/lib from the first temp alpine container
 COPY --from=0 /homesite/node_modules /homesite/node_modules
+RUN npm update
 COPY --from=0 /usr/lib/lib* /usr/lib/
 
 # Copy the shell script to start the container as well as app data (client and server)

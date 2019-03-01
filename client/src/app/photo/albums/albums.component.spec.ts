@@ -94,7 +94,7 @@ describe('Photo Module: AlbumsListComponent', () => {
         describe('After displayAlbums[] has data', () => {
             beforeEach(() => {
                 createComponent();
-            })
+            });
             it('should display a picture link for gallery of pics in this album', () => {
                 expect(page.galleryCard).toBeDefined();
             });
@@ -124,17 +124,15 @@ describe('Photo Module: AlbumsListComponent', () => {
                 fixture.detectChanges();
                 expect(page.anyElementWithText(tAlbum4.name)).toBeDefined();
             });
-            it('should navigate to /photo/photos/<album> when album with only photos is clicked', fakeAsync(() => {
+            it('should navigate to Photos /photo/photos/<album> when an album with only photos is clicked', fakeAsync(() => {
                 expect(component.displayAlbums).toEqual([tAlbum1, tAlbum2, tAlbum3]);
                 expect(location.path()).toEqual('/photo/albums/tAlbum');
                 page.albumCard2.click();
                 flush();
                 expect(location.path()).toEqual('/photo/photos/tAlbum/tAlbum2');
             }));
-        })
-
+        });
     });
-
 });
 
 class Page {
