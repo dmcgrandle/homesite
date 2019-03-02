@@ -46,7 +46,7 @@ jobs:
       command: login
       containerregistrytype: Container Registry
       dockerRegistryEndpoint: Contoso
-
+ 
   - task: Docker@1
     displayName: Push image
     inputs:
