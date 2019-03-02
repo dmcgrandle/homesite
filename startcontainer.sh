@@ -15,15 +15,23 @@ else
 fi
 
 # Set up /protected directories if they don't exist
-if [ ! -d /homesite/protected ]
-then  
-    mkdir /homesite/protected
+if [ ! -d /homesite/protected/images ]
+then
+    echo "No directory /protected/images - creating with defaults."
     mkdir /homesite/protected/images
-    mkdir /homesite/protected/videos
-    mkdir /homesite/protected/downloads
     cp /homesite/public/assets/images/Mountain.jpg /homesite/protected/images
-    cp /homesite/public/assets/images/Mountain.jpg /homesite/protected/downloads
+fi
+if [ ! -d /homesite/protected/videos ]
+then
+    echo "No directory /protected/videos - creating with defaults."
+    mkdir /homesite/protected/videos
     cp /homesite/public/assets/video/Beach* /homesite/protected/videos
+fi
+if [ ! -d /homesite/protected/downloads ]
+then
+    echo "No directory /protected/downloads - creating with defaults."
+    mkdir /homesite/protected/downloads
+    cp /homesite/public/assets/images/Mountain.jpg /homesite/protected/downloads
 fi
 
 supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
