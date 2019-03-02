@@ -16,23 +16,26 @@ variables:
 #job: build source into docker image
 #    displayName: 'build docker image'
 
+jobs:
+- job: 'first job'
+
     steps:
     - script: npm install --only=prod
-      displayName: 'npm install in client'
-      inputs:
+        displayName: 'npm install in client'
+        inputs:
         workingDirectory: 'client'
 
     - script: npm install --only=prod
-#        displayName: npm install in server
-      inputs:
+    #        displayName: npm install in server
+        inputs:
         workingDirectory: server
-    
+
     - script: ng build 
-      displayName: 'build Angular client'
-      inputs:
+        displayName: 'build Angular client'
+        inputs:
         workingDirectory: client
 
     - script: docker build -f Dockerfile -t $(imageName) .
-      displayName: docker build
-#      inputs:
+        displayName: docker build
+    #      inputs:
     
