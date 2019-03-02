@@ -9,6 +9,7 @@ trigger:
 variables:
 #    imageName: 'homesite:$(build.buildId)'
   imageName: 'homesite:0.1'
+  azureSubscription: DockerHub
   azureSubscriptionEndpoint: Contoso
   azureContainerRegistry: contoso.azurecr.io
 
