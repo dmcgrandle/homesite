@@ -24,12 +24,15 @@ variables:
 
     - script: npm install --only=prod
 #        displayName: npm install in server
+    inputs:
         workingDirectory: server
     
     - script: ng build 
-#        displayName: build Angular client
+    inputs:
+        displayName: build Angular client
         workingDirectory: client
 
     - script: docker build -f Dockerfile -t $(imageName) .
+    inputs:
         displayName: docker build
     
