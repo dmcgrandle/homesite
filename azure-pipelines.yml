@@ -25,7 +25,7 @@ jobs:
     displayName: 'Angular client build'
     workingDirectory: 'client'
 
-  - script: npm install --only=prod
+  - script: npm install
     displayName: npm install in server
     workingDirectory: server
 
