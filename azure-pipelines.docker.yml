@@ -9,9 +9,9 @@ trigger:
 variables:
 #    imageName: 'homesite:$(build.buildId)'
   imageName: 'homesite:0.1'
-  azureSubscription: DockerHub
-  azureSubscriptionEndpoint: DockerHub
-  azureContainerRegistry: https://index.docker.io/v1/
+  # azureSubscription: DockerHub
+  # azureSubscriptionEndpoint: DockerHub
+  # azureContainerRegistry: https://index.docker.io/v1/
 
 jobs:
 - job: firstJob
@@ -33,20 +33,13 @@ jobs:
 
   - script: docker build -f Dockerfile -t $(dockerId)/$(imageName) .
     displayName: docker build
-    
+
   # - task: Docker@1
   #   displayName: Container registry login
   #   inputs:
   #     command: login
   #     containerregistrytype: Container Registry
-  #     dockerRegistryEndpoint: Contoso
-
-  - task: Docker@1
-    displayName: Container registry login
-    inputs:
-      command: login
-      containerregistrytype: Container Registry
-      dockerRegistryEndpoint: DockerHub
+  #     dockerRegistryEndpoint: DockerHub
  
   - task: Docker@1
     displayName: Push image
