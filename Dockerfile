@@ -42,7 +42,7 @@ COPY --from=0 /usr/lib/lib* /usr/lib/
 # Copy the shell script to start the container as well as app data (client and server)
 COPY ./startcontainer.sh ./server/app.js ./server/config.js ./server/default-users.json ./server/file-type-description.txt /homesite/
 COPY ./server/bin /homesite/bin
-# COPY ./config/keys /homesite/keys
+COPY ./server/default-keys /homesite/default-keys
 COPY ./server/public /homesite/public
 COPY ./server/routes /homesite/routes
 COPY ./server/services /homesite/services
