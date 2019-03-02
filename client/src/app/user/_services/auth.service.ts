@@ -147,7 +147,7 @@ export class AuthService implements CanActivate {
     }
 
     private encryptPass(password): string {
-        console.log('encrypted password is', AES.encrypt(password, this.CFG.const.auth.password_secret).toString());
+        // console.log('encrypted password is', AES.encrypt(password, this.CFG.const.auth.password_secret).toString());
         return AES.encrypt(password, this.CFG.const.auth.password_secret).toString();
     }
 
