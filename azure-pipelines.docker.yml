@@ -40,8 +40,6 @@ jobs:
   #     containerregistrytype: Container Registry
   #     dockerRegistryEndpoint: Contoso
 
-variables:
-
   - task: Docker@1
     displayName: Container registry login
     inputs:
