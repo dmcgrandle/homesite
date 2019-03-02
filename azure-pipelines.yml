@@ -6,36 +6,39 @@
 trigger:
 - master
 
-pool:
-    vmImage: 'Ubuntu-16.04'
 
 variables:
 #    imageName: 'homesite:$(build.buildId)'
-    imageName: 'homesite:0.1'
+  imageName: 'homesite:0.1'
 
 #job: build source into docker image
 #    displayName: 'build docker image'
 
 jobs:
-- job: 'first job'
+- job: firstJob
+  displayName: docker build
 
-    steps:
-    - script: npm install --only=prod
-        displayName: 'npm install in client'
-        inputs:
-        workingDirectory: 'client'
+  pool:
+    vmImage: 'Ubuntu-16.04'
 
-    - script: npm install --only=prod
-    #        displayName: npm install in server
-        inputs:
-        workingDirectory: server
 
-    - script: ng build 
-        displayName: 'build Angular client'
-        inputs:
-        workingDirectory: client
+  steps:
+  - script: npm install --only=prod
+    displayName: 'npm install in client'
+    inputs:
+      workingDirectory: 'client'
 
-    - script: docker build -f Dockerfile -t $(imageName) .
-        displayName: docker build
-    #      inputs:
+  - script: npm install --only=prod
+  #        displayName: npm install in server
+    inputs:
+      workingDirectory: server
+
+  - script: ng build 
+    displayName: 'build Angular client'
+    inputs:
+      workingDirectory: client
+
+  - script: docker build -f Dockerfile -t $(imageName) .
+    displayName: docker build
+  #      inputs:
     
