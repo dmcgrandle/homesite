@@ -20,8 +20,7 @@ jobs:
   steps:
   - script: |
       npm install
-      npx install -g @angular/cli@6.2.3
-      ng build --prod
+      npx -p @angular/cli ng build --prod
     displayName: 'Angular client build'
     workingDirectory: 'client'
 
