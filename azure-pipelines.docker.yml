@@ -55,4 +55,4 @@ jobs:
       containerregistrytype: Container Registry
       dockerRegistryEndpoint: DockerHub
       # azureContainerRegistry: $(azureContainerRegistry)
-      imageName: $(Build.Repository.Name):$(Build.BuildId)
+      imageName: $(dockerId)/$(imageName)
