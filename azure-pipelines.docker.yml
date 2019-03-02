@@ -31,3 +31,18 @@ jobs:
   - script: docker build -f Dockerfile -t $(imageName) .
     displayName: docker build
     
+  # - task: Docker@1
+  #   displayName: Container registry login
+  #   inputs:
+  #     command: login
+  #     containerregistrytype: Container Registry
+  #     dockerRegistryEndpoint: Contoso
+
+  - task: Docker@1
+    displayName: Push image
+    inputs:
+      command: push
+      containerregistrytype: Container Registry
+      dockerRegistryEndpoint: Contoso
+      # azureContainerRegistry: $(azureContainerRegistry)
+      imageName: $(Build.Repository.Name):$(Build.BuildId)
