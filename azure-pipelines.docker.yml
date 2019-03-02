@@ -31,7 +31,7 @@ jobs:
     displayName: npm install in server
     workingDirectory: server
 
-  - script: docker build -f Dockerfile -t $(imageName) .
+  - script: docker build -f Dockerfile -t $(dockerId)/$(imageName) .
     displayName: docker build
     
   # - task: Docker@1
