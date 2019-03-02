@@ -7,11 +7,28 @@ trigger:
 - master
 
 pool:
-  vmImage: 'Ubuntu-16.04'
+    vmImage: 'Ubuntu-16.04'
 
 variables:
-  imageName: 'your-container-image-name:$(build.buildId)'
+#    imageName: 'homesite:$(build.buildId)'
+    imageName: 'homesite:0.1'
 
-steps:
-- script: docker build -f Dockerfile -t $(imageName) .
-  displayName: 'docker build'
+job: build source into docker image
+    displayName: 'build docker image'
+
+    steps:
+    - script: npm install
+        displayName: 'npm install in client'
+        workingDirectory: client
+
+    - script: npm install
+        displayName: 'npm install in server'
+        workingDirectory: server
+    
+    - script: ng build 
+        displayName: 'build Angular client'
+        workingDirectory: client
+
+    - script: docker build -f Dockerfile -t $(imageName) .
+        displayName: 'docker build'
+    
