@@ -9,6 +9,8 @@ trigger:
 variables:
 #    imageName: 'homesite:$(build.buildId)'
   imageName: 'homesite:0.1'
+  azureSubscriptionEndpoint: Contoso
+  azureContainerRegistry: contoso.azurecr.io
 
 jobs:
 - job: firstJob
@@ -37,6 +39,15 @@ jobs:
   #     command: login
   #     containerregistrytype: Container Registry
   #     dockerRegistryEndpoint: Contoso
+
+variables:
+
+  - task: Docker@1
+    displayName: Container registry login
+    inputs:
+      command: login
+      containerregistrytype: Container Registry
+      dockerRegistryEndpoint: Contoso
 
   - task: Docker@1
     displayName: Push image
