@@ -13,6 +13,7 @@ import {
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { SecurePipe } from './_helpers/secure.pipe';
+import { EqualDirective } from './_helpers/equal-validator';
 import { JwtInterceptor } from './_services/jwt-interceptor';
 import { UrlHelperService } from './_services/url-helper.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
@@ -47,6 +48,7 @@ import { ProgressBarComponent } from './progress-bar/progress-bar.component';
         FooterComponent,
         ProgressBarComponent,
         SecurePipe,
+        EqualDirective
     ],
     entryComponents: [AlertMessageDialogComponent, ProgressBarComponent]
 })
