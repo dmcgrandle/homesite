@@ -19,17 +19,16 @@ jobs:
 
 
   steps:
-  - script: npm install
-    displayName: 'npm install in client'
+  - script: |
+      npm install -g @angular/cli
+      npm install
+      ng build --prod
+    displayName: 'Angular client build'
     workingDirectory: 'client'
 
   - script: npm install --only=prod
     displayName: npm install in server
     workingDirectory: server
-
-  - script: ng build 
-    displayName: 'build Angular client'
-    workingDirectory: client
 
   - script: docker build -f Dockerfile -t $(imageName) .
     displayName: docker build
