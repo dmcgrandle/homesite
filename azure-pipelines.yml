@@ -25,18 +25,18 @@ jobs:
   steps:
   - script: npm install --only=prod
     displayName: 'npm install in client'
-    inputs:
-      workingDirectory: 'client'
+#    inputs:
+    workingDirectory: 'client'
 
   - script: npm install --only=prod
   #        displayName: npm install in server
-    inputs:
-      workingDirectory: server
+#    inputs:
+    workingDirectory: server
 
   - script: ng build 
     displayName: 'build Angular client'
-    inputs:
-      workingDirectory: client
+#    inputs:
+    workingDirectory: client
 
   - script: docker build -f Dockerfile -t $(imageName) .
     displayName: docker build
