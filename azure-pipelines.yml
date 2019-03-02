@@ -6,13 +6,9 @@
 trigger:
 - master
 
-
 variables:
 #    imageName: 'homesite:$(build.buildId)'
   imageName: 'homesite:0.1'
-
-#job: build source into docker image
-#    displayName: 'build docker image'
 
 jobs:
 - job: firstJob
@@ -23,22 +19,18 @@ jobs:
 
 
   steps:
-  - script: npm install --only=prod
+  - script: npm install
     displayName: 'npm install in client'
-#    inputs:
     workingDirectory: 'client'
 
   - script: npm install --only=prod
-  #        displayName: npm install in server
-#    inputs:
+    displayName: npm install in server
     workingDirectory: server
 
   - script: ng build 
     displayName: 'build Angular client'
-#    inputs:
     workingDirectory: client
 
   - script: docker build -f Dockerfile -t $(imageName) .
     displayName: docker build
-  #      inputs:
     
