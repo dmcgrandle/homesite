@@ -13,15 +13,15 @@ variables:
 #    imageName: 'homesite:$(build.buildId)'
     imageName: 'homesite:0.1'
 
-job: build source into docker image
-    displayName: 'build docker image'
+#job: build source into docker image
+#    displayName: 'build docker image'
 
     steps:
-    - script: npm install
+    - script: npm install --only=prod
         displayName: 'npm install in client'
         workingDirectory: client
 
-    - script: npm install
+    - script: npm install --only=prod
         displayName: 'npm install in server'
         workingDirectory: server
     
