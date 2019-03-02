@@ -19,8 +19,8 @@ jobs:
 
   steps:
   - script: |
-      sudo npm install -g @angular/cli@6.2.3
       npm install
+      sudo npm install -g @angular/cli@6.2.3
       ng build --prod
     displayName: 'Angular client build'
     workingDirectory: 'client'
