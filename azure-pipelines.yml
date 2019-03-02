@@ -17,10 +17,9 @@ jobs:
   pool:
     vmImage: 'Ubuntu-16.04'
 
-
   steps:
   - script: |
-      npm install -g @angular/cli
+      sudo npm install -g @angular/cli
       npm install
       ng build --prod
     displayName: 'Angular client build'
