@@ -1,0 +1,13 @@
+version: '2.1'
+
+services:
+  homesite:
+    image: homesite
+    hostname: homesite
+    build: .
+    environment:
+      NODE_ENV: production
+    volumes:
+      - ./server/protected:/homesite/protected:delegated
+    ports:
+      - 3000:3000
