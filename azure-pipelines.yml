@@ -18,17 +18,17 @@ variables:
 
     steps:
     - script: npm install --only=prod
-        displayName: 'npm install in client'
+#        displayName: npm install in client
         workingDirectory: client
 
     - script: npm install --only=prod
-        displayName: 'npm install in server'
+#        displayName: npm install in server
         workingDirectory: server
     
     - script: ng build 
-        displayName: 'build Angular client'
+#        displayName: build Angular client
         workingDirectory: client
 
     - script: docker build -f Dockerfile -t $(imageName) .
-        displayName: 'docker build'
+        displayName: docker build
     
