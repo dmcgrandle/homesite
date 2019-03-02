@@ -16,7 +16,7 @@ fi
 
 # Set up /protected directories if they don't exist
 if [ ! -d /homesite/protected ]
-then
+then  
     mkdir /homesite/protected
     mkdir /homesite/protected/images
     mkdir /homesite/protected/videos
