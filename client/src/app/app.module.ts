@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER } from '@angular/core';//for conf file read during init
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FlexLayoutModule } from '@angular/flex-layout';
 import 'hammerjs';
 
 import { AppConfig } from './app.config';
@@ -28,6 +29,7 @@ import { JwtInterceptor } from './shared/_services/jwt-interceptor';
         SharedModule.forRoot(),
         AppRoutingModule,
         BrowserModule,
+        FlexLayoutModule,
         BrowserAnimationsModule,
         HttpClientModule,
     ],

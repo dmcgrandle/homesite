@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material';
+import { MatCardModule, MatIconModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { SharedModule } from '../shared/shared.module';
@@ -14,7 +14,8 @@ import { HomeComponent } from './home/home.component';
         CoreRoutingModule,
         SharedModule,
         FlexLayoutModule,
-        MatCardModule
+        MatCardModule,
+        MatIconModule
     ],
     declarations: [HomeComponent]
 })

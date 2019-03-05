@@ -84,8 +84,10 @@ export class SecurePipe implements PipeTransform, OnDestroy {
 
   private _dispose() {
       this._subscription.unsubscribe();
-      this._internalSubscription.unsubscribe();
-      this._internalSubscription = null;
+      if (this._internalSubscription) {
+        this._internalSubscription.unsubscribe();
+        this._internalSubscription = null;
+      }
       this._latestValue = null;
       this._latestReturnedValue = null;
       this._subscription = null;

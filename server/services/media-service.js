@@ -40,7 +40,7 @@ let db;
     await saveDataToDB('videoAlbums', videoData.albums);
     await saveDataToDB('videos', videoData.videos);
     console.log(Date(Date.now()) + ' : created new "videoAlbums" document in db.');
-  } catch (err) { errSvc.errAndExit(err, 1); }
+  } catch (err) { errSvc.exit(err, 1); }
 })();
 /* eslint-enable no-use-before-define */
 
@@ -53,7 +53,7 @@ async function saveDataToDB(collection, data) {
       await db.collection(collection).drop(); // wipe it out.
     }
     await db.collection(collection).insertMany(data);
-  } catch (err) { errSvc.errAndExit(err); }
+  } catch (err) { errSvc.exit(err); }
 }
 
 function getFullThumbPath(file) {
@@ -145,7 +145,7 @@ async function createSomePosters(postersRemaining) {
   const numToDo = (postersRemaining.length > cfg.POSTERS.MAX_CREATE_AT_ONCE)
     ? cfg.POSTERS.MAX_CREATE_AT_ONCE : postersRemaining.length;
   if (numToDo > 0) { // still have work to do
-    let pArray = []; // promise array to build
+    let pArray = []; // promise array to build 
     for (let i = 0; i < numToDo; i += 1) {
       pArray.push(fs.exists(getFullPosterPath(postersRemaining[i])));
     } // first, check to see if the posters already exist.  Queue up MAX_CREATE_AT_ONCE of them.
@@ -165,11 +165,11 @@ async function createSomePosters(postersRemaining) {
         console.log(Date(Date.now()) + ' : Creating ' + pArray.length + ' posters...');
         await Promise.all(pArray);
       }
-    } catch (err) { errSvc.errAndExit(err, 1); }
+    } catch (err) { errSvc.exit(err, 1); }
     if (postersRemaining.length > 0) {
       try {
         await createSomePosters(postersRemaining); // recurse for the remaining
-      } catch (err) { errSvc.errAndExit(err, 1); }
+      } catch (err) { errSvc.exit(err, 1); }
     }
   }
 }
@@ -183,7 +183,7 @@ async function makePostersIfNeeded(files) {
     const posterFiles = files.slice(); // clone the files array since we'll be modifying it
     console.log(Date(Date.now()) + ' : Found ' + posterFiles.length + ' videos.  Will create posters if needed.');
     await createSomePosters(posterFiles);
-  } catch (err) { errSvc.errAndExit(err, 1); }
+  } catch (err) { errSvc.exit(err, 1); }
 }
 
 function buildAlbumsArray(paths, media) {

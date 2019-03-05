@@ -1,19 +1,17 @@
-<h2>Select a gallery:</h2>
-<div class="container" fxLayout="row" fxLayout.xs="column" fxLayoutAlign.gt-xs="space-evenly center" fxLayoutGap="10px">
-    <mat-card fxFlex="33">
-        <mat-card-header fxLayoutAlign="center center">
-            <mat-card-title>
-                <h3 fxFlexAlign>Photo Gallery</h3>
-            </mat-card-title>
-        </mat-card-header>
-        <img mat-card-image [routerLink]="['/photo/albums']" [src]="CFG.const.gallery.featuredMedia.filename | secure">
-    </mat-card>
-    <mat-card fxFlex="33">
-        <mat-card-header fxLayoutAlign="center center">
-            <mat-card-title>
-                <h3>Video Gallery</h3>
-            </mat-card-title>
-        </mat-card-header>
-        <img mat-card-image [routerLink]="['/video/albums']" [src]="CFG.const.gallery.featuredVideo.filename | secure">
-    </mat-card>
+<img [src]="CFG.const.home.background | secure" class="BackImage">
+
+<div fxLayout="column" class="container">
+    <div fxFlex="2"></div>
+    <div fxFlexOffset="5" fxLayout="column" fxLayoutAlign="end center">
+        <h2 class="welcome">Welcome to our home</h2>
+    </div>
+    <div fxFlexOffset="0" fxLayout="row" fxLayoutAlign="space-around center">
+        <span fxFlex="10"></span>
+        <mat-icon routerLink="/download" class="icon">cloud_download</mat-icon>
+        <mat-icon routerLink="/video/albums" class="icon">video_library</mat-icon>
+        <mat-icon routerLink="/photo/albums" class="icon">photo_library</mat-icon>
+        <mat-icon routerLink="/family" class="icon">group</mat-icon>
+        <div fxFlex="13"></div>
+    </div>
+    <div fxFlex></div>
 </div>

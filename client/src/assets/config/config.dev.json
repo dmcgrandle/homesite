@@ -9,13 +9,8 @@
         "title": "www.example.com",
         "email": "webmaster@example.com"
     },
-    "gallery": {
-        "featuredMedia": {
-            "filename": "protected/images/2018-00-03Graduation0364.jpg"
-        },
-        "featuredVideo": {
-            "filename": "protected/images/2018-05-23PianoRecital0356.jpg"
-        }
+    "home": {
+        "background": "assets/images/cabin-med.jpg"
     },
     "login": {
         "title": "My Awesome Site"

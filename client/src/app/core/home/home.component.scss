@@ -1,18 +1,36 @@
-img {
+.BackImage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    // width: 100%;
+    min-width: 100%;
+    // min-height: 100%;
+    // filter:opacity(60%);
+    z-index: -1;
+
+    // next two values center the image, clipping edges, on small viewports:
+    margin-left: 50%; 
+    transform: translateX(-50%);
+}
+
+.container {
+    // need min-height to expand the container, 140px is header+footer
+    min-height: calc(100vh - 140px);
+}
+
+.welcome {
+    justify-content: center;
+    align-items: center;
+    color: whitesmoke;
+    font-family: fantasy;
+    // calc below from: https://css-tricks.com/books/volume-i/scale-typography-screen-size/
+    // font-size: calc([minimum size] + ([maximum size] - [minimum size]) * ((100vw - [minimum viewport width]) / ([maximum viewport width] - [minimum viewport width])))
+    font-size: calc(20px + (66 - 20) * ((100vw - 300px) / (2400 - 300)));
+}
+
+.icon {
+    color: whitesmoke;
+    font-size: calc(40px + (100 - 40) * ((100vw - 300px) / (2400 - 300)));
     cursor: pointer;
-}
-
-mat-card {
-    border-radius: 5px;
-    border: 1px;
-    border-color: black;
-    border-style: ridge;
-    padding: 10px;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
-}
-
-[mat-card-image] { // had to override material design defaults
-    margin: 0;
-    width: 100%;
 }

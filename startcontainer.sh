@@ -6,12 +6,10 @@
 # Create the keys directory (doesn't exist in docker image)
 mkdir /homesite/keys
 
-# Copy in appropriate keys
+# Copy in appropriate keys from config to overwrite defaults
 if [ -d /homesite/config/keys ]
 then
-    cp /homesite/config/keys/* /homesite/keys
-else
-    cp /homesite/default-keys/* /homesite/keys
+    cp -f /homesite/config/keys/* /homesite/keys
 fi
 
 # Set up /protected directories if they don't exist
@@ -33,5 +31,22 @@ then
     mkdir /homesite/protected/downloads
     cp /homesite/public/assets/images/Mountain.jpg /homesite/protected/downloads
 fi
+
+# Copy over custom config files if they exist
+if [ -d /homesite/config/public/assets/config ]
+then
+    cp /homesite/config/public/assets/config/* /homesite/public/assets/config
+fi
+
+# copy in custom public image and video files if they exist
+if [ -d /homesite/config/public/assets/images ]
+then
+    cp /homesite/config/public/assets/images/* /homesite/public/assets/images
+fi
+if [ -d /homesite/config/public/assets/video ]
+then
+    cp /homesite/config/public/assets/video/* /homesite/public/assets/video
+fi
+
 
 supervisord -n -c /etc/supervisor/conf.d/supervisord.conf

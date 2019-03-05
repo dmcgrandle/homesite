@@ -13,6 +13,6 @@ export class HomeComponent implements OnInit {
 
     constructor(public CFG: AppConfig) { }
 
-    ngOnInit() { } 
+    ngOnInit() { }
 
 }
