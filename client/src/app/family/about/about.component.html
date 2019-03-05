@@ -16,12 +16,12 @@ directory in the relevant file's "about" section.
         <mat-card class="family-member-card">
             <ng-template mat-tab-label>
                 <mat-card-header>
-                    <img mat-card-avatar [src]="member.avatar">
+                    <img mat-card-avatar [src]="member.avatar | secure">
                     <mat-card-title>{{member.position}}</mat-card-title>
                     <mat-card-subtitle>{{member.firstName}} {{member.lastName}}</mat-card-subtitle>
                 </mat-card-header>
             </ng-template>
-            <img mat-card-image [src]="member.photo">
+            <img mat-card-image [src]="member.photo | secure">
             <mat-card-content>
                 <!-- Iterate over the bio[] array, inserting each line as HTML so it can contain markups -->
                 <p *ngFor="let line of member.bio" [innerHTML]="line"></p>
@@ -46,12 +46,12 @@ directory in the relevant file's "about" section.
             <mat-panel-description fxFlex="67">
                 {{member.firstName}} {{member.lastName}}
                 <span class="fill-space"></span>
-                <img mat-card-avatar [src]="member.avatar">
+                <img mat-card-avatar [src]="member.avatar | secure">
                 <!-- <mat-icon>account_circle</mat-icon> -->
             </mat-panel-description>
         </mat-expansion-panel-header>
         <mat-card class="family-member-card">
-            <img mat-card-image [src]="member.photo">
+            <img mat-card-image [src]="member.photo | secure">
             <mat-card-content>
                 <!-- Iterate over each line in the bio[] array, inserting that string as HTML so it can contain markups -->
                 <p *ngFor="let line of member.bio" [innerHTML]="line"></p>
