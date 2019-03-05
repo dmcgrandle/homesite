@@ -9,13 +9,8 @@ export interface IAppConfig {
         title: string;
         email: string;
     };
-    gallery: {
-        featuredMedia: {
-            filename: string;
-        },
-        featuredVideo: {
-            filename: string;
-        }
+    home: {
+        background: string;
     };
     login: {
         title: string;
