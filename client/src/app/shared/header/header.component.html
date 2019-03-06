@@ -3,9 +3,9 @@
         <img class="logo" [src]="CFG.const.header.logo | secure">
     </a>
     <div fxShow fxHide.xs fxLayout='row'>
-        <a mat-button routerLink="/photo/albums" routerLinkActive="active-link">Photo Gallery</a>
+        <a mat-button routerLink="/photo/albums" routerLinkActive="active-link" fxFlexOffset="5">Photo Gallery</a>
         <a mat-button routerLink="/video/albums" routerLinkActive="active-link">Video Gallery</a>
-        <a mat-button routerLink="/download" routerLinkActive="active-link" fxFlexOffset="5">Downloads</a>
+        <a mat-button routerLink="/download" routerLinkActive="active-link">Downloads</a>
         <a mat-button routerLink="/family" routerLinkActive="active-link">Family</a>
     </div>
     <span class="fill-space"></span>
