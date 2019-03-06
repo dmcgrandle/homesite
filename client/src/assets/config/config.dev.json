@@ -3,7 +3,8 @@
         "name": "DEV"
     },
     "header": {
-        "title": "Homesite"
+        "title": "Homesite",
+        "logo": "assets/images/homesite-logo.gif"
     },
     "footer": {
         "title": "www.example.com",

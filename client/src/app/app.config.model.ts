@@ -4,6 +4,7 @@ export interface IAppConfig {
     };
     header: {
         title: string;
+        logo: string;
     };
     footer: {
         title: string;

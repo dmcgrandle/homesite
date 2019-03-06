@@ -1,5 +1,7 @@
 <mat-toolbar *ngIf="auth.isAuthenticated()" class="toolbar" fxFlex>
-    <a mat-stroked-button routerLink="/home" routerLinkActive="active-link">{{CFG.const.header.title}}</a>
+    <a mat-icon-button routerLink="/home" routerLinkActive="active-link">
+        <img class="logo" [src]="CFG.const.header.logo | secure">
+    </a>
     <div fxShow fxHide.xs fxLayout='row'>
         <a mat-button routerLink="/download" routerLinkActive="active-link" fxFlexOffset="5">Downloads</a>
         <a mat-button routerLink="/video/albums" routerLinkActive="active-link">Video Gallery</a>
