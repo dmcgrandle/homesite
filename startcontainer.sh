@@ -6,9 +6,6 @@
 # Anything appended to the stdout of PID 1 will appear in "docker logs" for the container
 LOGLOC=/proc/1/fd/1
 
-# Create the keys directory (doesn't exist in docker image)
-mkdir /homesite/keys
-
 # Copy in appropriate keys from config to overwrite defaults
 if [ -d /homesite/config/keys ]
 then
@@ -58,7 +55,7 @@ fi
 # Copy over custom server config file if it exists
 if [ -f /homesite/config/server.config.js ]
 then
-    cp /homesite/config/server.config.js /homesite//assets/config
+    cp /homesite/config/server.config.js /homesite/assets/config
     echo "Custom client configs found and copied into the container." >> $LOGLOC
 fi
 

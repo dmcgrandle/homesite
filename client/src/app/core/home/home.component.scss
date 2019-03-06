@@ -30,7 +30,14 @@
 }
 
 .icon {
-    color: whitesmoke;
     font-size: calc(40px + (100 - 40) * ((100vw - 300px) / (2400 - 300)));
+    height: calc(40px + (100 - 40) * ((100vw - 300px) / (2400 - 300)));
+    width: calc(40px + (100 - 40) * ((100vw - 300px) / (2400 - 300)));
+    color: whitesmoke;
     cursor: pointer;
+}
+
+.icon-description {
+    font-size: calc(10px + (20 - 10) * ((100vw - 300px) / (2400 - 300)));
+    color: whitesmoke;
 }

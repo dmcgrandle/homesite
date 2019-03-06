@@ -2,15 +2,27 @@
 
 <div fxLayout="column" class="container">
     <div fxFlex="2"></div>
-    <div fxFlexOffset="5" fxLayout="column" fxLayoutAlign="end center">
+    <div fxFlexOffset="12" fxLayout="column" fxLayoutAlign="end center">
         <h2 class="welcome">Welcome to our home</h2>
     </div>
     <div fxFlexOffset="0" fxLayout="row" fxLayoutAlign="space-around center">
         <span fxFlex="10"></span>
-        <mat-icon routerLink="/download" class="icon">cloud_download</mat-icon>
-        <mat-icon routerLink="/video/albums" class="icon">video_library</mat-icon>
-        <mat-icon routerLink="/photo/albums" class="icon">photo_library</mat-icon>
-        <mat-icon routerLink="/family" class="icon">group</mat-icon>
+        <div fxLayout="column" fxLayoutAlign="center center">
+            <mat-icon routerLink="/photo/albums" class="icon">photo_library</mat-icon>
+            <span class="icon-description">Photos</span>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="center center">
+            <mat-icon routerLink="/video/albums" class="icon">video_library</mat-icon>
+            <span class="icon-description">Videos</span>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="center center">
+            <mat-icon routerLink="/download" class="icon">cloud_download</mat-icon>
+            <span class="icon-description">Downloads</span>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="center center">
+            <mat-icon routerLink="/family" class="icon">group</mat-icon>
+            <span class="icon-description">Family</span>
+        </div>
         <div fxFlex="13"></div>
     </div>
     <div fxFlex></div>
