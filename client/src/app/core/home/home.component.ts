@@ -1,7 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Component } from '@angular/core';
 
-import { AuthService } from '../../user/_services/auth.service';
 import { AppConfig } from '../../app.config';
 
 @Component({
@@ -9,10 +7,8 @@ import { AppConfig } from '../../app.config';
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
 
     constructor(public CFG: AppConfig) { }
-
-    ngOnInit() { }
 
 }

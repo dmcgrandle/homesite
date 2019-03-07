@@ -1,6 +1,6 @@
 import { Component, Pipe, PipeTransform } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { MatCardModule } from '@angular/material';
+import { MatIconModule } from '@angular/material';
 import { Location } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
@@ -8,18 +8,17 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppConfig } from '../../app.config';
 import { HomeComponent } from './home.component';
 
-@Component({selector: 'blank', template: ``}) 
-class BlankComp {}
+@Component({ selector: 'blank', template: `` })
+class BlankComp { }
 
 @Pipe({ name: 'secure' })
 class MockSecurePipe implements PipeTransform { transform(s) { return s } }
 
 xdescribe('Core Module: HomeComponent', () => {
     const configMock = {
-        const: { 
-            gallery: {
-                featuredMedia: { filename: 'assets/tests/lion-sml.jpg' },
-                featuredVideo: { filename: 'assets/tests/lion-sml.jpg' }
+        const: {
+            home: {
+                background: 'assets/tests/lion-sml.jpg'
             }
         }
     };
@@ -38,12 +37,14 @@ xdescribe('Core Module: HomeComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [ HomeComponent, BlankComp, MockSecurePipe ],
-            imports: [ MatCardModule, HttpClientModule, 
+            declarations: [HomeComponent, BlankComp, MockSecurePipe],
+            imports: [MatIconModule, HttpClientModule,
                 RouterTestingModule.withRoutes([
                     { path: 'photo/albums', component: BlankComp },
                     { path: 'video/albums', component: BlankComp },
-                ]) ],
+                    { path: 'download', component: BlankComp },
+                    { path: 'family', component: BlankComp },
+                ])],
             providers: [
                 { provide: AppConfig, useValue: configMock }
             ]
@@ -54,39 +55,61 @@ xdescribe('Core Module: HomeComponent', () => {
 
     it('should create', () => { expect(component).toBeTruthy() });
 
-    it('should have a Photo Gallery title', () => {
-        expect(page.photoTitle).toBeTruthy();
+    it('should have a background image', () => {
+        expect(page.backImg).toBeDefined();
     });
-    it('should have a Video Gallery title', () => {
-        console.log(page.videoTitle);
-        expect(page.videoTitle).toBeTruthy();
+    it('should have a Welcome banner', () => {
+        expect(page.banner).toBeDefined();
     });
-    it('should navigate to photo albums if photoImage is clicked', fakeAsync(() => {
-        page.photoImage.click();
+    it('should properly label all the icons', () => {
+        expect(page.photoDesc).toBeDefined();
+        expect(page.videoDesc).toBeDefined();
+        expect(page.downloadDesc).toBeDefined();
+        expect(page.familyDesc).toBeDefined();
+    });
+    it('should navigate to /photo/albums if the photo icon is clicked', fakeAsync(() => {
+        page.photoIcon.click();
         tick();
-        expect(location.path()).toEqual('/photo/albums')
+        expect(location.path()).toEqual('/photo/albums');
     }));
-    it('should navigate to video albums if videoImage is clicked', fakeAsync(() => {
-        page.videoImage.click();
+    it('should navigate to /video/albums if the video icon is clicked', fakeAsync(() => {
+        page.videoIcon.click();
         tick();
-        expect(location.path()).toEqual('/video/albums')
+        expect(location.path()).toEqual('/video/albums');
+    }));
+    it('should navigate to /download if the downloads icon is clicked', fakeAsync(() => {
+        page.downloadIcon.click();
+        tick();
+        expect(location.path()).toEqual('/download');
+    }));
+    it('should navigate to /family if the family icon is clicked', fakeAsync(() => {
+        page.familyIcon.click();
+        tick();
+        expect(location.path()).toEqual('/family');
     }));
 
 });
 
 class Page {
-    get images()     { return this.queryAll<HTMLImageElement>('img'); }
-    get photoImage() { return this.images[0]; }
-    get videoImage() { return this.images[1]; }
-    get photoTitle() { return this.queryText<HTMLElement>('photo gallery'); }
-    get videoTitle() { return this.queryText<HTMLElement>('video gallery'); }
+    get backImg() { return this.query<HTMLImageElement>('.BackImage'); }
+    get banner() { return this.queryText<HTMLElement>('Welcome to our home'); }
+    get allIcons() { return this.queryAll<HTMLElement>('.icon'); }
+    get allDescs() { return this.queryAll<HTMLElement>('.icon-description'); }
+    get photoIcon() { return this.allIcons[0]; } // photo should be first
+    get videoIcon() { return this.allIcons[1]; }
+    get downloadIcon() { return this.allIcons[2]; }
+    get familyIcon() { return this.allIcons[3]; }
+    get photoDesc() { return this.queryText<HTMLElement>('Photos'); }
+    get videoDesc() { return this.queryText<HTMLElement>('Videos'); }
+    get downloadDesc() { return this.queryText<HTMLElement>('Downloads'); }
+    get familyDesc() { return this.queryText<HTMLElement>('Family'); }
 
     private fixture: ComponentFixture<HomeComponent>;
-  
+
     constructor(fixture: ComponentFixture<HomeComponent>) {
         this.fixture = fixture;
     }
-  
+
     /* query helpers */
     private query<T>(selector: string): T {
         return this.fixture.nativeElement.querySelector(selector);
@@ -94,7 +117,7 @@ class Page {
     private queryAll<T>(selector: string): T[] {
         return this.fixture.nativeElement.querySelectorAll(selector);
     }
-    private queryText<T>(search: string) : T {
+    private queryText<T>(search: string): T {
         return (Array.from(this.fixture.nativeElement.querySelectorAll('*')) as T[])
             .filter(el => el['innerHTML'].toLowerCase() === search.toLowerCase())[0];
     }
