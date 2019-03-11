@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule, MatTabsModule, MatExpansionModule, MatTabGroup } from '@angular/material';
 import { By } from '@angular/platform-browser';
@@ -36,14 +36,17 @@ class MockAppConfig {
     }
 }
 
-xdescribe('Family Module: AboutComponent', () => {
+@Pipe({ name: 'secure' })
+class MockSecurePipe implements PipeTransform { transform(s) { return s } }
+
+describe('Family Module: AboutComponent', () => {
     let aboutComponent: AboutComponent;
     let aboutElement: HTMLElement;
     let fixture: ComponentFixture<AboutComponent>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [AboutComponent],
+            declarations: [AboutComponent, MockSecurePipe],
             providers: [{ provide: AppConfig, useClass: MockAppConfig }],
             imports: [BrowserAnimationsModule, MatCardModule, MatTabsModule, MatExpansionModule]
         });

@@ -1,6 +1,6 @@
 import { CoreModule } from './core.module';
 
-xdescribe('CoreModule', () => {
+describe('CoreModule', () => {
   let coreModule: CoreModule;
 
   beforeEach(() => {

@@ -1,6 +1,6 @@
 import { PhotoModule } from './photo.module';
 
-xdescribe('PhotoModule', () => {
+describe('PhotoModule', () => {
   let photoModule: PhotoModule;
 
   beforeEach(() => {

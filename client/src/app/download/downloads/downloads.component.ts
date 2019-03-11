@@ -4,7 +4,7 @@ import { MatDialog, MatTableDataSource, MatPaginator, MatSort, MatDialogRef, MAT
 import { Router, ActivatedRoute } from '@angular/router';
 import { Observable, interval, BehaviorSubject, Subscription } from 'rxjs';
 import { take, map } from 'rxjs/operators';
-import { ObservableMedia, MediaChange } from '@angular/flex-layout';
+import { MediaObserver, MediaChange } from '@angular/flex-layout';
 import { saveAs } from 'file-saver';
 
 import { AlertMessageDialogComponent, AlertData } from '../../shared/alert-message-dialog/alert-message-dialog.component';
@@ -35,7 +35,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         public dialog: MatDialog,
         private route: ActivatedRoute,
         private router: Router,
-        private flexMedia: ObservableMedia) {}
+        private flexMedia: MediaObserver) {}
 
     ngOnInit() {
         // This component can be called two ways (techniques):
@@ -48,7 +48,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
                     filename: this.dlFilename});
                 this.router.navigate(['/download']); // Enter again (re-Init) without file specified
             } else { // technique 2
-                this.flexMediaWatcher = this.flexMedia.asObservable().subscribe((change: MediaChange) => {
+                this.flexMediaWatcher = this.flexMedia.media$.subscribe((change: MediaChange) => {
                     this.currentScreenWidth = change.mqAlias;
                     this.setupDownloadsTable();
                 }); // set up a watcher to make columns in DownloadsTable responsive

@@ -4,7 +4,7 @@ import { AppConfig } from '../../app.config';
 import { AuthService } from '../../user/_services/auth.service';
 import { FooterComponent } from './footer.component';
 
-xdescribe('Shared Module: FooterComponent', () => {
+describe('Shared Module: FooterComponent', () => {
     let component: FooterComponent;
     let fixture: ComponentFixture<FooterComponent>;
     const tTitle = 'tFooter';

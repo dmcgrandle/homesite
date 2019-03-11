@@ -1,6 +1,6 @@
 import { SharedModule } from './shared.module';
 
-xdescribe('SharedModule', () => {
+describe('SharedModule', () => {
   let sharedModule: SharedModule;
 
   beforeEach(() => {

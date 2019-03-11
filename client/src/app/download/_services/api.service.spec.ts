@@ -26,7 +26,7 @@ export class MockRouter {
     navigate(url: string[]) {};
 }
 
-xdescribe('Download Module: APIService', () => {
+describe('Download Module: APIService', () => {
     let api: APIService;
     beforeEach(() => {
         TestBed.configureTestingModule({

@@ -7,7 +7,7 @@ import { environment } from '../environments/environment';
 import { IAppConfig } from './app.config.model';
 import { AppConfig } from './app.config';
 
-xdescribe('App Module: AppConfig', () => {
+describe('App Module: AppConfig', () => {
     let httpMock: HttpTestingController;
     let appConfig: AppConfig;
     const appCfgMock = {

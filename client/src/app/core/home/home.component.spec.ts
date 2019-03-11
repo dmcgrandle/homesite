@@ -14,7 +14,7 @@ class BlankComp { }
 @Pipe({ name: 'secure' })
 class MockSecurePipe implements PipeTransform { transform(s) { return s } }
 
-xdescribe('Core Module: HomeComponent', () => {
+describe('Core Module: HomeComponent', () => {
     const configMock = {
         const: {
             home: {

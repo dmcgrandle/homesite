@@ -5,7 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AlertMessageDialogComponent, AlertData } from './alert-message-dialog.component';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 
-xdescribe('Shared Module: AlertMessageDialogComponent with data', () => {
+describe('Shared Module: AlertMessageDialogComponent with data', () => {
     const mockDialogRef = jasmine.createSpyObj('mockDialogRef', ['close']);
     const mockDialogData: Partial<AlertData> = {
         heading: 'Testing',
@@ -60,7 +60,7 @@ xdescribe('Shared Module: AlertMessageDialogComponent with data', () => {
     });
 });
 
-xdescribe('Shared Module: AlertMessageDialogComponent without data', () => {
+describe('Shared Module: AlertMessageDialogComponent without data', () => {
     const mockDialogRef = jasmine.createSpyObj('mockDialogRef', ['close']);
     const mockDialogData: Partial<AlertData> = {};
     let component: AlertMessageDialogComponent;

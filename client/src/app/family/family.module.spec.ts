@@ -1,6 +1,6 @@
 import { FamilyModule } from './family.module';
 
-xdescribe('FamilyModule', () => {
+describe('FamilyModule', () => {
   let familyModule: FamilyModule;
 
   beforeEach(() => {

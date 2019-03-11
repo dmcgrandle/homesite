@@ -12,7 +12,7 @@ class RouterOutletStub {}
 @Component({selector: 'shared-footer', template: ''})
 class FooterStub {}
 
-xdescribe('App Module: AppComponent', () => {
+describe('App Module: AppComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [

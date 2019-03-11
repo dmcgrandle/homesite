@@ -11,7 +11,7 @@ import { AuthService } from '../_services/auth.service';
 import { ForgotDialogComponent, DialogData } from './forgot-dialog.component';
 import { HttpErrorResponse } from '@angular/common/http';
 
-xdescribe('User Module: ForgotDialogComponent', () => {
+describe('User Module: ForgotDialogComponent', () => {
 
     const mockDialogRef = jasmine.createSpyObj('MatDialogRef', {
         close: null,
@@ -83,7 +83,7 @@ xdescribe('User Module: ForgotDialogComponent', () => {
     it('should close the component and pass back correct data if cancel is clicked', () => {
         mockDialogRef.close.calls.reset();
         page.cancelButton.click();
-        expect(mockDialogRef.close).toHaveBeenCalledWith(true);
+        expect(mockDialogRef.close).toHaveBeenCalled();
     });
         it('should still have a disabled submit button if too few characters entered', () => {
             expect(page.emailInput).toBeTruthy('Err: Email input does not exist.');

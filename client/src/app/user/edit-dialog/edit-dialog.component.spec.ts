@@ -12,7 +12,7 @@ import { AuthService } from '../_services/auth.service';
 import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 import { EditDialogComponent, DialogData } from './edit-dialog.component';
 
-xdescribe('User Module: EditDialogComponent', () => {
+describe('User Module: EditDialogComponent', () => {
     const testUser: User = new User();
     const mockDialogRef = jasmine.createSpyObj('mockDialogRef', ['close']);
     const mockDialogData: DialogData = { user: testUser};

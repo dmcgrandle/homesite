@@ -5,7 +5,7 @@ import { MatFormFieldModule, MatDialogModule, MatPaginatorModule, MatInputModule
 import { HttpEvent, HttpEventType, HttpResponse } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ObservableMedia, MediaChange } from '@angular/flex-layout';
+import { MediaObserver, MediaChange } from '@angular/flex-layout';
 import { By } from '@angular/platform-browser';
 import { Observable, of, interval, throwError } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -19,7 +19,7 @@ import { map, elementAt } from 'rxjs/operators';
 import { ProgressBarComponent } from '../../shared/progress-bar/progress-bar.component';
 import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
-xdescribe('Download Module: DownloadsComponent', () => {
+describe('Download Module: DownloadsComponent', () => {
     const tFile1 = {
         _id: 1,
         filename: 'tFilename1.pdf',
@@ -52,7 +52,8 @@ xdescribe('Download Module: DownloadsComponent', () => {
         renameFile: of(tFile1),
         deleteFile: of(tFile1)
     });
-    let mockFlex = jasmine.createSpyObj({isActive: true, asObservable: of({mqAlias: 'lg'})});
+    let mockFlex = jasmine.createSpyObj({isActive: true });
+    mockFlex.media$ = of({mqAlias: 'lg'});
     const spyParamMap = jasmine.createSpyObj({get: null});
     const mockActivatedRoute = { paramMap: of(spyParamMap) };
     let dlComponent: DownloadsComponent;
@@ -83,7 +84,7 @@ xdescribe('Download Module: DownloadsComponent', () => {
                 { provide: Router, useValue: routerSpy },
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
                 { provide: APIService, useValue: mockAPI },
-                { provide: ObservableMedia, useValue: mockFlex }
+                { provide: MediaObserver, useValue: mockFlex }
             ]
         })
         .compileComponents();
@@ -129,10 +130,11 @@ xdescribe('Download Module: DownloadsComponent', () => {
             mockAPI.lastLoggedInUserLevel.and.returnValue(3); // set back to default
             });
         it('ngOnInit Technique 2: displayedColumns should be minimal on xs screen width (< 600px)', () => {
-            mockFlex.asObservable.and.returnValue(of({mqAlias: 'xs'}));
+            const flexMedia = TestBed.get(MediaObserver);
+            flexMedia.media$ = of({mqAlias: 'xs'});
             fixture.detectChanges();
             expect(dlComponent.displayedColumns).toEqual(['downloadIcon', 'deleteIcon', 'linkIcon', 'filename']);
-            mockFlex.asObservable.and.returnValue(of({mqAlias: 'lg'})); // set back for other tests.
+            // mockFlex.media$ = of({mqAlias: 'lg'}); // set back for other tests.
         });
     });
 

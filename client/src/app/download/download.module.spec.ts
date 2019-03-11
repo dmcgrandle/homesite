@@ -1,6 +1,6 @@
 import { DownloadModule } from './download.module';
 
-xdescribe('DownloadModule', () => {
+describe('DownloadModule', () => {
   let downloadModule: DownloadModule;
 
   beforeEach(() => {

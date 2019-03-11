@@ -1,6 +1,6 @@
 import { UserModule } from './user.module';
 
-xdescribe('UsersModule', () => {
+describe('UsersModule', () => {
   let userModule: UserModule;
 
   beforeEach(() => {
