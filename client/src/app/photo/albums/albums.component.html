@@ -1,31 +1,33 @@
 <div *ngIf="displayAlbums">
     <h2>List of Photo Albums:</h2>
 
-    <div class="container" fxLayoutGap="8px" fxLayout="row wrap" fxLayoutAlign.gt-xs="space-evenly center">
+    <div class="grid" #grid>
 
         <!-- If the album being displayed has both other albums AND pictures then display an icon for these pics -->
-        <mat-card *ngIf="api.curAlbum.photoIds.length > 0" (click)="navToPhotos(api.curAlbum)" fxFlex.xl="16.2%"
-            fxFlex.lg="24.5%" fxFlex.md="32.5%" fxFlex.sm="49%" fxFlex.xs="98%">
-            <mat-card-header fxLayoutAlign="start none">
-                <mat-card-title>
-                    <h3>View Photos in "{{api.curAlbum.name}}"</h3>
-                </mat-card-title>
-                <mat-card-subtitle>{{api.curAlbum.description}}</mat-card-subtitle>
-            </mat-card-header>
-            <img mat-card-image [src]='(api.curAlbum.featuredMedia.fullPath) | secure'>
-        </mat-card>
+        <div #firstCard *ngIf="api.curAlbum.photoIds.length > 0" (click)="navToPhotos(api.curAlbum)">
+            <mat-card>
+                <mat-card-header >
+                    <mat-card-title>
+                        <h3>View Photos in "{{api.curAlbum.name}}"</h3>
+                    </mat-card-title>
+                    <mat-card-subtitle>{{api.curAlbum.description}}</mat-card-subtitle>
+                </mat-card-header>
+                <img mat-card-image [src]='(api.curAlbum.featuredMedia.fullPath) | secure' (load)="imageLoaded.next(firstCard)">
+            </mat-card>
+        </div>
         <!-- Now loop through displaying all the albums in this album. -->
-        <mat-card *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)" fxFlex.xl="16.2%"
-            fxFlex.lg="24.5%" fxFlex.md="32.5%" fxFlex.sm="49%" fxFlex.xs="98%">
-            <mat-card-header fxLayoutAlign="start none">
-                <mat-card-title>
-                    <h3>{{album.name}}</h3>
-                </mat-card-title>
-                <mat-card-subtitle>{{album.description}}</mat-card-subtitle>
-            </mat-card-header>
-            <img FxLayoutAlign="center" *ngIf='album.featuredMedia.filename' mat-card-image
-                [src]='(album.featuredMedia.fullPath) | secure'>
-        </mat-card>
+        <div #nextCard *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)">
+            <mat-card>
+                <mat-card-header >
+                    <mat-card-title>
+                        <h3>{{album.name}}</h3>
+                    </mat-card-title>
+                    <mat-card-subtitle>{{album.description}}</mat-card-subtitle>
+                </mat-card-header>
+                <img mat-card-image *ngIf='album.featuredMedia.filename'
+                    [src]='(album.featuredMedia.fullPath) | secure' (load)="imageLoaded.next(nextCard)">
+            </mat-card>
+        </div>
     </div>
 </div>
 

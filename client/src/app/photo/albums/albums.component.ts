@@ -1,9 +1,9 @@
 // imports from Angular and other external libraries:
-import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Router, ActivatedRoute, ParamMap, UrlTree } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 
 // imports from homesite outside of photo module:
 import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
@@ -22,6 +22,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
     displayAlbums: Album[];
     photosDisplayName: string;
     getAlbumsSub: Subscription;
+    imageLoaded: Subject<HTMLDivElement>;
 
     constructor(private api: APIService,
         private route: ActivatedRoute,
@@ -30,18 +31,31 @@ export class AlbumsComponent implements OnInit, OnDestroy {
         private location: Location) { }
 
     ngOnInit() {
-        // this observable changes on init, or when nav button hit (back or fwd)
+        // this obMatSnackBarModule, or when nav button hit (back or fwd)
         this.getAlbumsSub = this.api.getAlbumsByURL(this.route.url).subscribe(
-            (albums) => {
+            (albums: Album[]) => {
                 this.displayAlbums = albums;
                 this.photosDisplayName = (this.api.curAlbum._id > 0) ? this.api.curAlbum.name: "";
             },
             (err) => this.errAlert('Problem getting albums!', err)
         );
+        this.imageLoaded = new Subject();
+        this.imageLoaded.subscribe((card: HTMLDivElement) => { // triggered from the template
+            // when an image has loaded, now (finally) the card is complete and the
+            // masonry layout can be finished by adding 'grid-row-end' to the card
+            // see https://medium.com/@andybarefoot/a-masonry-style-layout-using-css-grid-8c663d355ebb
+            const grid = card.parentElement;
+            const rowGap = parseInt(getComputedStyle(grid).getPropertyValue('grid-row-gap'));
+            const rowHeight = parseInt(getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
+            const cardHeight = card.firstElementChild.getBoundingClientRect().height;
+            const span = Math.ceil((cardHeight + rowGap) / (rowHeight + rowGap));
+            card.style.setProperty('grid-row-end', `span ${span}`);
+        });
     };
 
     ngOnDestroy() {
         if (this.getAlbumsSub) this.getAlbumsSub.unsubscribe();
+        // TODO: cleanup the imageLoaded Subject.
     }
 
     public updateDisplayAlbum(album: Album) {
