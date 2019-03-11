@@ -1,4 +1,5 @@
-.grid {
+.grid { // turn off autoprefixer warnings - IE doesn't support grid
+    /* autoprefixer: off */
     display: grid;
     grid-row-gap: 10px;
     grid-column-gap: 1em;
