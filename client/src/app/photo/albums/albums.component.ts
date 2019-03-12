@@ -1,5 +1,14 @@
 // imports from Angular and other external libraries:
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { 
+    Component, 
+    OnInit, 
+    OnDestroy, 
+    ViewChild, 
+    ViewChildren, 
+    ElementRef, 
+    QueryList, 
+    HostListener 
+} from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
@@ -22,7 +31,11 @@ export class AlbumsComponent implements OnInit, OnDestroy {
     displayAlbums: Album[];
     photosDisplayName: string;
     getAlbumsSub: Subscription;
-    imageLoaded: Subject<HTMLDivElement>;
+    imageLoaded: Subject<HTMLDivElement> = new Subject();
+
+    @ViewChild('gridContainer') gridContainerRef: ElementRef;
+    @ViewChild('firstItem') firstGridItemRef: ElementRef;
+    @ViewChildren('nextItem') otherGridItemRefs: QueryList<ElementRef>;
 
     constructor(private api: APIService,
         private route: ActivatedRoute,
@@ -31,7 +44,6 @@ export class AlbumsComponent implements OnInit, OnDestroy {
         private location: Location) { }
 
     ngOnInit() {
-        // this obMatSnackBarModule, or when nav button hit (back or fwd)
         this.getAlbumsSub = this.api.getAlbumsByURL(this.route.url).subscribe(
             (albums: Album[]) => {
                 this.displayAlbums = albums;
@@ -39,27 +51,37 @@ export class AlbumsComponent implements OnInit, OnDestroy {
             },
             (err) => this.errAlert('Problem getting albums!', err)
         );
-        this.imageLoaded = new Subject();
-        this.imageLoaded.subscribe((card: HTMLDivElement) => { // triggered from the template
-            // when an image has loaded, now (finally) the card is complete and the
-            // masonry layout can be finished by adding 'grid-row-end' to the card
-            // see https://medium.com/@andybarefoot/a-masonry-style-layout-using-css-grid-8c663d355ebb
-            const grid = card.parentElement;
-            const rowGap = parseInt(getComputedStyle(grid).getPropertyValue('grid-row-gap'));
-            const rowHeight = parseInt(getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
-            const cardHeight = card.firstElementChild.getBoundingClientRect().height;
-            const span = Math.ceil((cardHeight + rowGap) / (rowHeight + rowGap));
-            card.style.setProperty('grid-row-end', `span ${span}`);
-        });
+     /* triggered from the template when an image has loaded, now (finally) the card is complete and the
+        masonry layout can be finished by adding 'grid-row-end' to the gridItem's style
+        see https://medium.com/@andybarefoot/a-masonry-style-layout-using-css-grid-8c663d355ebb */
+        this.imageLoaded.subscribe((gridItem: HTMLDivElement) => this.setSpan(gridItem));
     };
 
     ngOnDestroy() {
         if (this.getAlbumsSub) this.getAlbumsSub.unsubscribe();
-        // TODO: cleanup the imageLoaded Subject.
+        if (this.imageLoaded) this.imageLoaded.unsubscribe();
+    }
+
+    @HostListener('window:resize', ['$event'])
+    screenResize(event: Event) {
+        if (this.firstGridItemRef) this.setSpan(this.firstGridItemRef.nativeElement);
+        if (this.otherGridItemRefs && this.otherGridItemRefs.length > 0) {
+            this.otherGridItemRefs.forEach((gridItemRef: ElementRef) => {
+                this.setSpan(gridItemRef.nativeElement);
+            });
+        }
+    }
+
+    private setSpan(gridItem: HTMLDivElement) {
+        const container = this.gridContainerRef.nativeElement;
+        const rowGap = parseInt(getComputedStyle(container).getPropertyValue('grid-row-gap'));
+        const rowHeight = parseInt(getComputedStyle(container).getPropertyValue('grid-auto-rows'));
+        const cardHeight = gridItem.firstElementChild.getBoundingClientRect().height;
+        const span = Math.ceil((cardHeight + rowGap) / (rowHeight + rowGap));
+        gridItem.style.setProperty('grid-row-end', `span ${span}`);
     }
 
     public updateDisplayAlbum(album: Album) {
-        console.log('ids length: ', album.albumIds.length);
         this.api.curAlbum = album; // go down one level (directory).
         if (album.albumIds.length > 0) {// means this album contains other albums
             this.api.getAlbumsByIdArray(album.albumIds).subscribe(

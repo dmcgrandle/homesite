@@ -1,31 +1,31 @@
 <div *ngIf="displayAlbums">
     <h2>List of Photo Albums:</h2>
 
-    <div class="grid" #grid>
+    <div class="grid-container" #gridContainer>
 
         <!-- If the album being displayed has both other albums AND pictures then display an icon for these pics -->
-        <div #firstCard *ngIf="api.curAlbum.photoIds.length > 0" (click)="navToPhotos(api.curAlbum)">
+        <div #firstItem class="grid-item" *ngIf="api.curAlbum.photoIds.length > 0" (click)="navToPhotos(api.curAlbum)">
             <mat-card>
-                <mat-card-header >
+                <mat-card-header>
                     <mat-card-title>
                         <h3>View Photos in "{{api.curAlbum.name}}"</h3>
                     </mat-card-title>
                     <mat-card-subtitle>{{api.curAlbum.description}}</mat-card-subtitle>
                 </mat-card-header>
-                <img mat-card-image [src]='(api.curAlbum.featuredMedia.fullPath) | secure' (load)="imageLoaded.next(firstCard)">
+                <img mat-card-image [src]='(api.curAlbum.featuredMedia.fullPath) | secure' (load)="imageLoaded.next(firstItem)">
             </mat-card>
         </div>
         <!-- Now loop through displaying all the albums in this album. -->
-        <div #nextCard *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)">
+        <div #nextItem class="grid-item" *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)">
             <mat-card>
-                <mat-card-header >
+                <mat-card-header>
                     <mat-card-title>
                         <h3>{{album.name}}</h3>
                     </mat-card-title>
                     <mat-card-subtitle>{{album.description}}</mat-card-subtitle>
                 </mat-card-header>
                 <img mat-card-image *ngIf='album.featuredMedia.filename'
-                    [src]='(album.featuredMedia.fullPath) | secure' (load)="imageLoaded.next(nextCard)">
+                    [src]='(album.featuredMedia.fullPath) | secure' (load)="imageLoaded.next(nextItem)">
             </mat-card>
         </div>
     </div>

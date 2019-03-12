@@ -7,7 +7,7 @@ import { environment } from '../environments/environment';
 import { IAppConfig } from './app.config.model';
 import { AppConfig } from './app.config';
 
-describe('App Module: AppConfig', () => {
+fdescribe('App Module: AppConfig', () => {
     let httpMock: HttpTestingController;
     let appConfig: AppConfig;
     const appCfgMock = {
@@ -41,7 +41,6 @@ describe('App Module: AppConfig', () => {
     }));
     it('should not load the config file if error', async(() => {
         appConfig.load().then().catch((err) => {
-            console.log(err);
             expect(err).toContain('Could not load file');
         });
         let req = httpMock.expectOne(`assets/config/config.${environment.confName}.json`);
