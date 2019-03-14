@@ -20,20 +20,28 @@
         }
     }
 
-    .large {
-        background-color: black;
-        cursor: pointer;
-        h4 {
-            margin: 0 0 10px 0;;
-            color: floralwhite;
-        }
-        .img-large {
-                margin-bottom: 0px;
-                max-height: 60vh;
-                width: auto;
-                max-width: 95vw;
-                border: 3px ridge black;
-                border-radius: 6px;
+    .photo-container {
+        .large-card {
+            background-color: black;
+            cursor: pointer;
+            .img-container {
+                
+                .spinner-container {
+                    background-color:black;
+                }
+            }
+            h4 {
+                margin: 0 0 10px 0;;
+                color: floralwhite;
+            }
+            .img-large {
+                    margin-bottom: 0px;
+                    max-height: 60vh;
+                    width: auto;
+                    max-width: 95vw;
+                    border: 3px ridge black;
+                    border-radius: 6px;
+            }
         }
     }
 

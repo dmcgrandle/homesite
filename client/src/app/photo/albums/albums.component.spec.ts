@@ -1,18 +1,18 @@
 import { Component, Pipe, PipeTransform } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
 import { MatCardModule, MatProgressSpinnerModule, MatDialogModule, MatDialog } from '@angular/material';
-import { HttpClientModule } from '@angular/common/http';
+// import { HttpClientModule } from '@angular/common/http';
 import { Location } from '@angular/common';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router/*, ActivatedRoute */} from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
-import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
+// import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
 import { APIService } from '../_services/api.service';
-import { MockAPIService, tAlbum, tAlbum1, tAlbum2, tAlbum3, tAlbum4 } from './mock-api-service.spec';
-import { Album, Photo } from '../_helpers/classes';
+import { MockAPIService, tAlbum, tAlbum1, tAlbum2, tAlbum3, tAlbum4, tPhoto } from '../_services/mock-api-service.spec';
+// import { Album, Photo } from '../_helpers/classes';
 import { AlbumsComponent } from './albums.component';
 
 @Component({selector: 'blank', template: ``}) 
@@ -21,7 +21,7 @@ class BlankComp {}
 @Pipe({ name: 'secure' })
 class MockSecurePipe implements PipeTransform { transform(s) { return s } }
 
-describe('Photo Module: AlbumsListComponent', () => {
+fdescribe('Photo Module: AlbumsComponent', () => {
     let component: AlbumsComponent;
     let location: Location;
     let api: MockAPIService;
@@ -44,7 +44,7 @@ describe('Photo Module: AlbumsListComponent', () => {
                 MatCardModule, 
                 MatProgressSpinnerModule, 
                 MatDialogModule, 
-                HttpClientModule,
+                // HttpClientModule,
                 RouterTestingModule.withRoutes([
                     // { path: 'photo/albums', component: BlankComp },
                     { path: 'photo/photos', component: AlbumsComponent },
@@ -63,6 +63,7 @@ describe('Photo Module: AlbumsListComponent', () => {
         location = TestBed.get(Location);
         location.go('photo/albums/tAlbum'); // setup initial test URL
         api = TestBed.get(APIService);
+        api.curAlbum = tAlbum; // mock the tap() set curAlbum in the original api service
         router = TestBed.get(Router);
         spyOn(router, 'navigate').and.callThrough();
     });
@@ -77,9 +78,7 @@ describe('Photo Module: AlbumsListComponent', () => {
             fixture = TestBed.createComponent(AlbumsComponent);
             component = fixture.componentInstance;
             page = new Page(fixture);
-            TestBed.get(APIService).getAlbumsByURL.and.returnValue(
-                of([tAlbum]).pipe(delay(100))
-            );
+            api.getAlbumsByURL.and.returnValue(of([tAlbum]).pipe(delay(100)));
             fixture.detectChanges();
             tick(99);
             expect(component.displayAlbums).toBeUndefined();

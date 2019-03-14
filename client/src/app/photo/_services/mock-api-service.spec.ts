@@ -8,6 +8,27 @@ export const tPhoto: Photo = {
     fullPath: 'assets/tests/lion.jpg',
     thumbPath: 'assets/tests/lion-sml.jpg'
 }
+export const tPhoto1: Photo = {
+    _id: 1,
+    filename: 'tFile1',
+    fullPath: 'assets/tests/lion.jpg',
+    thumbPath: 'assets/tests/lion-sml.jpg'
+}
+export const tPhoto2: Photo = {
+    _id: 2,
+    filename: 'tFile2',
+    fullPath: 'assets/tests/lion.jpg',
+    thumbPath: 'assets/tests/lion-sml.jpg'
+}
+export const tPhoto3: Photo = {
+    _id: 3,
+    filename: 'tFile3',
+    fullPath: 'assets/tests/lion.jpg',
+    thumbPath: 'assets/tests/lion-sml.jpg'
+}
+
+
+
 export const tAlbum: Album = {
     _id: 0,
     name: 'tAlbum',
@@ -23,7 +44,7 @@ export const tAlbum1: Album = {
     path: 'tAlbum/tAlbum1',
     description: 'test Photo Album 1',
     featuredMedia: tPhoto,
-    photoIds: [0],
+    photoIds: [1, 2, 3],
     albumIds: [4]
 }
 export const tAlbum2: Album = {
@@ -55,13 +76,23 @@ export const tAlbum4: Album = {
 }
 
 export class MockAPIService {
-    curPhoto: Photo = tPhoto;
-    curAlbum: Album = tAlbum;
+    curPhoto: Photo;
+    curAlbum: Album;
 
+    /* for AlbumsComponent */
     getAlbumsByURL = jasmine.createSpy().and.returnValue(
         of([tAlbum1, tAlbum2, tAlbum3])
     );
     getAlbumsByIdArray =jasmine.createSpy().and.returnValue(
         of([tAlbum4])
+    )
+
+    /* for PhotosComponent */
+    getAlbumByURL = jasmine.createSpy().and.callFake(() => {
+        this.curAlbum = tAlbum1; //mock the tap() in original service
+        return of(tAlbum1);
+    });
+    getPhotosByIdArray =jasmine.createSpy().and.returnValue(
+        of([tPhoto1, tPhoto2, tPhoto3])
     )
 }

@@ -1,6 +1,6 @@
 import { VideoModule } from './video.module';
 
-describe('VideoModule', () => {
+fdescribe('VideoModule', () => {
   let videoModule: VideoModule;
 
   beforeEach(() => {

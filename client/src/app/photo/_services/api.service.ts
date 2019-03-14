@@ -44,9 +44,9 @@ export class APIService {
     };
 
     public getAlbumByURL(url: Observable<UrlSegment[]>): Observable<Album> {
-        // This function takes in an UrlSegment array, joins those segments into a path,
-        // passes that path to getAlbumsByPath.  When that resolves it saves the resulting
-        // album into curAlbum variable (class scope).  Ultimately this function 
+        // This function takes in an Observable of an UrlSegment array, joins those segments 
+        // into a path, passes that path to getAlbumsByPath.  When that resolves it saves the 
+        // resulting album into curAlbum variable (class scope).  Ultimately this function 
         // returns an observable which resolves to the album from getAlbumByPath.
         return url.pipe(
             switchMap(segments => this.getAlbumByPath(segments.join('/'))),

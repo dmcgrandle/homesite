@@ -8,7 +8,7 @@ trigger:
 
 variables:
 #    imageName: 'homesite:$(build.buildId)'
-  imageName: 'homesite:0.1'
+  imageName: 'homesite:latest'
 
 jobs:
 - job: firstJob

@@ -26,6 +26,7 @@ export class PhotosComponent implements OnInit {
     //  version = VERSION;
     photos: Photo[];
     curPhotoIndex: number;
+    largeImgLoading: boolean = true;
 
     constructor(private api: APIService,
         private route: ActivatedRoute,
@@ -53,6 +54,7 @@ export class PhotosComponent implements OnInit {
 
     private changePhoto(newPhoto: Photo) {
         this.curPhotoIndex = this.photos.findIndex(photo => photo._id === newPhoto._id);
+        this.largeImgLoading = true;
     }
 
     private highlightAndScroll(photo: Photo, thumbE: Element, thumbsE: Element) {
@@ -100,6 +102,7 @@ export class PhotosComponent implements OnInit {
                     break;
             }
             this.curPhotoIndex = nextIndex;
+            this.largeImgLoading = true;
             //      this.api.getPhotoById(this.api.curAlbum.photoIds[nextIndex])
             //        .subscribe(photo => this.curPhotoIndex = photo);
         }
