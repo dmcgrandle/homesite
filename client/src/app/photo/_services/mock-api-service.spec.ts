@@ -17,6 +17,7 @@ export const tPhoto1: Photo = {
 export const tPhoto2: Photo = {
     _id: 2,
     filename: 'tFile2',
+    caption: `It's a lion!`,
     fullPath: 'assets/tests/lion.jpg',
     thumbPath: 'assets/tests/lion-sml.jpg'
 }

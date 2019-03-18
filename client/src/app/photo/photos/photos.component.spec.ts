@@ -9,6 +9,7 @@ import {
     async,
     fakeAsync,
     tick,
+    flush,
     ComponentFixture,
     TestBed
 } from '@angular/core/testing';
@@ -22,6 +23,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import { of, throwError } from 'rxjs';
 import { delay } from 'rxjs/operators';
+import { FlexLayoutModule } from '@angular/flex-layout'
 
 import { 
     MockAPIService,
@@ -79,7 +81,9 @@ fdescribe('Photo Module: PhotosComponent', () => {
                 MatIconModule, 
                 MatCardModule, 
                 MatProgressSpinnerModule,
-                MatDialogModule],
+                MatDialogModule,
+                FlexLayoutModule
+            ],
             providers: [
                 { provide: APIService, useClass: MockAPIService },
                 { provide: Router, useValue: routerSpy },
@@ -106,13 +110,13 @@ fdescribe('Photo Module: PhotosComponent', () => {
             fixture.detectChanges();
             tick(99);
             expect(component.photos).toBeUndefined('component.photos has data when it should not.');
-            expect(page.spinner).toBeDefined('The spinner is not displayed in the DOM.');
+            expect(page.outerSpinner).toBeDefined('The outer spinner is not displayed in the DOM.');
             expect(page.largeCard).toBeNull('The largeCard is incorrectly in the DOM.');
             api.curAlbum = tAlbum; //mock the tap() in the original api service which sets curAlbum
             tick(1); // now getAlbumByURL Observable will complete
             expect(component.photos).toEqual([tPhoto1, tPhoto2, tPhoto3]);
             fixture.detectChanges();
-            expect(page.spinner).toBeNull('The spinner is incorrectly still in the DOM.');
+            expect(page.outerSpinner).toBeNull('The outer spinner is incorrectly still in the DOM.');
             expect(page.largeCard).toBeDefined('The largeCard is not displayed in the DOM.');
         }));
         describe('After photos[] has data', () => {
@@ -131,9 +135,12 @@ fdescribe('Photo Module: PhotosComponent', () => {
                 expect(anchor.clicked).toEqual('yes', 'the download link was not clicked.');
                 expect(page.downloadLink.getAttribute('download')).toEqual('tFile1', 'wrong file being downloaded');
             });
-            // it('should display a picture link for each album nested inside this album', () => {
-            //     expect(page.allCards.length).toEqual(4);
-            // });
+            it(`should display the caption, or a filename if caption doesn't exist, for the large Image`, () => {
+                expect(page.largeCaption.innerText).toContain(component.photos[0].filename, `filename wasn't displayed in DOM`);
+                page.allThumbs[1].click();
+                fixture.detectChanges();
+                expect(page.largeCaption.innerText).toContain(component.photos[1].caption, `caption wasn't displayed properly`);
+            });
             // it('should call updateDisplayAlbum() when an albumCard is clicked', () => {
             //     spyOn(component, 'updateDisplayAlbum');
             //     page.albumCard1.click();
@@ -173,9 +180,11 @@ fdescribe('Photo Module: PhotosComponent', () => {
 class Page {
     get largeCard()    { return this.query<HTMLElement>('.large'); }
     get allThumbs()    { return this.queryAll<HTMLElement>('.img-thumbs'); }
-    get spinner()      { return this.query<HTMLElement>('mat-spinner'); }
+    get outerSpinner() { return this.query<HTMLElement>('.outer-spinner'); }
+    get innerSpinner() { return this.query<HTMLElement>('.inner-spinner'); }
     get title()        { return this.query<HTMLElement>('.title'); }
     get downloadLink() { return this.query<HTMLElement>('a[download]'); }
+    get largeCaption() { return this.query<HTMLElement>('mat-card-footer'); }
 
     private fixture: ComponentFixture<PhotosComponent>;
   

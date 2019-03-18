@@ -10,12 +10,12 @@
         <!-- large display picture -->
         <mat-card class="large-card" (click)="makeFullscreen()" fxLayout="column" fxLayoutAlign="none center" 
             fxHide.lt-sm fxFlexAlign="center">
-            <div class="img-container" fxLayout="column" fxLayoutAlign="center center">
-                <div class="spinner-container" *ngIf="largeImgLoading">
+            <div #imageContainer class="img-container" fxLayoutAlign="center center">
+                <div class="inner-spinner" *ngIf="largeImgLoading" [ngStyle]="{'height.px': imageHeight}" fxLayoutAlign="center center">
                     <mat-spinner></mat-spinner>
                 </div>
-                <img class="img-large" [fxHide]="largeImgLoading" mat-card-image
-                    [src]="photos[curPhotoIndex].fullPath | secure" (load)="largeImgLoading = false">
+                <img [@fade]="largeImgLoading ? 'fadeOut' : 'fadeIn'" [hidden]="largeImgLoading" class="img-large" mat-card-image
+                    [src]="photos[curPhotoIndex].fullPath | secure" (load)="largeImgLoading=false">
             </div> 
             <mat-card-footer>
                 <h4 *ngIf="!photos[curPhotoIndex].caption">{{photos[curPhotoIndex].filename}}</h4>
@@ -34,7 +34,7 @@
     </div>
 </div>
 
-<div *ngIf="!photos">
+<div *ngIf="!photos" class="outer-spinner">
     <p>Waiting on the server ...</p>
     <mat-spinner></mat-spinner>
 </div>

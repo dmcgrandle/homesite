@@ -1,12 +1,20 @@
-// imports from Angular and other libraries:
-import { Component, EventEmitter, Directive, Output, OnInit, HostListener } from '@angular/core';
+// imports from external:
+import { 
+    Component,
+    ViewChild,
+    OnInit,
+    AfterViewChecked,
+    HostListener,
+    ElementRef
+} from '@angular/core';
+import { trigger, state, style, transition, animate, AnimationEvent, group, query } from '@angular/animations';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { VERSION } from '@angular/material';
 import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
 
 // imports from homesite outside of photo module:
-import { AuthService } from '../../user/_services/auth.service';
+// import { AuthService } from '../../user/_services/auth.service';
 import { KEY_CODE } from '../../shared/_classes/key-code-enum';
 import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
@@ -14,19 +22,30 @@ import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/a
 import { Photo } from '../_helpers/classes';
 import { APIService } from '../_services/api.service';
 
+const ANIMATION_TIMINGS = '900ms cubic-bezier(0.25, 0.8, 0.25, 1)';
 
 @Component({
     selector: 'photo-photos',
     templateUrl: './photos.component.html',
-    styleUrls: ['./photos.component.scss']
+    styleUrls: ['./photos.component.scss'],
+    animations: [
+        trigger('fade', [
+            state('fadeOut', style({opacity: 0})),
+            state('fadeIn', style({opacity: 1 })),
+            transition('* => fadeIn', animate(ANIMATION_TIMINGS))
+        ])
+    ]
 })
 
-export class PhotosComponent implements OnInit {
+export class PhotosComponent implements OnInit, AfterViewChecked {
 
     //  version = VERSION;
     photos: Photo[];
     curPhotoIndex: number;
     largeImgLoading: boolean = true;
+    imageHeight: number;
+    @ViewChild('largeCard') largeCardRef: ElementRef;
+    @ViewChild('imageContainer') imageContainerRef: ElementRef;
 
     constructor(private api: APIService,
         private route: ActivatedRoute,
@@ -44,6 +63,16 @@ export class PhotosComponent implements OnInit {
                 (album) => this.setCurrentValues(album.photoIds),
                 (err) => this.errAlert('Problem getting albums!', err)
             );
+        }
+    }
+
+    ngAfterViewChecked() {
+        // Setting this.imageHeight (which is used in the template to set the height
+        // of the imageContainer) prevents the "flashing" effect when loading a new 
+        // largeImage due to the height difference between the previous image and
+        // the <mat-spinner>
+        if (this.imageContainerRef && !this.largeImgLoading) {
+            this.imageHeight = this.imageContainerRef.nativeElement.clientHeight;
         }
     }
 
