@@ -8,17 +8,11 @@ import { Photo } from '../_helpers/classes';
     templateUrl: './thumbnails.component.html',
     styleUrls: ['./thumbnails.component.scss']
 })
-export class ThumbnailsComponent implements OnInit {
+export class ThumbnailsComponent {
 
     @Input() thumbs: Photo[];
     @Input() curIndex: number;
     @Output() thumbChanged = new EventEmitter<number>();
-
-    constructor() { }
-
-    ngOnInit() {
-        console.log('init! thumbs is', this.thumbs);
-    }
 
     private changeThumb(newThumb: Photo) {
         if (newThumb !== this.thumbs[this.curIndex]) {
@@ -44,7 +38,6 @@ export class ThumbnailsComponent implements OnInit {
         }
         return null;
     }
-
 
     @HostListener('window:keyup', ['$event'])
     keyEvent(event: KeyboardEvent) {
@@ -73,8 +66,6 @@ export class ThumbnailsComponent implements OnInit {
                     break;
             }
             this.thumbChanged.emit(nextIndex);
-            // this.curPhotoIndex = nextIndex;
-            // this.largeImgLoading = true;
         }
     }
 

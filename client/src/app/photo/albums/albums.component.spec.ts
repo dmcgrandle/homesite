@@ -21,7 +21,7 @@ class BlankComp {}
 @Pipe({ name: 'secure' })
 class MockSecurePipe implements PipeTransform { transform(s) { return s } }
 
-fdescribe('Photo Module: AlbumsComponent', () => {
+describe('Photo Module: AlbumsComponent', () => {
     let component: AlbumsComponent;
     let location: Location;
     let api: MockAPIService;

@@ -4,7 +4,6 @@ import {
     ViewChild,
     OnInit,
     AfterViewChecked,
-    HostListener,
     ElementRef
 } from '@angular/core';
 import { trigger, state, style, transition, animate, AnimationEvent, group, query } from '@angular/animations';
@@ -15,8 +14,6 @@ import { Observable, throwError } from 'rxjs';
 import { share, switchMap, catchError, tap } from 'rxjs/operators';
 
 // imports from homesite outside of photo module:
-// import { AuthService } from '../../user/_services/auth.service';
-import { KEY_CODE } from '../../shared/_classes/key-code-enum';
 import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
 // imports from within photo module:
