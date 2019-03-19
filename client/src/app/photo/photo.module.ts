@@ -18,6 +18,7 @@ import { PhotoRoutingModule } from './photo-routing.module';
 import { AlbumsComponent } from './albums/albums.component';
 import { PhotosComponent } from './photos/photos.component';
 import { ThumbnailsComponent } from './thumbnails/thumbnails.component';
+import { FocalPhotoComponent } from './focal-photo/focal-photo.component';
 
 @NgModule({
     imports: [
@@ -29,7 +30,12 @@ import { ThumbnailsComponent } from './thumbnails/thumbnails.component';
         MatProgressSpinnerModule,
         MatIconModule
     ],
-    declarations: [ AlbumsComponent, PhotosComponent, ThumbnailsComponent ],
+    declarations: [
+        AlbumsComponent,
+        PhotosComponent,
+        ThumbnailsComponent,
+        FocalPhotoComponent
+    ],
     providers: [
         {
             provide: OverlayContainer,

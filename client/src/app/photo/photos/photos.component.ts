@@ -3,7 +3,6 @@ import {
     Component,
     ViewChild,
     OnInit,
-    AfterViewChecked,
     ElementRef
 } from '@angular/core';
 import { trigger, state, style, transition, animate, AnimationEvent, group, query } from '@angular/animations';
@@ -20,27 +19,17 @@ import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/a
 import { Photo } from '../_helpers/classes';
 import { APIService } from '../_services/api.service';
 
-const ANIMATION_TIMINGS = '900ms cubic-bezier(0.25, 0.8, 0.25, 1)';
-
 @Component({
     selector: 'photo-photos',
     templateUrl: './photos.component.html',
-    styleUrls: ['./photos.component.scss'],
-    animations: [
-        trigger('fade', [
-            state('fadeOut', style({opacity: 0})),
-            state('fadeIn', style({opacity: 1 })),
-            transition('* => fadeIn', animate(ANIMATION_TIMINGS))
-        ])
-    ]
+    styleUrls: ['./photos.component.scss']
 })
 
-export class PhotosComponent implements OnInit, AfterViewChecked {
+export class PhotosComponent implements OnInit {
 
     thumbs$: Observable<Photo[]>;
     curThumbsIndex: number = 0;
-    largeImgLoading: boolean = true;
-    imageHeight: number;
+    focalLoading: boolean = true;
     @ViewChild('largeCard') largeCardRef: ElementRef;
     @ViewChild('imageContainer') imageContainerRef: ElementRef;
 
@@ -71,30 +60,7 @@ export class PhotosComponent implements OnInit, AfterViewChecked {
 
     private changeThumb(newIndex: number) {// event 'thumbChanged' in template
         this.curThumbsIndex = newIndex;
-        this.largeImgLoading = true;
-    }
-    
-
-    ngAfterViewChecked() {
-        // Setting this.imageHeight (which is used in the template to set the height of 
-        // the inner spinner) prevents the "flashing" effect when loading a new largeImage 
-        // due to the height difference between the previous image and the spinner.
-        if (this.imageContainerRef && !this.largeImgLoading) {
-            this.imageHeight = this.imageContainerRef.nativeElement.clientHeight;
-        }
-    }
-
-    public makeFullscreen() {
-        const i: any = document.getElementById('full-screen');
-        if (i.requestFullscreen) {
-            i.requestFullscreen();
-        } else if (i.webkitRequestFullscreen) {
-            i.webkitRequestFullscreen();
-        } else if (i.mozRequestFullScreen) {
-            i.mozRequestFullScreen();
-        } else if (i.msRequestFullscreen) {
-            i.msRequestFullscreen();
-        }
+        this.focalLoading = true;
     }
 
     private errAlert(msg: string, err) {

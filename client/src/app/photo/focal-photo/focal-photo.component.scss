@@ -1,0 +1,21 @@
+.focal-container {
+    background-color: black;
+    cursor: pointer;
+    .img-container {
+        .inner-spinner {
+            background-color:black;
+        }
+        .img-focal {
+            margin-bottom: 0px;
+            max-height: 60vh;
+            width: auto;
+            max-width: 95vw;
+            border: 3px ridge black;
+            border-radius: 6px;
+        }
+    }
+    h4 {
+        margin: 0 0 10px 0;;
+        color: floralwhite;
+    }
+}
