@@ -1,14 +1,7 @@
 // imports from external:
-import { 
-    Component,
-    ViewChild,
-    OnInit,
-    ElementRef
-} from '@angular/core';
-import { trigger, state, style, transition, animate, AnimationEvent, group, query } from '@angular/animations';
+import { Component, ViewChild, OnInit, ElementRef} from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
 import { Observable, throwError } from 'rxjs';
 import { share, switchMap, catchError, tap } from 'rxjs/operators';
 

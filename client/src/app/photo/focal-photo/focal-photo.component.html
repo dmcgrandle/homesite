@@ -6,7 +6,7 @@
             <mat-spinner></mat-spinner>
         </div>
         <img [@fade]="loading ? 'fadeOut' : 'fadeIn'" [hidden]="loading" class="img-focal"
-            mat-card-image [src]="focal.fullPath | secure" (load)="loaded.emit(true)">
+            [src]="focal.fullPath | secure" (load)="loaded.emit(true)">
     </div>
     <mat-card-footer>
         <h4 *ngIf="!focal.caption">{{focal.filename}}</h4>
