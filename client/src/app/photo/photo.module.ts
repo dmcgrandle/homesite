@@ -17,6 +17,7 @@ import { SharedModule } from '../shared/shared.module';
 import { PhotoRoutingModule } from './photo-routing.module';
 import { AlbumsComponent } from './albums/albums.component';
 import { PhotosComponent } from './photos/photos.component';
+import { ThumbnailsComponent } from './thumbnails/thumbnails.component';
 
 @NgModule({
     imports: [
@@ -28,7 +29,7 @@ import { PhotosComponent } from './photos/photos.component';
         MatProgressSpinnerModule,
         MatIconModule
     ],
-    declarations: [ AlbumsComponent, PhotosComponent ],
+    declarations: [ AlbumsComponent, PhotosComponent, ThumbnailsComponent ],
     providers: [
         {
             provide: OverlayContainer,

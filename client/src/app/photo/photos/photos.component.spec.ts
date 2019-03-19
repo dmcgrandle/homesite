@@ -19,6 +19,7 @@ import {
     MatDialogModule,
     MatProgressSpinnerModule
 } from '@angular/material';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router, ActivatedRoute } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import { of, throwError } from 'rxjs';
@@ -33,6 +34,7 @@ import {
     tPhoto2,
     tPhoto3 
 } from '../_services/mock-api-service.spec';
+import { ThumbnailsComponent } from '../thumbnails/thumbnails.component';
 import { PhotosComponent } from './photos.component';
 import { APIService } from '../_services/api.service';
 
@@ -76,13 +78,14 @@ fdescribe('Photo Module: PhotosComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [PhotosComponent, MockSecurePipe, AnchorDownloadDirectiveStub],
+            declarations: [PhotosComponent, MockSecurePipe, AnchorDownloadDirectiveStub, ThumbnailsComponent],
             imports: [
                 MatIconModule, 
                 MatCardModule, 
                 MatProgressSpinnerModule,
                 MatDialogModule,
-                FlexLayoutModule
+                FlexLayoutModule,
+                BrowserAnimationsModule
             ],
             providers: [
                 { provide: APIService, useClass: MockAPIService },
@@ -108,16 +111,17 @@ fdescribe('Photo Module: PhotosComponent', () => {
             page = new Page(fixture);
             api.getAlbumByURL.and.returnValue(of([tAlbum]).pipe(delay(100)));
             fixture.detectChanges();
+            // note: next line won't enter the subscribe until after the observable completes ... :)
+            component.thumbs$.subscribe(thumbs => expect(thumbs).toEqual([tPhoto1, tPhoto2, tPhoto3]));
             tick(99);
-            expect(component.photos).toBeUndefined('component.photos has data when it should not.');
             expect(page.outerSpinner).toBeDefined('The outer spinner is not displayed in the DOM.');
             expect(page.largeCard).toBeNull('The largeCard is incorrectly in the DOM.');
             api.curAlbum = tAlbum; //mock the tap() in the original api service which sets curAlbum
             tick(1); // now getAlbumByURL Observable will complete
-            expect(component.photos).toEqual([tPhoto1, tPhoto2, tPhoto3]);
             fixture.detectChanges();
             expect(page.outerSpinner).toBeNull('The outer spinner is incorrectly still in the DOM.');
             expect(page.largeCard).toBeDefined('The largeCard is not displayed in the DOM.');
+            // flush();
         }));
         describe('After photos[] has data', () => {
             beforeEach(() => { createComponent(); });
@@ -136,10 +140,12 @@ fdescribe('Photo Module: PhotosComponent', () => {
                 expect(page.downloadLink.getAttribute('download')).toEqual('tFile1', 'wrong file being downloaded');
             });
             it(`should display the caption, or a filename if caption doesn't exist, for the large Image`, () => {
-                expect(page.largeCaption.innerText).toContain(component.photos[0].filename, `filename wasn't displayed in DOM`);
-                page.allThumbs[1].click();
-                fixture.detectChanges();
-                expect(page.largeCaption.innerText).toContain(component.photos[1].caption, `caption wasn't displayed properly`);
+                component.thumbs$.subscribe(thumbs => {
+                    expect(page.largeCaption.innerText).toContain(thumbs[0].filename, `filename wasn't displayed in DOM`);
+                    page.allThumbs[1].click();
+                    fixture.detectChanges();
+                    expect(page.largeCaption.innerText).toContain(thumbs[1].caption, `caption wasn't displayed properly`);
+                });
             });
             // it('should call updateDisplayAlbum() when an albumCard is clicked', () => {
             //     spyOn(component, 'updateDisplayAlbum');

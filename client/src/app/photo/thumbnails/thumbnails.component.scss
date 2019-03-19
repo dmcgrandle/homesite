@@ -1,0 +1,15 @@
+#thumbnails {
+    overflow: scroll;
+    max-height: none !important;
+    .img-thumbs {
+        cursor: pointer;
+        border-radius: 6px;
+        border: 3px;
+        border-color: black;
+        border-style: ridge;
+        width: 100%;
+    }
+    #selected {
+        border-color: white;
+    }
+}
