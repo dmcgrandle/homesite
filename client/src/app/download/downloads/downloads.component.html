@@ -2,8 +2,8 @@
     <mat-spinner></mat-spinner>
 </div>
 
-<div class="download-container" [hidden]="loading$ | async">
-    <div class="dl-header-container" fxLayout="row" fxLayoutGap="5vw" fxLayoutAlign.gt-xs="none center" 
+<div class="download-container" [hidden]="loading$ | async" fxFlexFill fxLayout="column">
+    <div class="dl-header-container" fxLayout="row" fxLayoutGap="5vw" fxLayoutAlign.gt-xs="none center"
         fxLayout.xs="row wrap" fxLayoutAlign.xs="none center">
         <h2>Downloads/Uploads</h2>
         <mat-form-field fxFlexOrder.xs="3">
@@ -13,12 +13,13 @@
         <span class="fill-space"></span>
         <!-- For file upload: set up a hidden input and 'click' it when the "upload" icon is clicked -->
         <input hidden="true" type="file" #file (change)="uploadPickedFile($event)">
-        <mat-icon *ngIf="api.lastLoggedInUserLevel() > 2" class="upload-icon clickable" (click)="file.click()" 
+        <mat-icon *ngIf="api.lastLoggedInUserLevel() > 2" class="upload-icon clickable" (click)="file.click()"
             matTooltip="Upload A File" matTooltipPosition="left" matTooltipShowDelay="1000">
             publish
         </mat-icon>
     </div>
-    <div>   <!-- container for table and paginator -->
+
+    <div fxFlex class="table-container" fxLayout="column" >
         <table mat-table matSort [dataSource]="dataSource">
 
             <!-- FileId Column -->
@@ -30,7 +31,7 @@
             <!-- Download Icon Column -->
             <ng-container matColumnDef="downloadIcon">
                 <th mat-header-cell *matHeaderCellDef></th>
-                <td mat-cell class="clickable center-align" *matCellDef="let row" matTooltip="Download this item" 
+                <td mat-cell class="clickable center-align" *matCellDef="let row" matTooltip="Download this item"
                     matTooltipPosition="right" matTooltipShowDelay="1000">
                     <mat-icon (click)="onDownloadClicked(row)">get_app</mat-icon>
                 </td>
@@ -39,8 +40,8 @@
             <!-- Delete Icon Column -->
             <ng-container matColumnDef="deleteIcon">
                 <th mat-header-cell *matHeaderCellDef></th>
-                <td mat-cell class="clickable center-align" *matCellDef="let row" matTooltip="DELETE this item permanently" 
-                    matTooltipPosition="right" matTooltipShowDelay="1000">
+                <td mat-cell class="clickable center-align" *matCellDef="let row"
+                    matTooltip="DELETE this item permanently" matTooltipPosition="right" matTooltipShowDelay="1000">
                     <mat-icon (click)="onDeleteClicked(row)">delete_forever</mat-icon>
                 </td>
             </ng-container>
@@ -48,19 +49,20 @@
             <!-- Link Icon Column -->
             <ng-container matColumnDef="linkIcon">
                 <th mat-header-cell *matHeaderCellDef></th>
-                <td mat-cell class="clickable center-align" *matCellDef="let row" matTooltip="Link to send to others to download this item"
-                    matTooltipPosition="right" matTooltipShowDelay="1000">
+                <td mat-cell class="clickable center-align" *matCellDef="let row"
+                    matTooltip="Link to send to others to download this item" matTooltipPosition="right"
+                    matTooltipShowDelay="1000">
                     <mat-icon (click)="onLinkClicked(row)">link</mat-icon>
                 </td>
             </ng-container>
-    
-                <!-- Filename Column -->
+
+            <!-- Filename Column -->
             <ng-container matColumnDef="filename">
                 <th mat-header-cell class="indent" *matHeaderCellDef mat-sort-header> Filename </th>
                 <td mat-cell class="indent" *matCellDef="let file">
-                        <!-- [(ngModel)]="existingPass" {{file.filename}} #file="ngModel"-->
-                        <download-filename [filename]="file.filename" [id]="file._id" (changed)="onFilenameChange($event)">
-                        </download-filename>
+                    <!-- [(ngModel)]="existingPass" {{file.filename}} #file="ngModel"-->
+                    <download-filename [filename]="file.filename" [id]="file._id" (changed)="onFilenameChange($event)">
+                    </download-filename>
                 </td>
             </ng-container>
 
@@ -84,11 +86,10 @@
                 <td mat-cell class="right-align" *matCellDef="let file"> {{file.sizeHR}} </td>
             </ng-container>
 
-
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
-        <mat-paginator [pageSize]="50" [pageSizeOptions]="[5, 10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
     </div>
+    <mat-paginator [pageSize]="50" [pageSizeOptions]="[5, 10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
 
 </div>

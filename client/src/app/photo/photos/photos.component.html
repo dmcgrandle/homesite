@@ -1,4 +1,4 @@
-<div id="full-screen" *ngIf="thumbs$ | async as thumbs">
+<div id="full-screen" *ngIf="thumbs$ | async as thumbs" fxLayout="column" fxLayoutGap="4px" fxFlexFill>
     <div class="title" fxLayout="row">
         <h2><span>{{api.curAlbum.name}}:</span></h2>
         <span class="fill-space"></span>
@@ -6,12 +6,10 @@
             <mat-icon>vertical_align_bottom</mat-icon>
         </a>
     </div>
-    <div class="photo-container" fxLayout="column" fxLayoutGap="4px" fxLayoutAlign.gt-xs="space-evenly stretch">
-        <!-- large display (focal) picture -->
-        <photo-focal [focal]="thumbs[curThumbsIndex]" [loading]="focalLoading" (loaded)="focalLoading=false"></photo-focal>
-        <!-- scrollable row of thumbnails -->
-        <photo-thumbnails [thumbs]="thumbs" [curIndex]="curThumbsIndex" (thumbChanged)="changeThumb($event)"></photo-thumbnails>
-    </div>
+    <!-- <div fxFlex class="green"> -->
+        <photo-focal fxFlex [focal]="thumbs[curThumbsIndex]" [loading]="focalLoading" (loaded)="focalLoading=false"></photo-focal>
+    <!-- </div> -->
+    <photo-thumbnails [thumbs]="thumbs" [curIndex]="curThumbsIndex" (thumbChanged)="changeThumb($event)"></photo-thumbnails>
 </div>
 
 <div *ngIf="!(thumbs$ | async)" class="outer-spinner">

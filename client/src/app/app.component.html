@@ -1,9 +1,8 @@
-<!-- <app-login></app-login> -->
 <div fxLayout="column" fxLayoutAlign="center stretch" class="container">
-        <shared-header></shared-header>
-        <div fxFlex="100%">
-            <!-- Note: extra div because put flex custom attributes don't work in <router-outlet> -->
-            <router-outlet></router-outlet>
-        </div>
-        <shared-footer></shared-footer>
+    <shared-header></shared-header>
+        <!-- Note: extra div because put flex custom attributes don't work in <router-outlet> -->
+    <div fxFlex>
+        <router-outlet></router-outlet>
+    </div>
+    <shared-footer></shared-footer>
 </div>

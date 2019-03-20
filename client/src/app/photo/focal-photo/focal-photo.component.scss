@@ -1,21 +1,23 @@
 .focal-container {
-    background-color: black;
+    background-color: rgba(0,0,0,0); //transparent
+    padding-top: 0;
     cursor: pointer;
     .img-container {
+        height: 0; //need to set it, then stretch it
         .inner-spinner {
             background-color:black;
         }
         .img-focal {
             margin-bottom: 0px;
-            height: 55vh;
-            width: auto;
             max-width: 95vw;
+            max-height: 100%;
+            // width: auto;
             border: 3px ridge black;
             border-radius: 6px;
         }
     }
     h4 {
-        margin: 0 0 10px 0;;
+        margin: 5px 0;
         color: floralwhite;
     }
 }
