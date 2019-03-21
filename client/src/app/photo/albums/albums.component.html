@@ -5,28 +5,13 @@
 
         <!-- If the album being displayed has both other albums AND pictures then display an icon for these pics -->
         <div #firstItem class="grid-item" *ngIf="api.curAlbum.photoIds.length > 0" (click)="navToPhotos(api.curAlbum)">
-            <mat-card>
-                <mat-card-header>
-                    <mat-card-title>
-                        <h3 class="card-title">{{api.curAlbum.name}}</h3>
-                    </mat-card-title>
-                    <mat-card-subtitle>{{api.curAlbum.description}}</mat-card-subtitle>
-                </mat-card-header>
-                <img mat-card-image [src]='(api.curAlbum.featuredMedia.fullPath) | secure' (load)="imageLoaded.next(firstItem)">
-            </mat-card>
+            <shared-card [name]="api.curAlbum.name" [description]="api.curAlbum.description" 
+            [image]="api.curAlbum.featuredMedia.fullPath" (loaded)="cardLoaded.next(firstItem)"></shared-card>
         </div>
         <!-- Now loop through displaying all the albums in this album. -->
         <div #nextItem class="grid-item" *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)">
-            <mat-card>
-                <mat-card-header>
-                    <mat-card-title>
-                        <h3 class="card-title">{{album.name}}</h3>
-                    </mat-card-title>
-                    <mat-card-subtitle>{{album.description}}</mat-card-subtitle>
-                </mat-card-header>
-                <img mat-card-image *ngIf='album.featuredMedia.filename'
-                    [src]='(album.featuredMedia.fullPath) | secure' (load)="imageLoaded.next(nextItem)">
-            </mat-card>
+            <shared-card [name]="album.name" [description]="album.description"
+            [image]="album.featuredMedia.fullPath" (loaded)="cardLoaded.next(nextItem)"></shared-card>
         </div>
     </div>
 </div>
@@ -35,5 +20,3 @@
     <p>Waiting on server ...</p>
     <mat-spinner></mat-spinner>
 </div>
-
-<!-- <div class="green" fxFlexFill></div> -->

@@ -8,7 +8,8 @@ import {
     MatListModule, 
     MatIconModule, 
     MatButtonModule, 
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatCardModule
 } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
@@ -21,12 +22,14 @@ import { AlertMessageDialogComponent } from './alert-message-dialog/alert-messag
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { ProgressBarComponent } from './progress-bar/progress-bar.component';
+import { CardComponent } from './card/card.component';
 
 @NgModule({
     imports: [
         CommonModule,
         RouterModule,
         FlexLayoutModule,
+        MatCardModule,
         MatToolbarModule,
         MatMenuModule,
         MatListModule,
@@ -35,6 +38,7 @@ import { ProgressBarComponent } from './progress-bar/progress-bar.component';
         MatProgressBarModule
     ],
     exports: [
+        CardComponent,
         PageNotFoundComponent,
         HeaderComponent,
         FooterComponent,
@@ -48,7 +52,8 @@ import { ProgressBarComponent } from './progress-bar/progress-bar.component';
         FooterComponent,
         ProgressBarComponent,
         SecurePipe,
-        EqualDirective
+        EqualDirective,
+        CardComponent
     ],
     entryComponents: [AlertMessageDialogComponent, ProgressBarComponent]
 })

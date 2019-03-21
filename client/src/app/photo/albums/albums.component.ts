@@ -31,7 +31,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
     displayAlbums: Album[];
     photosDisplayName: string;
     getAlbumsSub: Subscription;
-    imageLoaded: Subject<HTMLDivElement> = new Subject();
+    cardLoaded: Subject<HTMLDivElement> = new Subject();
 
     @ViewChild('gridContainer') gridContainerRef: ElementRef;
     @ViewChild('firstItem') firstGridItemRef: ElementRef;
@@ -51,15 +51,13 @@ export class AlbumsComponent implements OnInit, OnDestroy {
             },
             (err) => this.errAlert('Problem getting albums!', err)
         );
-     /* triggered from the template when an image has loaded, now (finally) the card is complete and the
-        masonry layout can be finished by adding 'grid-row-end' to the gridItem's style
-        see https://medium.com/@andybarefoot/a-masonry-style-layout-using-css-grid-8c663d355ebb */
-        this.imageLoaded.subscribe((gridItem: HTMLDivElement) => this.setSpan(gridItem));
+        // triggered from the template when an image has loaded.
+        this.cardLoaded.subscribe((gridItem: HTMLDivElement) => this.setSpan(gridItem));
     };
 
     ngOnDestroy() {
         if (this.getAlbumsSub) this.getAlbumsSub.unsubscribe();
-        if (this.imageLoaded) this.imageLoaded.unsubscribe();
+        if (this.cardLoaded) this.cardLoaded.unsubscribe();
     }
 
     @HostListener('window:resize', ['$event'])
@@ -73,12 +71,17 @@ export class AlbumsComponent implements OnInit, OnDestroy {
     }
 
     private setSpan(gridItem: HTMLDivElement) {
+        /* When image has loaded or screen resized, the card is complete and the masonry layout 
+        can be finished by adding 'grid-row-end: span <num>' to the gridItem's style see:
+        https://medium.com/@andybarefoot/a-masonry-style-layout-using-css-grid-8c663d355ebb */
+        const cardHeight = gridItem.firstElementChild.getBoundingClientRect().height;
         const container = this.gridContainerRef.nativeElement;
         const rowGap = parseInt(getComputedStyle(container).getPropertyValue('grid-row-gap'));
         const rowHeight = parseInt(getComputedStyle(container).getPropertyValue('grid-auto-rows'));
-        const cardHeight = gridItem.firstElementChild.getBoundingClientRect().height;
-        const span = Math.ceil((cardHeight + rowGap) / (rowHeight + rowGap));
+        const itemsGutter = Math.ceil(rowGap ? 0 : (10 / rowHeight)); // add a 10px gutter if rowGap === 0
+        const span = Math.ceil((cardHeight + rowGap) / (rowHeight + rowGap)) + itemsGutter;
         gridItem.style.setProperty('grid-row-end', `span ${span}`);
+
     }
 
     public updateDisplayAlbum(album: Album) {
