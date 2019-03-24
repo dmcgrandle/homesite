@@ -1,27 +1,28 @@
-.container {
+.videos-container {
     background-color: black;
     border-radius: 6px;
     padding-top: 15px;
 
-    h3 {
-        margin-top: 0;
+    .title {
+        margin: 0 1em 10px 1em;
         color: floralwhite;
     }
     
-    .all-videos {
-        margin-bottom: 2px;
-//        background-color: grey;
-
-        .poster {
-            max-height: calc(96% - 1em);
-            max-width: 100%;
+    .video-grid {
+        margin: 0 1em;
+        .video-item {
+            .poster {
+                max-width: 100%;
+                border: 1px solid white;
+                border-radius: 6px;
+            }
+            h5 {
+                margin: 0 4px 0 10px;
+                color: floralwhite;
+                overflow: hidden;
+                white-space: nowrap;
+                max-width: 95%;
+            }
         }
-        h5 {
-            margin: 0 4px 0 10px;
-            color: floralwhite;
-            overflow: hidden;
-            white-space: nowrap;
-            max-width: 95%;
         }
-    }
 }

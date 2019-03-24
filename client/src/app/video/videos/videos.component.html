@@ -1,18 +1,18 @@
-<div class="container" *ngIf="videos">
-  <h3>Videos in Album {{api.curVideoAlbum.name}}:</h3>
-  <div fxLayout.xs="column" fxLayoutGap.xs="2px" fxLayout.gt-xs="row wrap" fxLayoutGap.gt-xs="0px" 
-      fxLayoutAlign.gt-xs="space-evenly none" fxLayoutAlign.xs="none none">
-      <div #allVideos class="all-videos" *ngFor="let video of videos; index as i" fxLayout="column" 
-          fxFlex.xl="1 1 16.3%" fxFlex.lg="1 1 24.6%" fxFlex.md="1 1 32.75%" fxFlex.sm="1 1 49%" 
-          fxFlex.xs="1 1 auto" fxLayoutAlign="center center" [ngStyle]="{'height.px': allVideos.offsetWidth}">
-          <!-- This makes height = width to make pContainer square -->
-          <img class="poster" (click)="playVideo(video)" [src]='video.posterPath | secure'>
-          <h5 fxFlexAlign="center" *ngIf="!video.caption">{{video.filename}}</h5>
-          <h5 fxFlexAlign="center" *ngIf="video.caption">{{video.caption}}</h5>
-      </div>
-  </div>
+<div class="videos-container" *ngIf="videos" fxFlexFill fxLayout="column">
+    <h3 class="title">Videos in Album {{api.curVideoAlbum.name}}:</h3>
+    <div mnMasonryGrid mnMinColSize="220px" class="video-grid" fxFlex>
+        <div #videoItem [mnMasonryItem]="posterLoaded" mnSpanColumns="true" class="video-item"
+            *ngFor="let video of videos; index as i" fxLayout="column">
+            <div fxLayout="column">
+                <img fxFlex class="poster" (click)="playVideo(video)" [src]='video.posterPath | secure'
+                    (load)="posterLoaded.next(videoItem)">
+                <h5 fxFlexAlign="center" *ngIf="!video.caption">{{video.filename}}</h5>
+                <h5 fxFlexAlign="center" *ngIf="video.caption">{{video.caption}}</h5>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div *ngIf="!videos">
-  <p>Waiting on the server ...</p>
+    <p>Waiting on the server ...</p>
 </div>

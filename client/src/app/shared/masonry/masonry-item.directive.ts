@@ -46,10 +46,13 @@ export class MasonryItemDirective implements OnInit, OnDestroy {
 
     setSpan(gridItem: HTMLElement) {
         const container = gridItem.parentElement;
+        // let cardHeight = gridItem.getBoundingClientRect().height;
+        // const cardWidth = gridItem.getBoundingClientRect().width;
         let cardHeight = gridItem.firstElementChild.getBoundingClientRect().height;
         const cardWidth = gridItem.firstElementChild.getBoundingClientRect().width;
         if ((this.mnSpanColumns === 'true') && (cardWidth > cardHeight)) {
             gridItem.style.setProperty('grid-column-end', 'span 2');
+            // cardHeight = gridItem.getBoundingClientRect().height; // it changed...
             cardHeight = gridItem.firstElementChild.getBoundingClientRect().height; // it changed...
         }
         const rowGap = parseInt(getComputedStyle(container).getPropertyValue('grid-row-gap'));

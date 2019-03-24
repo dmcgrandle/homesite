@@ -1,28 +1,27 @@
-import { Component, EventEmitter, Directive, Output, OnInit, HostListener } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-// import { ParseTreeResult } from '@angular/compiler';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Subject } from 'rxjs';
 
 import { APIService } from '../_services/api.service';
 import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
-import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
+// import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
 import { Video } from '../_helpers/classes';
-import { KEY_CODE } from '../../shared/_classes/key-code-enum';
 
 @Component({
     selector: 'video-videos',
     templateUrl: './videos.component.html',
     styleUrls: ['./videos.component.scss']
 })
-export class VideosComponent implements OnInit {
+export class VideosComponent implements OnInit, OnDestroy {
 
     videos: Video[];
+    posterLoaded: Subject<HTMLDivElement> = new Subject();
 
     constructor(private api: APIService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog) { }
-
 
     ngOnInit() {
         // If called from gallery-video-albums component then the
@@ -36,6 +35,10 @@ export class VideosComponent implements OnInit {
                 (err) => this.errAlert('Problem getting albums!', err)
             );
         }
+    }
+
+    ngOnDestroy() {
+        this.posterLoaded.unsubscribe();
     }
 
     playVideo(video: Video) {

@@ -13,7 +13,7 @@
  *      display: grid;
  *      grid-row-gap: 10px;
  *      grid-column-gap: 1em;
- *      grid-template-columns: repeat( auto-fit, minmax( 250px, 1fr) );
+ *      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
  *      grid-auto-rows: 5px;
  *      grid-auto-flow: row dense;
  *      overflow-y: auto;
