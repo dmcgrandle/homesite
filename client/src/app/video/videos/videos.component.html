@@ -3,7 +3,7 @@
     <div mnMasonryGrid mnMinColSize="220px" class="video-grid" fxFlex>
         <div #videoItem [mnMasonryItem]="posterLoaded" mnSpanColumns="true" class="video-item"
             *ngFor="let video of videos; index as i" fxLayout="column">
-            <div fxLayout="column">
+            <div fxLayout="column"> 
                 <img fxFlex class="poster" (click)="playVideo(video)" [src]='video.posterPath | secure'
                     (load)="posterLoaded.next(videoItem)">
                 <h5 fxFlexAlign="center" *ngIf="!video.caption">{{video.filename}}</h5>
