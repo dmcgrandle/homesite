@@ -156,7 +156,7 @@ async function createSomePosters(postersRemaining) {
         if (!postersExist[i]) {
           const fileIn = path.join(__dirname, '..', cfg.VIDEO_DIR.PATH + postersRemaining[0]);
           const fileOut = getFullPosterPath(postersRemaining[0]);
-          pArray.push(ffmpegPromise('ffmpeg', ['-ss', '00:00:00', '-i', fileIn, '-vframes', '1',
+          pArray.push(ffmpegPromise('ffmpeg', ['-ss', '00:00:05', '-i', fileIn, '-vframes', '1',
             '-q:v', '2', '-vf', 'scale=' + cfg.POSTERS.WIDTH + ':-1', fileOut]));
         }
         postersRemaining.shift(); // drop the first item in the array.
