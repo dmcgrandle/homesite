@@ -23,6 +23,8 @@ import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { ProgressBarComponent } from './progress-bar/progress-bar.component';
 import { CardComponent } from './card/card.component';
+import { MasonryGridDirective } from './masonry/masonry-grid.directive';
+import { MasonryItemDirective } from './masonry/masonry-item.directive';
 
 @NgModule({
     imports: [
@@ -44,6 +46,8 @@ import { CardComponent } from './card/card.component';
         FooterComponent,
         ProgressBarComponent,
         SecurePipe,
+        MasonryGridDirective,
+        MasonryItemDirective
     ],
     declarations: [
         PageNotFoundComponent,
@@ -53,7 +57,9 @@ import { CardComponent } from './card/card.component';
         ProgressBarComponent,
         SecurePipe,
         EqualDirective,
-        CardComponent
+        CardComponent,
+        MasonryGridDirective,
+        MasonryItemDirective
     ],
     entryComponents: [AlertMessageDialogComponent, ProgressBarComponent]
 })

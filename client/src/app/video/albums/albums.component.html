@@ -1,16 +1,20 @@
 <div *ngIf="displayAlbums" fxFlexFill fxLayout="column" class="albums-container">
     <h2 class="title">Video Albums in {{api.curVideoAlbum.name}}:</h2>
 
-    <div class="grid-container" #gridContainer fxFlex>
+    <div class="grid-container" mnMasonryGrid fxFlex>
         <!-- If the album being displayed has both other albums AND videos then display an icon for these vids -->
-        <div #firstItem class="grid-item" *ngIf="api.curVideoAlbum.videoIds.length > 0" (click)="navToVideos(api.curVideoAlbum)">
-            <shared-card [name]="api.curVideoAlbum.name" [description]="api.curVideoAlbum.description" 
-            [image]="api.curVideoAlbum.featuredMedia.posterPath" (loaded)="cardLoaded.next(firstItem)"></shared-card>
+        <div #firstItem [mnMasonryItem]="cardLoaded" mnSpanColumns="true" class="grid-item"
+            *ngIf="api.curVideoAlbum.videoIds.length > 0" (click)="navToVideos(api.curVideoAlbum)">
+            <shared-card [name]="api.curVideoAlbum.name" [description]="api.curVideoAlbum.description"
+                [image]="api.curVideoAlbum.featuredMedia.posterPath" (loaded)="cardLoaded.next(firstItem)">
+            </shared-card>
         </div>
         <!-- Now loop through displaying all the albums in this album. -->
-        <div #nextItem class="grid-item" *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)">
-            <shared-card [name]="album.name" [description]="album.description" 
-            [image]="album.featuredMedia.posterPath" (loaded)="cardLoaded.next(nextItem)"></shared-card>
+        <div #nextItem [mnMasonryItem]="cardLoaded" mnSpanColumns="true" class="grid-item"
+            *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)">
+            <shared-card [name]="album.name" [description]="album.description" [image]="album.featuredMedia.posterPath"
+                (loaded)="cardLoaded.next(nextItem)">
+            </shared-card>
         </div>
     </div>
 </div>

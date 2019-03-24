@@ -1,19 +1,17 @@
 <div *ngIf="displayAlbums" fxFlexFill fxLayout="column" class="albums-container">
-    <h2 class="title">List of Photo Albums:</h2>
+    <h2 class="title">Photo Albums in {{api.curAlbum.name}}:</h2>
 
-    <div class="grid-container" #gridContainer fxFlex>
-
-        <!-- If the album being displayed has both other albums AND pictures then display an icon for these pics -->
-        <div #firstItem class="grid-item" *ngIf="api.curAlbum.photoIds.length > 0" (click)="navToPhotos(api.curAlbum)">
+    <div mnMasonryGrid fxFlex>
+        <div #firstItem [mnMasonryItem]="cardLoaded" class="grid-item" *ngIf="api.curAlbum.photoIds.length > 0" (click)="navToPhotos(api.curAlbum)">
             <shared-card [name]="api.curAlbum.name" [description]="api.curAlbum.description" 
             [image]="api.curAlbum.featuredMedia.fullPath" (loaded)="cardLoaded.next(firstItem)"></shared-card>
         </div>
-        <!-- Now loop through displaying all the albums in this album. -->
-        <div #nextItem class="grid-item" *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)">
+        <div #nextItem [mnMasonryItem]="cardLoaded" class="grid-item" *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)">
             <shared-card [name]="album.name" [description]="album.description"
             [image]="album.featuredMedia.fullPath" (loaded)="cardLoaded.next(nextItem)"></shared-card>
         </div>
     </div>
+
 </div>
 
 <div *ngIf="!displayAlbums">
