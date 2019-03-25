@@ -4,6 +4,7 @@
         margin: 0.4em 0;
     }
     .grid-container {
+        border-radius: 6px;
         @supports (-webkit-overflow-scrolling: touch) {
             -webkit-overflow-scrolling: touch;
         } /* Support for IOS device scrolling in mobile Safari */
