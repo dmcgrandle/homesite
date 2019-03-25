@@ -1,7 +1,7 @@
 <div *ngIf="displayAlbums" fxFlexFill fxLayout="column" class="albums-container">
     <h2 class="title">Photo Albums in {{api.curAlbum.name}}:</h2>
 
-    <div mnMasonryGrid fxFlex>
+    <div mnMasonryGrid class="grid-container" fxFlex>
         <!-- If the album being displayed has both other albums AND photos then display a card for these pics -->
         <div #firstItem [mnMasonryItem]="cardLoaded" class="grid-item" *ngIf="api.curAlbum.photoIds.length > 0" (click)="navToPhotos(api.curAlbum)">
             <shared-card [name]="api.curAlbum.name" [description]="api.curAlbum.description" 

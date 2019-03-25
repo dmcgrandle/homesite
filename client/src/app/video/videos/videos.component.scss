@@ -14,18 +14,20 @@
             -webkit-overflow-scrolling: touch;
         } /* Support for IOS device scrolling in mobile Safari */
         .video-item {
-            .poster {
-                max-width: 100%;
-                border: 1px solid white;
-                border-radius: 6px;
-            }
-            h5 {
-                margin: 0 4px 0 10px;
-                color: floralwhite;
-                overflow: hidden;
-                white-space: nowrap;
-                max-width: 95%;
+            .video-wrapper {
+                .poster {
+                    max-width: 100%;
+                    border: 1px solid white;
+                    border-radius: 6px;
+                }
+                h5 {
+                    margin: 0 4px 0 10px;
+                    color: floralwhite;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    max-width: 95%;
+                }
             }
         }
-        }
+    }
 }

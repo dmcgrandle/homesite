@@ -1,8 +1,10 @@
-<div class="container" *ngIf="!loadingAPI" fxLayout="column" fxLayoutAlign.gt-xs="center center" 
-    fxLayoutAlign.xs="none none">
-    <div *ngIf="loadingVideo"><mat-spinner></mat-spinner></div>
-    <video [hidden]="loadingVideo" controls preload="auto" [src]="video.fullPath | secure" type="video/mp4" 
-        [poster]="video.posterPath | secure" (loadeddata)="loadingVideo = false"></video>
+<div class="container" *ngIf="!loadingAPI" fxFlexFill fxLayout="column">
+    <div *ngIf="loadingVideo" class="spinner"><mat-spinner></mat-spinner></div>
+    <!-- Note: relative wrapper and no flexbox for video is intentional - needs to work with Chrome, FF and Safari (IOS) -->
+    <div fxFlex class="wrapper">
+        <video class="video" [hidden]="loadingVideo" controls autoplay [src]="video.fullPath | secure" type="video/mp4" 
+        (loadeddata)="loadingVideo = false"></video>
+    </div>
     <h5 fxFlexAlign="center" *ngIf="!video.caption">{{video.filename}}</h5>
     <h5 fxFlexAlign="center" *ngIf="video.caption">{{video.caption}}</h5>
 </div>

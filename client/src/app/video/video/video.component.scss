@@ -1,9 +1,17 @@
 .container {
     background-color: black;
     border-radius: 6px;
-    video {
-        margin-top: 10px;
-        height: 85vh;
+    .wrapper {
+        position: relative;
+        video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); // center it
+            height: 98%;
+            width: 98%;
+            margin-top: 10px;
+        }
     }
     h5 {
         margin: 10px 0;

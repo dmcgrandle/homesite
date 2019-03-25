@@ -30,6 +30,18 @@
  *      </div>
  *  </div>
  * 
+ * Note: masonry-item assumes there is only one direct child, so if you want an image with a caption for
+ * example, you will need a containing div.  Something like this:
+ * 
+ *  <div mnMasonryGrid>
+ *      <div #imageItem [mnMasonryItem]="imgLoaded" mnSpanColumns="true" *ngFor="let photo of photos">
+ *          <div class="photo-wrapper">
+ *              <img [src]="photo.path" (loaded)="imgLoaded.next(imageItem)">
+ *              <h4>{{photo.caption}}</h4>
+ *          </div>
+ *      </div>
+ *  </div>
+ * 
 */
 
 import { Directive, ElementRef, Input, OnInit } from '@angular/core';
