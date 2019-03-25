@@ -10,6 +10,9 @@
     
     .video-grid {
         margin: 0 1em;
+        @supports (-webkit-overflow-scrolling: touch) {
+            -webkit-overflow-scrolling: touch;
+        } /* Support for IOS device scrolling in mobile Safari */
         .video-item {
             .poster {
                 max-width: 100%;

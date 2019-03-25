@@ -17,7 +17,8 @@ import { Video } from '../_helpers/classes';
 export class VideoComponent implements OnInit {
 
     video: Video;
-    loading: boolean = true;
+    loadingAPI: boolean = true;
+    loadingVideo: boolean = true;
 
     constructor(private api: APIService,
         private route: ActivatedRoute,
@@ -37,12 +38,12 @@ export class VideoComponent implements OnInit {
             this.video = this.api.curVideo;
             console.log('video is: ');
             console.log(this.video);
-            this.loading = false;
+            this.loadingAPI = false;
         } else {// We need to load video from the url sent.
             this.api.getVideoByURL(this.route.url).subscribe(
                 (video) => {
                     this.video = video;
-                    this.loading = false;
+                    this.loadingAPI = false;
                     console.log('video is:');
                     console.log(video);
                 },

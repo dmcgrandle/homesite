@@ -1,9 +1,13 @@
-<div class="container" *ngIf="!loading" fxLayout="column" fxLayoutAlign.gt-xs="center center" 
+<div class="container" *ngIf="!loadingAPI" fxLayout="column" fxLayoutAlign.gt-xs="center center" 
     fxLayoutAlign.xs="none none">
-    <video controls preload="auto" [src]="video.fullPath | secure" type="video/mp4" 
-        [poster]="video.posterPath | secure"></video>
+    <div *ngIf="loadingVideo"><mat-spinner></mat-spinner></div>
+    <video [hidden]="loadingVideo" controls preload="auto" [src]="video.fullPath | secure" type="video/mp4" 
+        [poster]="video.posterPath | secure" (loadeddata)="loadingVideo = false"></video>
     <h5 fxFlexAlign="center" *ngIf="!video.caption">{{video.filename}}</h5>
     <h5 fxFlexAlign="center" *ngIf="video.caption">{{video.caption}}</h5>
 </div>
 
-<h3 *ngIf="loading" >Video is loading ...</h3>
+<div *ngIf="loadingAPI">
+    <h3>Video is loading ...</h3>
+    <mat-spinner></mat-spinner>
+</div>
