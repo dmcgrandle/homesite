@@ -55,7 +55,7 @@ fi
 # Copy over custom server config file if it exists
 if [ -f /homesite/config/server.config.js ]
 then
-    cp /homesite/config/server.config.js /homesite/assets/config
+    cp /homesite/config/server.config.js /homesite/public/assets/config
     echo "Custom client configs found and copied into the container." >> $LOGLOC
 fi
 
