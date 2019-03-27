@@ -60,7 +60,7 @@ class AnchorDownloadDirectiveStub {
     }
 }
 
-fdescribe('Photo Module: PhotosComponent', () => {
+describe('Photo Module: PhotosComponent', () => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const routeMock = { url: of(tAlbum.path) };
     let api: MockAPIService;

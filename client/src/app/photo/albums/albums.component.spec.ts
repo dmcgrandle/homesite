@@ -9,6 +9,9 @@ import { of, throwError } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
 // import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
+import { MasonryGridDirective } from '../../shared/masonry/masonry-grid.directive';
+import { MasonryItemDirective } from '../../shared/masonry/masonry-item.directive';
+import { CardComponent } from '../../shared/card/card.component';
 
 import { APIService } from '../_services/api.service';
 import { MockAPIService, tAlbum, tAlbum1, tAlbum2, tAlbum3, tAlbum4, tPhoto } from '../_services/mock-api-service.spec';
@@ -21,7 +24,7 @@ class BlankComp {}
 @Pipe({ name: 'secure' })
 class MockSecurePipe implements PipeTransform { transform(s) { return s } }
 
-describe('Photo Module: AlbumsComponent', () => {
+fdescribe('Photo Module: AlbumsComponent', () => {
     let component: AlbumsComponent;
     let location: Location;
     let api: MockAPIService;
@@ -39,12 +42,18 @@ describe('Photo Module: AlbumsComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [AlbumsComponent, MockSecurePipe, BlankComp],
+            declarations: [
+                AlbumsComponent,
+                MockSecurePipe,
+                BlankComp,
+                CardComponent,
+                MasonryGridDirective,
+                MasonryItemDirective
+            ],
             imports: [
                 MatCardModule, 
                 MatProgressSpinnerModule, 
                 MatDialogModule, 
-                // HttpClientModule,
                 RouterTestingModule.withRoutes([
                     // { path: 'photo/albums', component: BlankComp },
                     { path: 'photo/photos', component: AlbumsComponent },
