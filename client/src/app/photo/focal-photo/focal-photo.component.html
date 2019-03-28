@@ -1,4 +1,4 @@
-<mat-card class="focal-container" (click)="makeFullscreen()" fxLayout="column" fxLayoutAlign="none center" fxHide.lt-sm
+<mat-card class="focal-container" (click)="clicked.emit(true)" fxLayout="column" fxLayoutAlign="none center" fxHide.lt-sm
     fxFlexAlign="center" fxFlexFill>
     <div fxFlex #imageContainer class="img-container" fxLayoutAlign="center center">
         <div class="inner-spinner" *ngIf="loading" [ngStyle]="{'height.px': imageHeight}" fxLayoutAlign="center center">

@@ -1,4 +1,4 @@
-<div id="full-screen" *ngIf="thumbs$ | async as thumbs" fxLayout="column" fxLayoutGap="4px" fxFlexFill>
+<div #fullScreen class="photos-container" *ngIf="api.thumbs$ | async as thumbs" fxLayout="column" fxLayoutGap="4px" fxFlexFill>
     <div class="title" fxLayout="row">
         <h2><span>{{api.curAlbum.name}}:</span></h2>
         <span class="fill-space"></span>
@@ -6,13 +6,12 @@
             <mat-icon>vertical_align_bottom</mat-icon>
         </a>
     </div>
-    <!-- <div fxFlex class="green"> -->
-        <photo-focal fxFlex [focal]="thumbs[curThumbsIndex]" [loading]="focalLoading" (loaded)="focalLoading=false"></photo-focal>
-    <!-- </div> -->
+    <photo-focal fxFlex [focal]="thumbs[curThumbsIndex]" [loading]="focalLoading" 
+        (loaded)="focalLoading=false" (clicked)="makeFullscreen(fullScreen)"></photo-focal>
     <photo-thumbnails [thumbs]="thumbs" [curIndex]="curThumbsIndex" (thumbChanged)="changeThumb($event)"></photo-thumbnails>
 </div>
 
-<div *ngIf="!(thumbs$ | async)" class="outer-spinner">
+<div *ngIf="!(api.thumbs$ | async)" class="outer-spinner">
     <p>Getting photos in this album from the server ...</p>
     <mat-spinner></mat-spinner>
 </div>

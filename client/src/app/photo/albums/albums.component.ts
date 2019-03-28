@@ -24,7 +24,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
     getAlbumsSub: Subscription;
     cardLoaded: Subject<HTMLDivElement> = new Subject();
 
-    constructor(private api: APIService,
+    constructor(public api: APIService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog,
@@ -34,15 +34,15 @@ export class AlbumsComponent implements OnInit, OnDestroy {
         this.getAlbumsSub = this.api.getAlbumsByURL(this.route.url).subscribe(
             (albums: Album[]) => {
                 this.displayAlbums = albums;
-                this.photosDisplayName = (this.api.curAlbum._id > 0) ? this.api.curAlbum.name: "";
+                this.photosDisplayName = (this.api.curAlbum._id > 0) ? this.api.curAlbum.name : '';
             },
             (err) => this.errAlert('Problem getting albums!', err)
         );
-    };
+    }
 
     ngOnDestroy() {
-        if (this.getAlbumsSub) this.getAlbumsSub.unsubscribe();
-        if (this.cardLoaded) this.cardLoaded.unsubscribe();
+        if (this.getAlbumsSub) { this.getAlbumsSub.unsubscribe(); }
+        if (this.cardLoaded) { this.cardLoaded.unsubscribe(); }
     }
 
     public updateDisplayAlbum(album: Album) {
@@ -59,7 +59,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
         } else { // Not an album of albums!  So nav to photos ...
             this.navToPhotos(album);
         }
-    };
+    }
 
     public navToPhotos(album: Album) {
         return this.router.navigate(['/photo/photos/' + album.path]);
@@ -75,6 +75,19 @@ export class AlbumsComponent implements OnInit, OnDestroy {
             console.log(msg, err);
             this.router.navigate(['/home']);
         });
-    };
+    }
+
+    public makeFullscreen() {
+        const i: any = document.getElementById('full-screen');
+        if (i.requestFullscreen) {
+            i.requestFullscreen();
+        } else if (i.webkitRequestFullscreen) {
+            i.webkitRequestFullscreen();
+        } else if (i.mozRequestFullScreen) {
+            i.mozRequestFullScreen();
+        } else if (i.msRequestFullscreen) {
+            i.msRequestFullscreen();
+        }
+    }
 
 }

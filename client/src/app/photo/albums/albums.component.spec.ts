@@ -18,13 +18,43 @@ import { MockAPIService, tAlbum, tAlbum1, tAlbum2, tAlbum3, tAlbum4, tPhoto } fr
 // import { Album, Photo } from '../_helpers/classes';
 import { AlbumsComponent } from './albums.component';
 
-@Component({selector: 'blank', template: ``}) 
-class BlankComp {}
+class Page {
+    get allCards()    { return this.queryAll<HTMLElement>('mat-card'); }
+    get galleryCard() { return this.allCards[0]; }
+    get albumCard1()  { return this.allCards[1]; }
+    get albumCard2()  { return this.allCards[2]; }
+    get spinner()     { return this.query<HTMLElement>('mat-spinner'); }
+
+    private fixture: ComponentFixture<AlbumsComponent>;
+
+    constructor(fixture: ComponentFixture<AlbumsComponent>) {
+        this.fixture = fixture;
+    }
+
+    public anyElementWithText<T>(search: string): T {
+        return this.queryText<T>(search);
+    }
+
+    /* query helpers */
+    private query<T>(selector: string): T {
+        return this.fixture.nativeElement.querySelector(selector);
+    }
+    private queryAll<T>(selector: string): T[] {
+        return this.fixture.nativeElement.querySelectorAll(selector);
+    }
+    private queryText<T>(search: string): T {
+        return (Array.from(this.fixture.nativeElement.querySelectorAll('*')) as T[])
+            .filter(el => el['innerHTML'].toLowerCase() === search.toLowerCase())[0];
+    }
+}
+
+@Component({selector: 'test-blank', template: ``})
+class BlankComponent {}
 
 @Pipe({ name: 'secure' })
-class MockSecurePipe implements PipeTransform { transform(s) { return s } }
+class MockSecurePipe implements PipeTransform { transform(s) { return s; } }
 
-fdescribe('Photo Module: AlbumsComponent', () => {
+describe('Photo Module: AlbumsComponent', () => {
     let component: AlbumsComponent;
     let location: Location;
     let api: MockAPIService;
@@ -45,22 +75,22 @@ fdescribe('Photo Module: AlbumsComponent', () => {
             declarations: [
                 AlbumsComponent,
                 MockSecurePipe,
-                BlankComp,
+                BlankComponent,
                 CardComponent,
                 MasonryGridDirective,
                 MasonryItemDirective
             ],
             imports: [
-                MatCardModule, 
-                MatProgressSpinnerModule, 
-                MatDialogModule, 
+                MatCardModule,
+                MatProgressSpinnerModule,
+                MatDialogModule,
                 RouterTestingModule.withRoutes([
                     // { path: 'photo/albums', component: BlankComp },
                     { path: 'photo/photos', component: AlbumsComponent },
                     { path: 'photo/photos', children: [
                         { path: '**', component: AlbumsComponent }
                     ]},
-                    { path: 'home', component: BlankComp },
+                    { path: 'home', component: BlankComponent },
                 ])
             ],
             providers: [
@@ -142,33 +172,3 @@ fdescribe('Photo Module: AlbumsComponent', () => {
         });
     });
 });
-
-class Page {
-    get allCards()    { return this.queryAll<HTMLElement>('mat-card'); }
-    get galleryCard() { return this.allCards[0]; }
-    get albumCard1()  { return this.allCards[1]; }
-    get albumCard2()  { return this.allCards[2]; }
-    get spinner()     { return this.query<HTMLElement>('mat-spinner'); }
-
-    private fixture: ComponentFixture<AlbumsComponent>;
-  
-    constructor(fixture: ComponentFixture<AlbumsComponent>) {
-        this.fixture = fixture;
-    }
-  
-    public anyElementWithText<T>(search: string) : T {
-        return this.queryText<T>(search);
-    }
-
-    /* query helpers */
-    private query<T>(selector: string): T {
-        return this.fixture.nativeElement.querySelector(selector);
-    }
-    private queryAll<T>(selector: string): T[] {
-        return this.fixture.nativeElement.querySelectorAll(selector);
-    }
-    private queryText<T>(search: string) : T {
-        return (Array.from(this.fixture.nativeElement.querySelectorAll('*')) as T[])
-            .filter(el => el['innerHTML'].toLowerCase() === search.toLowerCase())[0];
-    }
-}

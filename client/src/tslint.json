@@ -4,13 +4,13 @@
         "directive-selector": [
             true,
             "attribute",
-            "app",
+            ["hs", "core", "download", "family", "photo", "shared", "user", "video", "test"],
             "camelCase"
         ],
         "component-selector": [
             true,
             "element",
-            "app",
+            ["hs", "core", "download", "family", "photo", "shared", "user", "video", "test"],
             "kebab-case"
         ]
     }
