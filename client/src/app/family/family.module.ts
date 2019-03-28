@@ -1,13 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule, MatTabsModule, MatExpansionModule,
+import {
+  MatCardModule,
+  MatTabsModule,
+  MatExpansionModule,
 } from '@angular/material';
-// import { MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
-//     MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatPaginatorModule,
-//     MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
-//     MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MatMenuModule,
-//     MatTableModule, MatSortModule, MatProgressBarModule, MatTabsModule, MatExpansionModule
-// } from '@angular/material';
 
 import { FamilyRoutingModule } from './family-routing.module';
 import { AboutComponent } from './about/about.component';
@@ -20,16 +17,9 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     FamilyRoutingModule,
     SharedModule,
     FlexLayoutModule,
-    MatCardModule, MatTabsModule, MatExpansionModule
-    // MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
-    // MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatTableModule,
-    // MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
-    // , , , MatDialogModule,
-    // MatMenuModule, MatPaginatorModule, MatProgressSpinnerModule, MatSortModule,
-    // MatProgressBarModule, MatTabsModule, MatExpansionModule,
-    // MatButtonModule, MatCheckboxModule, MatDatepickerModule, MatFormFieldModule,
-    // MatInputModule, MatRadioModule, MatSelectModule, MatSliderModule, MatTableModule,
-    // MatSlideToggleModule, MatToolbarModule, MatTooltipModule, MatListModule, MatGridListModule,
+    MatCardModule,
+    MatTabsModule,
+    MatExpansionModule
   ],
   declarations: [AboutComponent]
 })

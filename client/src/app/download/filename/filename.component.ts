@@ -18,8 +18,8 @@ export class FilenameComponent {
     valueChanged(name: string): void {
         if (name !== this.filename) {
             const filenameChanged: FilenameChangedObj = {
-                _id: this.id, 
-                oldFilename: this.filename, 
+                _id: this.id,
+                oldFilename: this.filename,
                 newFilename: name
             };
             this.changed.emit(filenameChanged);

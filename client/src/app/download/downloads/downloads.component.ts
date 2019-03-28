@@ -25,7 +25,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     displayedColumns: string[];
     dataSource = new MatTableDataSource<DlFile>();
     dlFilename: string;
-    currentScreenWidth: string = '';
+    currentScreenWidth = '';
     flexMediaWatcher: Subscription;
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -44,7 +44,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         this.route.paramMap.subscribe(params => {
             this.dlFilename = params.get('download');
             if (this.dlFilename) { // technique 1
-                this.onDownloadClicked(<DlFile>{fullPath: `/protected/downloads/${this.dlFilename}`, 
+                this.onDownloadClicked(<DlFile>{fullPath: `/protected/downloads/${this.dlFilename}`,
                     filename: this.dlFilename});
                 this.router.navigate(['/download']); // Enter again (re-Init) without file specified
             } else { // technique 2
@@ -55,10 +55,10 @@ export class DownloadsComponent implements OnInit, OnDestroy {
                 this.setupDownloadsTable();
             }
         });
-    };
+    }
 
     ngOnDestroy() {
-        if (this.flexMediaWatcher) this.flexMediaWatcher.unsubscribe();
+        if (this.flexMediaWatcher) { this.flexMediaWatcher.unsubscribe(); }
     }
 
     setupDownloadsTable() {
@@ -77,23 +77,23 @@ export class DownloadsComponent implements OnInit, OnDestroy {
             // this.sort.sort(<MatSortable>{ id: 'filename', start: 'asc' });
             this.dataSource.sort = this.sort;
             this.reloadDownloads();
-        };
+        }
 
     }
 
     applyFilter(filterValue: string) {
         this.dataSource.filter = filterValue.trim().toLowerCase();
-    };
+    }
 
     onDownloadClicked(file: DlFile) {
         let download: Subscription;
-        let progress$ = new BehaviorSubject<number>(0); // start with zero progress
+        const progress$ = new BehaviorSubject<number>(0); // start with zero progress
         const pData: ProgressData = { heading: 'Download', progress$: progress$ };
         const dialogRef = this.dialog.open(ProgressBarComponent, { data: pData });
         download = this.api.downloadFile(file).subscribe(
             event => {
                 // console.log('event is ', event)
-                if (event.type == HttpEventType.DownloadProgress) {
+                if (event.type === HttpEventType.DownloadProgress) {
                     const percentDone = Math.round(100 * event.loaded / event.total);
                     progress$.next(percentDone); // update progress bar via observable
                     // console.log(`File is ${percentDone}% downloaded.`);
@@ -115,9 +115,9 @@ export class DownloadsComponent implements OnInit, OnDestroy {
                 dialogRef.close();
                 console.log('Download Error:', err);
                 const alertData: AlertData = {
-                    heading: 'Download Error!', 
+                    heading: 'Download Error!',
                     alertMessage: err.message,
-                    showCancel: false 
+                    showCancel: false
                 };
                 this.dialog.open(AlertMessageDialogComponent, { data: alertData });
             }
@@ -131,7 +131,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
                 });
             }
         });
-    };
+    }
 
     onFilenameChange(filenameChanged: FilenameChangedObj) {
         this.api.renameFile(filenameChanged).subscribe((file: DlFile) => {
@@ -144,22 +144,22 @@ export class DownloadsComponent implements OnInit, OnDestroy {
             this.dialog.open(AlertMessageDialogComponent, { data: alertData });
             const i = this.dataSource.data.findIndex(el => el._id === filenameChanged._id);
             this.dataSource.data[i] = file;
-        })
+        });
     }
 
     onLinkClicked(file: DlFile) {
         // This whole function is such a hack.  It's amazing there isn't a better way
         // to access the clipboard in Angular ... that I could find ...
-        let url = document.URL + this.router.createUrlTree([file.filename]).toString();
+        const url = document.URL + this.router.createUrlTree([file.filename]).toString();
         // create a "fake" textarea to store text and then copy to clipboard from
-        let clipArea = document.createElement('textarea');
+        const clipArea = document.createElement('textarea');
         clipArea.style.position = 'fixed'; // out of the flow
         clipArea.style.left = '0';
         clipArea.style.top = '0';
         clipArea.style.opacity = '0'; // so there is no flicker
         clipArea.textContent = url; // store text in the fake
         document.body.appendChild(clipArea);
-        clipArea.select(); // select the fake text to be copied 
+        clipArea.select(); // select the fake text to be copied
         document.execCommand('copy'); // finally actually copy to clipboard!
         document.body.removeChild(clipArea); // get rid of the fake
         this.dialog.open(AlertMessageDialogComponent, {
@@ -186,36 +186,35 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         });
         dialogRef.afterClosed().subscribe(data => {
             if (data.okClicked) {
-                this.api.deleteFile(file).subscribe(
-                    file => {
-                        console.log('Deleted file ' + file.filename);
+                this.api.deleteFile(file).subscribe(returnedFile => {
+                        console.log('Deleted file ' + returnedFile.filename);
                         this.reloadDownloads();
                     }
-                )
+                );
             } // if cancel clicked, do nothing.
         });
-    };
+    }
 
     uploadPickedFile(event) {// Upload clicked and file selected
         let upload: Subscription;
-        let progress$ = new BehaviorSubject<number>(0); // start with zero progress
+        const progress$ = new BehaviorSubject<number>(0); // start with zero progress
         const pData: ProgressData = { heading: 'Download', progress$: progress$ };
         const dialogRef = this.dialog.open(ProgressBarComponent, { data: pData });
         upload = this.api.uploadFile(event.target.files[0]).subscribe(
-            event => { // called as upload progresses
-                if (event.type == HttpEventType.UploadProgress) {
-                    const percentDone = Math.round(100 * event.loaded / event.total);
+            progEvent => { // called as upload progresses
+                if (progEvent.type === HttpEventType.UploadProgress) {
+                    const percentDone = Math.round(100 * progEvent.loaded / progEvent.total);
                     progress$.next(percentDone); // update progress bar via observable
                     // console.log(`File is ${percentDone}% loaded.`);
-                } else if (event instanceof HttpResponse) { // All done!
-                    console.log('Uploaded file :', event.body.filename);
+                } else if (progEvent instanceof HttpResponse) { // All done!
+                    console.log('Uploaded file :', progEvent.body.filename);
                     this.reloadDownloads();
                     dialogRef.close(); // close the progress bar
                     this.dialog.open(AlertMessageDialogComponent, {
                         data: {
                             heading: 'Upload Complete',
                             alertMessage: 'You successfully uploaded the file:',
-                            alertMessage2: event.body.filename,
+                            alertMessage2: progEvent.body.filename,
                             showCancel: false,
                         }
                     });
@@ -240,15 +239,15 @@ export class DownloadsComponent implements OnInit, OnDestroy {
                 });
             }
         });
-    };
+    }
 
     reloadDownloads() {
         this.loading$.next(true);
         this.api.authGetDownloads().subscribe(downloads => {
             this.dataSource.data = downloads;
             this.loading$.next(false);
-        })
-    };
-};
+        });
+    }
+}
 
 

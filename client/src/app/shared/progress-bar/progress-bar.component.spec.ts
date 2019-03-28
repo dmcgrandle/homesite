@@ -24,7 +24,7 @@ describe('Shared Module: ProgressBarComponent', () => {
                 { provide: MAT_DIALOG_DATA, useValue: mockDialogData }
             ],
             imports: [MatDialogModule, MatToolbarModule, MatProgressBarModule]
-        })
+        });
         TestBed.overrideModule(BrowserDynamicTestingModule, {
             set: {
                 entryComponents: [ProgressBarComponent]
@@ -64,12 +64,12 @@ describe('Shared Module: ProgressBarComponent', () => {
         expect(button).toEqual('STOP');
     });
     it('should update the UI as progress changes', () => {
-        for (let i=50;i<60;i++) {
+        for (let i = 50; i < 60; i++) {
             mockDialogData.progress$.next(i);
             fixture.detectChanges();
             const progressIndicator = progressBarEl.querySelector('p').textContent;
             expect(progressIndicator).toBe(`${i}%`);
-        };
+        }
     });
 
 

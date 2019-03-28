@@ -12,14 +12,14 @@ export interface DialogData {
 }
 
 @Component({
-    selector: 'users-register',
+    selector: 'user-register',
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
 
-    hidePass: boolean = true;
-    hideRetype: boolean = true;
+    hidePass = true;
+    hideRetype = true;
 
     constructor(public auth: AuthService,
         public dialogRef: MatDialogRef<RegisterComponent>,

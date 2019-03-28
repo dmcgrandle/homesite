@@ -12,7 +12,7 @@ export interface DialogData {
 }
 
 @Component({
-    selector: 'users-forgot-dialog',
+    selector: 'user-forgot-dialog',
     templateUrl: './forgot-dialog.component.html',
     styleUrls: ['./forgot-dialog.component.scss']
 })
@@ -37,13 +37,13 @@ export class ForgotDialogComponent implements OnInit {
             (user: User) => {
                 this.loading$.next(false);
                 const alertMessage = `Email "${user.email}" was sent reset email. ` +
-                    "If you don't see it in a few minutes please check your SPAM folder.";
+                    'If you don\'t see it in a few minutes please check your SPAM folder.';
                 const dRef = this.dialog.open(AlertMessageDialogComponent, {
                     width: '400px',
                     data: { alertMessage: alertMessage, showCancel: false }
                 });
                 dRef.afterClosed().subscribe(() => {
-                    this.dialogRef.close()
+                    this.dialogRef.close();
                 });
             },
             (err: HttpErrorResponse) => {
@@ -58,11 +58,11 @@ export class ForgotDialogComponent implements OnInit {
                     data: { heading: 'Error!', alertMessage: alertMessage, showCancel: false }
                 });
                 dRef.afterClosed().subscribe(() => {
-                    this.dialogRef.close()
+                    this.dialogRef.close();
                 });
             }
         );
-        
+
     }
 
 

@@ -8,15 +8,15 @@ import { AlertMessageDialogComponent, AlertData } from '../../shared/alert-messa
 import { NgForm } from '@angular/forms';
 
 @Component({
-    selector: 'users-change-password',
+    selector: 'user-change-password',
     templateUrl: './change-password.component.html',
     styleUrls: ['./change-password.component.scss']
 })
 export class ChangePasswordComponent implements OnInit {
 
-    hideExgPass: boolean = true; // hide existing password as dots instead of plain text
-    hideNewPass: boolean = true;
-    hideNewPassChk: boolean = true;
+    hideExgPass = true; // hide existing password as dots instead of plain text
+    hideNewPass = true;
+    hideNewPassChk = true;
     knowExisting: boolean;
     existingPass: string;
     token: string;
@@ -38,7 +38,7 @@ export class ChangePasswordComponent implements OnInit {
         this.token = this.route.snapshot.paramMap.get('token');
         if (this.token) {// method 1
             this.knowExisting = false;
-            if (!this.auth.user) this.auth.user = new User;
+            if (!this.auth.user) { this.auth.user = new User; }
             this.auth.user.username = this.route.snapshot.paramMap.get('username');
         } else { // method 2
             this.knowExisting = true;
@@ -82,5 +82,5 @@ export class ChangePasswordComponent implements OnInit {
 }
 /* Note: this form is simple to validate without using the built in angular
    form validity system because there are only two values that need comparing,
-   and that can be done right in the template - no need for extra code. See the 
+   and that can be done right in the template - no need for extra code. See the
    RegisterComponent for a more complicated method. :) */

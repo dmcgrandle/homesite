@@ -12,6 +12,91 @@ import { AuthService } from '../_services/auth.service';
 import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 import { EditDialogComponent, DialogData } from './edit-dialog.component';
 
+class Page {
+    get cancelButton()     { return this.queryAllSearch<HTMLButtonElement>('button', 'cancel'); }
+    get saveButton()       { return this.queryAllSearch<HTMLButtonElement>('button', 'save'); }
+    get nameInput()        { return this.queryAllInputs('full name'); }
+    get usernameInput()    { return this.queryAllInputs('username'); }
+    get emailInput()       { return this.queryAllInputs('email'); }
+    get levelSelect()      { return this.query<HTMLSelectElement>('mat-select'); }
+    get levelSelectOpts()  { return this.queryParentAll<HTMLElement>('mat-option'); }
+    get levelCurSelected() { return this.queryParent<HTMLElement>('.mat-selected'); }
+    get levelCurActive()   { return this.queryParent<HTMLElement>('.mat-active'); }
+    get newPassInput()     { return this.queryAllInputs('new password'); }
+    get verifyPassInput()  { return this.queryAllInputs('verify'); }
+    get dialogContainer()  { return this.queryParentAll<HTMLElement>('.edit-user-container'); }
+
+    private fixture: ComponentFixture<EditDialogComponent>;
+
+    constructor(fixture: ComponentFixture<EditDialogComponent>) {
+        this.fixture = fixture;
+    }
+
+    /* query helpers */
+    private query<T>(selector: string): T {
+        return this.fixture.nativeElement.querySelector(selector);
+    }
+
+    private queryAll<T>(selector: string): T[] {
+        return this.fixture.nativeElement.querySelectorAll(selector);
+    }
+
+    // Sometimes elements (like mat-option in the OverlayContainer) are not in the component ...
+    private queryParent<T>(selector: string): T {
+        return this.fixture.nativeElement.parentElement.querySelector(selector);
+    }
+    private queryParentAll<T>(selector: string): T[] {
+        return this.fixture.nativeElement.parentElement.querySelectorAll(selector);
+    }
+
+/*
+  Next three functions are to take a more confidence based approach to testing by attempting
+  to test things as the user would attempt to use it.  So for example, the user would look
+  for a button with the word 'cancel' on it to dismiss the dialog box and then press it,
+  so testing that same way will give confidence that this component is working.  It also
+  is not dependendent on implementation details such as the 'cancel' button returns as the
+  second in an array of queryAll for 'button'.
+*/
+
+    /**
+    * @param {string} selector - CSS selector to identify an element
+    * @param {string} search - Search string to look for in .innerText
+    */
+    private querySearch<T>(selector: string, search: string): T {
+        const result: T = this.query<T>(selector);
+        if (result['innerText'].toLowerCase().includes(search.toLowerCase())) {
+                return result;
+            } else { return undefined; }
+    }
+
+    /**
+    * @param {string} selector - CSS selector to identify a list of elements
+    * @param {string} search - Search string to look for in .innerText
+    */
+   private queryAllSearch<T>(selector: string, search: string): T {
+        let result: T;
+        this.queryAll<HTMLElement>(selector).forEach((item: HTMLElement) => {
+            if (item.innerText.toLowerCase().includes(search.toLowerCase())) {
+                result = <any>item; // ugh - not sure how else to cast this ...
+            }
+        });
+        return result;
+    }
+
+    /**
+    * @param {string} search - Search string to look for in placeholder attribute
+    */
+   private queryAllInputs(search: string): HTMLInputElement {
+        let result: HTMLInputElement;
+        this.queryAll<HTMLInputElement>('input').forEach((item: HTMLInputElement) => {
+            if (item.placeholder.toLowerCase().includes(search.toLowerCase())) {
+                result = item;
+            }
+        });
+        return result;
+    }
+}
+
 describe('User Module: EditDialogComponent', () => {
     const testUser: User = new User();
     const mockDialogRef = jasmine.createSpyObj('mockDialogRef', ['close']);
@@ -42,7 +127,7 @@ describe('User Module: EditDialogComponent', () => {
                 { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
                 { provide: AuthService, useValue: authSpy }
             ],
-            imports: [FormsModule, MatIconModule, MatDialogModule, MatToolbarModule, 
+            imports: [FormsModule, MatIconModule, MatDialogModule, MatToolbarModule,
                 MatInputModule, MatFormFieldModule, MatSelectModule, BrowserAnimationsModule]
         });
         TestBed.overrideModule(BrowserDynamicTestingModule, {
@@ -88,7 +173,7 @@ describe('User Module: EditDialogComponent', () => {
             mockDialogRef.close.calls.reset();
             authSpy.authUpdateUser.and.returnValue(throwError({error: 'Network Timeout'}));
             component.onSaveClick('tPass');
-            expect(dialogSpy).toHaveBeenCalledWith(AlertMessageDialogComponent, jasmine.objectContaining({ 
+            expect(dialogSpy).toHaveBeenCalledWith(AlertMessageDialogComponent, jasmine.objectContaining({
                 data: jasmine.objectContaining({heading: 'Error'})
             }));
             expect(mockDialogRef.close).toHaveBeenCalled();
@@ -96,18 +181,18 @@ describe('User Module: EditDialogComponent', () => {
             component.data.user.password = '';
         });
         it('copyToDialogData() should copy the given user without password to the component.data.user object', () => {
-            const testUser = new User({name: 'tFooName', password: 'tPass'});
-            component.copyToDialogData(testUser);
-            delete testUser.password;
-            expect(component.data.user).toEqual(testUser);
+            const testUser1 = new User({name: 'tFooName', password: 'tPass'});
+            component.copyToDialogData(testUser1);
+            delete testUser1.password;
+            expect(component.data.user).toEqual(testUser1);
             component.data.user.password = '';
-        })
+        });
 
 
     });
 
     describe('HTML Template:', () => { // Mostly functional tests
-        beforeEach(async(() => { 
+        beforeEach(async(() => {
             createComponent();
             authSpy.authUpdateUser.calls.reset();
             authSpy.authUpdateUser.and.returnValue(of(new User()));
@@ -206,89 +291,3 @@ describe('User Module: EditDialogComponent', () => {
         });
     });
 });
-
-class Page {
-    get cancelButton()     { return this.queryAllSearch<HTMLButtonElement>('button', 'cancel'); }
-    get saveButton()       { return this.queryAllSearch<HTMLButtonElement>('button', 'save'); }
-    get nameInput()        { return this.queryAllInputs('full name'); }
-    get usernameInput()    { return this.queryAllInputs('username'); }
-    get emailInput()       { return this.queryAllInputs('email'); }
-    get levelSelect()      { return this.query<HTMLSelectElement>('mat-select'); }
-    get levelSelectOpts()  { return this.queryParentAll<HTMLElement>('mat-option'); }
-    get levelCurSelected() { return this.queryParent<HTMLElement>('.mat-selected')} 
-    get levelCurActive()   { return this.queryParent<HTMLElement>('.mat-active')} 
-    get newPassInput()     { return this.queryAllInputs('new password'); }
-    get verifyPassInput()  { return this.queryAllInputs('verify'); }
-    get dialogContainer()  { return this.queryParentAll<HTMLElement>('.edit-user-container'); }
-
-    private fixture: ComponentFixture<EditDialogComponent>;
-  
-    constructor(fixture: ComponentFixture<EditDialogComponent>) {
-        this.fixture = fixture;
-    }
-  
-    /* query helpers */
-    private query<T>(selector: string): T {
-        return this.fixture.nativeElement.querySelector(selector);
-    }
-  
-    private queryAll<T>(selector: string): T[] {
-        return this.fixture.nativeElement.querySelectorAll(selector);
-    }
-
-    // Sometimes elements (like mat-option in the OverlayContainer) are not in the component ...
-    private queryParent<T>(selector: string): T {
-        return this.fixture.nativeElement.parentElement.querySelector(selector);
-    }
-    private queryParentAll<T>(selector: string): T[] {
-        return this.fixture.nativeElement.parentElement.querySelectorAll(selector);
-    }
-
-/*
-  Next three functions are to take a more confidence based approach to testing by attempting
-  to test things as the user would attempt to use it.  So for example, the user would look
-  for a button with the word 'cancel' on it to dismiss the dialog box and then press it,
-  so testing that same way will give confidence that this component is working.  It also
-  is not dependendent on implementation details such as the 'cancel' button returns as the
-  second in an array of queryAll for 'button'. 
-*/
-
-    /**
-    * @param {string} selector - CSS selector to identify an element
-    * @param {string} search - Search string to look for in .innerText
-    */
-    private querySearch<T>(selector: string, search: string): T {
-        let result: T = this.query<T>(selector)
-        if (result['innerText'].toLowerCase().includes(search.toLowerCase())) {
-                return result;
-            }
-        else return undefined
-    }
-
-    /**
-    * @param {string} selector - CSS selector to identify a list of elements
-    * @param {string} search - Search string to look for in .innerText
-    */
-   private queryAllSearch<T>(selector: string, search: string): T {
-        let result: T;
-        this.queryAll<HTMLElement>(selector).forEach((item: HTMLElement) => {
-            if (item.innerText.toLowerCase().includes(search.toLowerCase())) {
-                result = <any>item; // ugh - not sure how else to cast this ...
-            }
-        });
-        return result;
-    }
-
-    /**
-    * @param {string} search - Search string to look for in placeholder attribute
-    */
-   private queryAllInputs(search: string): HTMLInputElement {
-        let result: HTMLInputElement;
-        this.queryAll<HTMLInputElement>('input').forEach((item: HTMLInputElement) => {
-            if (item.placeholder.toLowerCase().includes(search.toLowerCase())) {
-                result = item; 
-            }
-        });
-        return result;
-    }
-}

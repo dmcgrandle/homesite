@@ -20,11 +20,11 @@ describe('User Module: ChangePasswordComponent', () => {
     });
     mockAuth.user = tUser; // Add the user property to the mockAuth spy object
     const mockActivatedRoute: Object = {
-        snapshot: { 
+        snapshot: {
             paramMap: {
                 get: (key: string) => {
-                    if (key === 'token') return 'ABCDEFGHIJKL';
-                    if (key === 'username') return 'tGuest';
+                    if (key === 'token') { return 'ABCDEFGHIJKL'; }
+                    if (key === 'username') { return 'tGuest'; }
                 }
             }
         }
@@ -88,7 +88,7 @@ describe('User Module: ChangePasswordComponent', () => {
             chgPassComp.knowExisting = false;
             chgPassComp.onChangePassword('tNewPass');
             expect(auth.authChangePasswordByToken).toHaveBeenCalledTimes(1); // called first time
-            expect(auth.authChangePasswordByPassword).toHaveBeenCalledTimes(1); //not called again
+            expect(auth.authChangePasswordByPassword).toHaveBeenCalledTimes(1); // not called again
             expect(chgPassComp.successfulChange).toHaveBeenCalledWith(tUser);
             expect(chgPassComp.errorChange).not.toHaveBeenCalled();
             expect(auth.user.password).toEqual('tNewPass');

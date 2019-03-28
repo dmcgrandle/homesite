@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogModule, MatFormFieldModule, 
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogModule, MatFormFieldModule,
          MatToolbarModule, MatInputModule, MatProgressSpinnerModule} from '@angular/material';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -11,6 +11,50 @@ import { AuthService } from '../_services/auth.service';
 import { ForgotDialogComponent, DialogData } from './forgot-dialog.component';
 import { HttpErrorResponse } from '@angular/common/http';
 
+class Page {
+    get cancelButton() { return this.queryAllSearch<HTMLButtonElement>('button', 'cancel'); }
+    get submitButton() { return this.queryAllSearch<HTMLButtonElement>('button', 'submit'); }
+    get emailInput()   { return this.queryAllInputs('email'); }
+
+    private fixture: ComponentFixture<ForgotDialogComponent>;
+
+    constructor(fixture: ComponentFixture<ForgotDialogComponent>) {
+        this.fixture = fixture;
+    }
+
+    /* query helpers */
+    private query<T>(selector: string): T {
+        return this.fixture.nativeElement.querySelector(selector);
+    }
+    private queryAll<T>(selector: string): T[] {
+        return this.fixture.nativeElement.querySelectorAll(selector);
+    }
+    private querySearch<T>(selector: string, search: string): T {
+        const result: T = this.query<T>(selector);
+        if (result['innerText'].toLowerCase().includes(search.toLowerCase())) {
+                return result;
+            } else { return undefined; }
+    }
+   private queryAllSearch<T>(selector: string, search: string): T {
+        let result: T;
+        this.queryAll<HTMLElement>(selector).forEach((item: HTMLElement) => {
+            if (item.innerText.toLowerCase().includes(search.toLowerCase())) {
+                result = <any>item; // TODO: figure out how else to cast this ...
+            }
+        });
+        return result;
+    }
+   private queryAllInputs(search: string): HTMLInputElement {
+        let result: HTMLInputElement;
+        this.queryAll<HTMLInputElement>('input').forEach((item: HTMLInputElement) => {
+            if (item.placeholder.toLowerCase().includes(search.toLowerCase())) {
+                result = item;
+            }
+        });
+        return result;
+    }
+}
+
 describe('User Module: ForgotDialogComponent', () => {
 
     const mockDialogRef = jasmine.createSpyObj('MatDialogRef', {
@@ -20,7 +64,7 @@ describe('User Module: ForgotDialogComponent', () => {
     const mockDialog = jasmine.createSpyObj('MatDialog', { open: mockDialogRef });
     const mockDialogData: DialogData = { username: 'tUser'};
     const tEmail = 'foo@bar.com';
-    let authSpy = jasmine.createSpyObj('AuthService', ['authForgot']);
+    const authSpy = jasmine.createSpyObj('AuthService', ['authForgot']);
     authSpy.user = new User({email: ''});
     let component: ForgotDialogComponent;
     let fixture: ComponentFixture<ForgotDialogComponent>;
@@ -44,7 +88,7 @@ describe('User Module: ForgotDialogComponent', () => {
                 { provide: MatDialog, useValue: mockDialog },
             ],
             imports: [
-                MatInputModule, MatDialogModule, MatFormFieldModule, MatToolbarModule, 
+                MatInputModule, MatDialogModule, MatFormFieldModule, MatToolbarModule,
                 MatProgressSpinnerModule, FormsModule, BrowserAnimationsModule
             ]
         }).compileComponents();
@@ -58,7 +102,7 @@ describe('User Module: ForgotDialogComponent', () => {
 
     describe('HTML Template:', () => {
 
-        beforeEach(async(() => { 
+        beforeEach(async(() => {
             mockDialogRef.close.calls.reset();
             mockDialog.open.calls.reset();
             authSpy.authForgot.calls.reset();
@@ -131,48 +175,3 @@ describe('User Module: ForgotDialogComponent', () => {
     });
 
 });
-
-class Page {
-    get cancelButton() { return this.queryAllSearch<HTMLButtonElement>('button', 'cancel'); }
-    get submitButton() { return this.queryAllSearch<HTMLButtonElement>('button', 'submit'); }
-    get emailInput()   { return this.queryAllInputs('email'); }
-
-    private fixture: ComponentFixture<ForgotDialogComponent>;
-  
-    constructor(fixture: ComponentFixture<ForgotDialogComponent>) {
-        this.fixture = fixture;
-    }
-  
-    /* query helpers */
-    private query<T>(selector: string): T {
-        return this.fixture.nativeElement.querySelector(selector);
-    }
-    private queryAll<T>(selector: string): T[] {
-        return this.fixture.nativeElement.querySelectorAll(selector);
-    }
-    private querySearch<T>(selector: string, search: string): T {
-        let result: T = this.query<T>(selector)
-        if (result['innerText'].toLowerCase().includes(search.toLowerCase())) {
-                return result;
-            }
-        else return undefined
-    }
-   private queryAllSearch<T>(selector: string, search: string): T {
-        let result: T;
-        this.queryAll<HTMLElement>(selector).forEach((item: HTMLElement) => {
-            if (item.innerText.toLowerCase().includes(search.toLowerCase())) {
-                result = <any>item; // TODO: figure out how else to cast this ...
-            }
-        });
-        return result;
-    }
-   private queryAllInputs(search: string): HTMLInputElement {
-        let result: HTMLInputElement;
-        this.queryAll<HTMLInputElement>('input').forEach((item: HTMLInputElement) => {
-            if (item.placeholder.toLowerCase().includes(search.toLowerCase())) {
-                result = item; 
-            }
-        });
-        return result;
-    }
-}

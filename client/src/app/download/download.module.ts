@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-    MatIconModule, 
-    MatPaginatorModule, 
-    MatTooltipModule, 
-    MatInputModule, 
-    MatTableModule, 
-    MatSortModule, 
-    MatProgressSpinnerModule, 
+    MatIconModule,
+    MatPaginatorModule,
+    MatTooltipModule,
+    MatInputModule,
+    MatTableModule,
+    MatSortModule,
+    MatProgressSpinnerModule,
 } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 

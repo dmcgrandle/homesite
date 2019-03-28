@@ -35,15 +35,15 @@ export class AlbumsComponent implements OnInit, OnDestroy {
         this.getAlbumsSub = this.api.getVideoAlbumsByURL(this.route.url).subscribe(
             (albums) => {
                 this.displayAlbums = albums;
-                this.videosDisplayName = (this.api.curVideoAlbum._id > 0) ? this.api.curVideoAlbum.name : "";
+                this.videosDisplayName = (this.api.curVideoAlbum._id > 0) ? this.api.curVideoAlbum.name : '';
             },
             (err) => this.errAlert('Problem getting albums!', err)
         );
-    };
+    }
 
     ngOnDestroy() {
-        if (this.getAlbumsSub) this.getAlbumsSub.unsubscribe();
-        if (this.cardLoaded) this.cardLoaded.unsubscribe();
+        if (this.getAlbumsSub) { this.getAlbumsSub.unsubscribe(); }
+        if (this.cardLoaded) { this.cardLoaded.unsubscribe(); }
     }
 
     public updateDisplayAlbum(album: VideoAlbum) {
@@ -60,7 +60,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
         } else { // Not an album of albums!  So nav to Videoss ...
             this.navToVideos(album);
         }
-    };
+    }
 
     public navToVideos(album: VideoAlbum) {
         return this.router.navigate(['/media/video/videos/' + album.path]);
@@ -75,6 +75,6 @@ export class AlbumsComponent implements OnInit, OnDestroy {
         dialogRef.afterClosed().subscribe(result => { });
         console.log(err);
         this.router.navigate(['/home']);
-    };
+    }
 
 }

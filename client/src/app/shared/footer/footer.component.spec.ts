@@ -12,7 +12,7 @@ describe('Shared Module: FooterComponent', () => {
     const configMock = { const: { footer: { title: tTitle, email: tEmail } } };
     const authSpy = jasmine.createSpyObj(['isAuthenticated']);
 
-    function getElementByInnerHTML<T>(search: string) : T {
+    function getElementByInnerHTML<T>(search: string): T {
         return (Array.from(fixture.nativeElement.querySelectorAll('*')) as T[])
             .filter(el => el['innerHTML'].toLowerCase() === search.toLowerCase())[0];
     }
@@ -34,7 +34,7 @@ describe('Shared Module: FooterComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should create', () => { expect(component).toBeTruthy("Error: Doesn't create") });
+    it('should create', () => { expect(component).toBeTruthy('Error: Does not create'); });
 
     it('Footer toolbar should only appear if user is authenticated', () => {
         const toolbarWhenAuthenticated = fixture.nativeElement.querySelector('.toolbar');

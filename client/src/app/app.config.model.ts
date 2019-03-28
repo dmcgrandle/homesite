@@ -24,7 +24,7 @@ export interface IAppConfig {
             name: string;
             members: Person[];
             }
-    }
+    };
 }
 
 export interface Person {
@@ -33,5 +33,5 @@ export interface Person {
     lastName: string;
     avatar: string;
     photo: string;
-    bio : string[];
+    bio: string[];
 }

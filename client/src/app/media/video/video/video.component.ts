@@ -17,8 +17,8 @@ import { Video } from '../_helpers/classes';
 export class VideoComponent implements OnInit {
 
     video: Video;
-    loadingAPI: boolean = true;
-    loadingVideo: boolean = true;
+    loadingAPI = true;
+    loadingVideo = true;
 
     constructor(public api: APIService,
         private route: ActivatedRoute,
@@ -33,7 +33,7 @@ export class VideoComponent implements OnInit {
         this.route.url.subscribe(segments => {
             console.log('segments passed were: ');
             console.log(segments);
-        })
+        });
         if (this.api.curVideo) {
             this.video = this.api.curVideo;
             console.log('video is: ');
@@ -62,7 +62,7 @@ export class VideoComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => { });
         console.log(err);
         this.router.navigate(['/user/login']);
-    };
+    }
 
 
 }

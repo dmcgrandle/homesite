@@ -26,7 +26,7 @@ describe('Download Module: FilenameComponent', () => {
     describe('valueChanged() method', () => {
         let elDebug: DebugElement;
         let el: HTMLInputElement;
-        beforeEach(()=> {
+        beforeEach(() => {
             component.id = 0;
             component.filename = 'tFile';
             spyOn(component.changed, 'emit');

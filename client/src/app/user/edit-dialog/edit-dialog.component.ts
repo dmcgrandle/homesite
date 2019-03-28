@@ -13,7 +13,7 @@ export interface DialogData {
 }
 
 @Component({
-    selector: 'users-edit-dialog',
+    selector: 'user-edit-dialog',
     templateUrl: './edit-dialog.component.html',
     styleUrls: ['./edit-dialog.component.scss'],
     encapsulation: ViewEncapsulation.None // Had to turn off to CSS style fieldset ... ?
@@ -39,7 +39,7 @@ export class EditDialogComponent implements OnInit, OnDestroy {
     }
 
     onSaveClick(password: string): void {
-        if (password) this.data.user.password = password;
+        if (password) { this.data.user.password = password; }
         if (+this.tempLevel !== this.data.user.level) {
             this.data.user.level = +this.tempLevel;
         }
@@ -77,7 +77,7 @@ export class EditDialogComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        if (this.authSub) this.authSub.unsubscribe();
+        if (this.authSub) { this.authSub.unsubscribe(); }
     }
 
 }

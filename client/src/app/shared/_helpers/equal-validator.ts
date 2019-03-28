@@ -3,11 +3,12 @@ import { NG_VALIDATORS, Validator, FormGroup, ValidatorFn } from '@angular/forms
 
 // Set up the directive for a custom form validation - "password" and "retype" password.
 // Using template driven forms, so need a custom @Directive to create a selector for use
-// in the form.  Note: this selector is applied as an attribute in the form GROUP 
+// in the form.  Note: this selector is applied as an attribute in the form GROUP
 // (note the ngModelGroup="passGroup" in the template).  That way all the formGroup input
-// fields will be sent in the FormControl object injected into the function within the 
+// fields will be sent in the FormControl object injected into the function within the
 // factory - yeah, the syntax is a bit confusing for this...
 @Directive({
+    // tslint:disable-next-line: directive-selector
     selector: '[equal]',
     providers: [{ provide: NG_VALIDATORS, useExisting: EqualDirective, multi: true }]
 })
@@ -31,6 +32,6 @@ export class EqualDirective implements Validator {
 function validateEqualFactory(): ValidatorFn {
     return (c: FormGroup) => {
         const [first, second] = Object.keys(c.value || {}); // Deconstruct array syntax
-        return ((c.value[first] == c.value[second])) ? null : { equal: { valid: false } };
-    }
+        return ((c.value[first] === c.value[second])) ? null : { equal: { valid: false } };
+    };
 }

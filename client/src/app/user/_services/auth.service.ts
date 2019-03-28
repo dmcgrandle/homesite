@@ -61,21 +61,21 @@ export class AuthService implements CanActivate {
 
     public authChangePasswordByToken(token: string): Observable<User> {
         this.user.password = this.encryptPass(this.user.password);
-        let body = this.user;
+        const body = this.user;
         body['token'] = token; // Add token to the object to send to the server
         return <Observable<User>>this.http.post('/api/users/changepw-by-token', body);
     }
 
     public authChangePasswordByPassword(newPassword: string): Observable<User> {
         this.user.password = this.encryptPass(this.user.password);
-        let body = this.user;
+        const body = this.user;
         body['newPassword'] = this.encryptPass(newPassword);
         return <Observable<User>>this.http.post('/api/users/changepw-by-pw', body);
     }
 
     public authUpdateUser(user: User): Observable<User> {
-        if (user.password) user.password = this.encryptPass(user.password);
-        let body = user;
+        if (user.password) { user.password = this.encryptPass(user.password); }
+        const body = user;
         return this.http.put<User>('/api/users/update', body);
     }
 
@@ -88,16 +88,16 @@ export class AuthService implements CanActivate {
     }
 
     public downloadFile(file: DlFile): Observable<Blob> {
-        return this.http.get(file.fullPath, { responseType: 'blob' })
+        return this.http.get(file.fullPath, { responseType: 'blob' });
     }
 
     public deleteFile(file: DlFile): Observable<DlFile> {
-        return this.http.delete<DlFile>('/api/downloads/' + file.filename)
+        return this.http.delete<DlFile>('/api/downloads/' + file.filename);
     }
 
     public uploadFile(file: File): Observable<HttpEvent<any>> {
         // Note - this returns an EVENT, so we can track progress
-        let formData = new FormData();
+        const formData = new FormData();
         formData.append('upload', file);
         const params = new HttpParams;
         const options = { params: params, reportProgress: true };
@@ -110,7 +110,7 @@ export class AuthService implements CanActivate {
     }
 
     public isLoginExpired(): boolean {
-        let tokenTimeRemaining = Number(localStorage.getItem('expiresAt')) - Math.round(Date.now() / 1000);
+        const tokenTimeRemaining = Number(localStorage.getItem('expiresAt')) - Math.round(Date.now() / 1000);
         return (tokenTimeRemaining < 300); // If less than 5 mins (300s) remaining, log in again.
     }
 

@@ -16,14 +16,14 @@ export class APIService  {
     }
 
     public downloadFile(file: DlFile): Observable<HttpEvent<any>> {
-        const options = { responseType: 'blob', reportProgress: true  }
+        const options = { responseType: 'blob', reportProgress: true  };
         const req = new HttpRequest('GET', file.fullPath, options);
         return this.http.request(req);
     }
 
     public uploadFile(file: File): Observable<HttpEvent<any>> {
         // Note - this returns an EVENT, so we can track progress
-        let formData = new FormData();
+        const formData = new FormData();
         formData.append('upload', file);
         const params = new HttpParams;
         const options = { params: params, reportProgress: true };
@@ -32,7 +32,7 @@ export class APIService  {
     }
 
     public deleteFile(file: DlFile): Observable<DlFile> {
-        return this.http.delete<DlFile>('/api/downloads/' + file.filename)
+        return this.http.delete<DlFile>('/api/downloads/' + file.filename);
     }
 
     public renameFile(filenameChangedObj: FilenameChangedObj): Observable<DlFile> {

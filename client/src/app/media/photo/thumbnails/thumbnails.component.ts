@@ -34,7 +34,7 @@ export class ThumbnailsComponent {
             const numThumbsToLeftOfCenter = this.curIndex - numThumbsDisplayed / 2;
             thumbsE.scrollLeft = numThumbsToLeftOfCenter * thumbWidth;
             // thumbE.scrollIntoView({behavior: "instant", block: "center", inline: "center"})
-            return "selected"; // changes the id property of this element so css styles can outline it
+            return 'selected'; // changes the id property of this element so css styles can outline it
         }
         return null;
     }

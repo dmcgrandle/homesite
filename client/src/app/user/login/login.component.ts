@@ -10,13 +10,13 @@ import { ForgotDialogComponent } from '../forgot-dialog/forgot-dialog.component'
 import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
 @Component({
-    selector: 'users-login',
+    selector: 'user-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
 
-    hide: boolean = true;
+    hide = true;
 
     constructor(public CFG: AppConfig,
         public auth: AuthService,
@@ -33,16 +33,16 @@ export class LoginComponent implements OnInit {
             this.router.navigate(['/home']);
             console.log('Auto-login for user ' + this.auth.user['username']);
         }
-    };
+    }
 
     onLogin(password: string) {
-        // Note: I stopped binding password to auth.user.password since the auth service 
+        // Note: I stopped binding password to auth.user.password since the auth service
         // changes that value outside the form.  Keeping it unbound keeps the UI clean.
         this.auth.user.password = password;
         this.auth.authLogin().subscribe(
             () => {
-                console.log("User " + this.auth.user['username'] + " is logged in");
-                let earlierAttempt = this.auth.getAttemptedURL();
+                console.log('User ' + this.auth.user['username'] + ' is logged in');
+                const earlierAttempt = this.auth.getAttemptedURL();
                 if (earlierAttempt) { // there was an URL that was attempted without auth
                     this.auth.clearAttemptedURL();
                     this.router.navigate([earlierAttempt]); // now we can load it!
@@ -62,13 +62,13 @@ export class LoginComponent implements OnInit {
             },
             () => { }
         );
-    };
+    }
 
     onSubmitClick() {
         this.auth.authForgot().subscribe(
             (userReturned) => {
                 const alertMessage = 'Email "' + userReturned['email'] + '" was sent reset email. ' +
-                    "If you don't see it in a few minutes please check your SPAM folder.";
+                    'If you don\'t see it in a few minutes please check your SPAM folder.';
                 const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
                     width: '400px',
                     data: { alertMessage: alertMessage }

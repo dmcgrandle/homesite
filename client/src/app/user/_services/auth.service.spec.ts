@@ -19,12 +19,12 @@ export class MockAppConfig {
 
 @Injectable()
 export class MockRSnapshot {
-    url: string = 'testURL';
+    url = 'testURL';
 }
 
 @Injectable()
 export class MockRouter {
-    navigate(url: string[]) {};
+    navigate(url: string[]) {}
 }
 
 describe('User Module: AuthService', () => {
@@ -33,7 +33,7 @@ describe('User Module: AuthService', () => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [
-                AuthService, 
+                AuthService,
                 { provide: AppConfig, useClass: MockAppConfig },
                 { provide: RouterStateSnapshot, useClass: MockRSnapshot },
                 { provide: Router, useClass: MockRouter }
@@ -46,7 +46,7 @@ describe('User Module: AuthService', () => {
     describe('Users Methods', () => {
         let httpMock: HttpTestingController;
         beforeEach(() => {
-            httpMock = TestBed.get(HttpTestingController); 
+            httpMock = TestBed.get(HttpTestingController);
             auth.user = { _id: 1, name: 'A', username: 'B', password: 'C', email: 'D', level: 4 };
         });
         it('should successfully get list of users', async(() => {
@@ -55,7 +55,7 @@ describe('User Module: AuthService', () => {
                 { _id: 2, name: 'E', username: 'F', password: 'G', email: 'H', level: 1 }
             ];
             auth.authGetUsers().subscribe(users => expect(users).toEqual(testList));
-            let req = httpMock.expectOne('/api/users/list');
+            const req = httpMock.expectOne('/api/users/list');
             expect(req.request.method).toEqual('GET');
             req.flush(testList);
             httpMock.verify();
@@ -63,42 +63,42 @@ describe('User Module: AuthService', () => {
         it('should encrypt the password when logging in', () => {
             auth.authLogin();
             expect(auth.user.password.length).toEqual(44);
-            expect(AES.decrypt(auth.user.password.toString(),'1234').toString(ENC.Utf8)).toEqual('C');
+            expect(AES.decrypt(auth.user.password.toString(), '1234').toString(ENC.Utf8)).toEqual('C');
         });
         it('should successfully log in a user', () => {
             const testRes: LoginResponse = {level: 4, jwtToken: 'A', expiresAt: 1234};
             auth.authLogin().subscribe(res => expect(res).toEqual(testRes));
-            let req = httpMock.expectOne('/api/users/login');
+            const req = httpMock.expectOne('/api/users/login');
             expect(req.request.method).toEqual('POST');
             req.flush(testRes);
         });
         it('should successfully register a new user', () => {
             auth.authRegister().subscribe(user => expect(user).toEqual(auth.user));
-            let req = httpMock.expectOne('/api/users/create');
+            const req = httpMock.expectOne('/api/users/create');
             expect(req.request.method).toEqual('POST');
-            req.flush(auth.user);// send test user object back into the subscribe above.
+            req.flush(auth.user); // send test user object back into the subscribe above.
         });
         it('should successfully post a forgot password request', async(() => {
             auth.authForgot().subscribe(user => expect(user).toEqual(auth.user));
-            let req = httpMock.expectOne('/api/users/forgot');
+            const req = httpMock.expectOne('/api/users/forgot');
             expect(req.request.method).toEqual('POST');
             req.flush(auth.user);
         }));
         it('should successfully change a password via emailed token', async(() => {
             auth.authChangePasswordByToken('token').subscribe(user => expect(user).toEqual(auth.user));
-            let req = httpMock.expectOne('/api/users/changepw-by-token');
+            const req = httpMock.expectOne('/api/users/changepw-by-token');
             expect(req.request.method).toEqual('POST');
             req.flush(auth.user);
         }));
         it('should successfully change a password by entering password', async(() => {
             auth.authChangePasswordByPassword('newPass').subscribe(user => expect(user).toEqual(auth.user));
-            let req = httpMock.expectOne('/api/users/changepw-by-pw');
+            const req = httpMock.expectOne('/api/users/changepw-by-pw');
             expect(req.request.method).toEqual('POST');
             req.flush(auth.user);
         }));
         it('should successfully update a user', async(() => {
             auth.authUpdateUser(auth.user).subscribe(user => expect(user).toEqual(auth.user));
-            let req = httpMock.expectOne('/api/users/update');
+            const req = httpMock.expectOne('/api/users/update');
             expect(req.request.method).toEqual('PUT');
             req.flush(auth.user);
         }));
@@ -109,35 +109,35 @@ describe('User Module: AuthService', () => {
         let httpMock: HttpTestingController;
         let tFile: DlFile;
         beforeEach(() => {
-            httpMock = TestBed.get(HttpTestingController); 
+            httpMock = TestBed.get(HttpTestingController);
             tFile = { _id: 1, filename: 'A', fullPath: 'B', suffix: 'C', type: 'D', size: 4, sizeHR: 'E', icon: 'F' };
         });
         it('should successfully get a list of downloads', async(() => {
             const testList: DlFile[] = [ tFile, tFile ];
             auth.authGetDownloads().subscribe(files => expect(files).toEqual(testList));
-            let req = httpMock.expectOne('/api/downloads/list');
+            const req = httpMock.expectOne('/api/downloads/list');
             expect(req.request.method).toEqual('GET');
             req.flush(testList);
         }));
         it('should successfully download a file', async(() => {
             const testBlob: Blob = new Blob(['test blob content'], {type : 'text/plain'});
             auth.downloadFile(tFile).subscribe(blob => expect(blob.type).toEqual('text/plain'));
-            let req = httpMock.expectOne(`${tFile.fullPath}`);
+            const req = httpMock.expectOne(`${tFile.fullPath}`);
             expect(req.request.method).toEqual('GET');
             expect(req.request.responseType).toEqual('blob');
             req.flush(testBlob);
         }));
         it('should successfully delete a file', async(() => {
             auth.deleteFile(tFile).subscribe(file => expect(file).toEqual(tFile));
-            let req = httpMock.expectOne(`/api/downloads/${tFile.filename}`);
+            const req = httpMock.expectOne(`/api/downloads/${tFile.filename}`);
             expect(req.request.method).toEqual('DELETE');
             req.flush(tFile);
         }));
         it('should successfully upload a file', async(() => {
-            const testFile: File = new File([],'A');
+            const testFile: File = new File([], 'A');
             const testEvent: HttpProgressEvent =  { type: HttpEventType.UploadProgress, loaded: 55 };
             auth.uploadFile(testFile).subscribe(res => expect(res.type).toBeDefined());
-            let req = httpMock.expectOne('/api/downloads/upload');
+            const req = httpMock.expectOne('/api/downloads/upload');
             expect(req.request.method).toEqual('POST');
             req.flush(testEvent);
         }));
@@ -163,11 +163,11 @@ describe('User Module: AuthService', () => {
             spyOn(localStorage, 'setItem').and.callFake(mockLS.setItem);
             spyOn(localStorage, 'removeItem').and.callFake(mockLS.removeItem);
             spyOn(localStorage, 'clear').and.callFake(mockLS.clear);
-        })
+        });
         it('should provide route guard services correctly', () => {
-            let state = TestBed.get(RouterStateSnapshot);
+            const state = TestBed.get(RouterStateSnapshot);
             // set checks to one second either side of expiration
-            const notExpired = Math.round(Date.now()/1000 + 301);
+            const notExpired = Math.round(Date.now() / 1000 + 301);
             const hasExpired = notExpired - 2;
             localStorage.setItem('expiresAt', notExpired.toString());
             expect(auth.canActivate(new ActivatedRouteSnapshot(), state)).toBeTruthy();
@@ -175,8 +175,8 @@ describe('User Module: AuthService', () => {
             localStorage.setItem('expiresAt', hasExpired.toString());
             expect(auth.canActivate(new ActivatedRouteSnapshot(), state)).toBeFalsy();
             expect(localStorage.getItem('attemptedURL')).toEqual('testURL');
-        })
-    
+        });
+
         it('should retrieve jwtToken', () => {
             expect(auth.getToken()).toEqual('testToken');
         });
@@ -212,7 +212,7 @@ describe('User Module: AuthService', () => {
         });
         it('should evaluate if login has expired correctly', () => {
             // set checks to one second either side of expiration
-            const notExpired = Math.round(Date.now()/1000 + 301);
+            const notExpired = Math.round(Date.now() / 1000 + 301);
             const hasExpired = notExpired - 2;
             localStorage.setItem('expiresAt', `${notExpired}`);
             expect(auth.isLoginExpired()).toBeFalsy();
@@ -220,18 +220,18 @@ describe('User Module: AuthService', () => {
             expect(auth.isLoginExpired()).toBeTruthy();
         });
         it('should successfully store user credentials after logging in', async(() => {
-            let httpMock = TestBed.get(HttpTestingController);
+            const httpMock = TestBed.get(HttpTestingController);
             const testRes: LoginResponse = {level: 4, jwtToken: 'T', expiresAt: 1234};
             auth.user = { _id: 1, name: 'A', username: 'B', password: 'C', email: 'D', level: 4 };
             auth.authLogin().subscribe(res => {
-                    expect(res).toEqual(testRes)
+                    expect(res).toEqual(testRes);
                     expect(localStorage.getItem('username')).toEqual('B');
                     expect(localStorage.getItem('jwtToken')).toEqual('T');
                     expect(localStorage.getItem('level').toString()).toEqual('4');
                     expect(localStorage.getItem('expiresAt').toString()).toEqual('1234');
                     expect(localStorage.getItem('successfulLogin')).toEqual('true');
             });
-            let loginReq = httpMock.expectOne('/api/users/login');
+            const loginReq = httpMock.expectOne('/api/users/login');
             expect(loginReq.request.method).toEqual('POST');
             loginReq.flush(testRes); // send back into the subscribe above.
             httpMock.verify();

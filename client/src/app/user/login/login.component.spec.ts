@@ -21,7 +21,7 @@ import { LoginComponent } from './login.component';
 //     beforeEach(async(() => {
 //         TestBed.configureTestingModule({
 //             declarations: [LoginComponent],
-//             imports: [ FormsModule, MatFormFieldModule, MatToolbarModule, MatIconModule, HttpClientModule, 
+//             imports: [ FormsModule, MatFormFieldModule, MatToolbarModule, MatIconModule, HttpClientModule,
 //                 RouterTestingModule, MatDialogModule, MatInputModule ],
 //             providers: [
 //                 { provide: AppConfig, useValue: configSpy }

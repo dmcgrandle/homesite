@@ -27,7 +27,7 @@ describe('Shared Module: UrlHelperService', () => {
             spyOn(URL, 'createObjectURL').and.returnValue(urlBlob);
             spyOn(URL, 'revokeObjectURL');
             urlHelper.get(urlTest).subscribe(result => expect(result).toEqual(urlBlob));
-            let req = httpMock.expectOne(urlTest);
+            const req = httpMock.expectOne(urlTest);
             expect(req.request.method).toEqual('GET');
             expect(req.request.responseType).toEqual('blob');
             req.flush(testBlob);

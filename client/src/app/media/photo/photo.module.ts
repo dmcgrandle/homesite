@@ -5,7 +5,7 @@ import {
     OverlayContainer,
     FullscreenOverlayContainer
 } from '@angular/cdk/overlay';
-import { 
+import {
     MatCardModule,
     MatIconModule,
     MatProgressSpinnerModule

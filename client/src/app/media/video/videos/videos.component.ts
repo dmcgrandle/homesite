@@ -60,6 +60,5 @@ export class VideosComponent implements OnInit, OnDestroy {
         dialogRef.afterClosed().subscribe(result => { });
         console.log(err);
         this.router.navigate(['/home']);
-    };
-
+    }
 }

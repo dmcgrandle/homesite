@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CollectionViewer, DataSource } from "@angular/cdk/collections";
+import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { MatDialog, MatTableDataSource, MatPaginator, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Location } from '@angular/common';
@@ -14,7 +14,7 @@ import { catchError, finalize, tap, startWith, switchMap } from 'rxjs/operators'
 import { EditDialogComponent } from '../edit-dialog/edit-dialog.component';
 
 @Component({
-    selector: 'users-manage',
+    selector: 'user-manage',
     templateUrl: './manage.component.html',
     styleUrls: ['./manage.component.scss']
 })
@@ -34,7 +34,7 @@ export class ManageComponent implements OnInit {
             .subscribe(users => {
                 this.dataSource.data = users;
                 this.loading$.next(false);
-            })
+            });
     }
 
     applyFilter(filterValue: string) {

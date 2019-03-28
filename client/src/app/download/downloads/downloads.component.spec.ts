@@ -19,6 +19,40 @@ import { map, elementAt } from 'rxjs/operators';
 import { ProgressBarComponent } from '../../shared/progress-bar/progress-bar.component';
 import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
+class Page {
+    get spinner()       { return this.query<HTMLElement>('.spinner'); }
+    get dlContainer()   { return this.query<HTMLDivElement>('.download-container'); }
+    get inputs()        { return this.queryAll<HTMLInputElement>('input'); }
+    get filterInput()   { return this.inputs[0]; }
+    get uploadInput()   { return this.inputs[1]; }
+    get uploadIcon()    { return this.query<HTMLElement>('.upload-icon'); }
+    get table()         { return this.query<HTMLTableElement>('table'); }
+    get tableRows()     { return this.queryAll<HTMLTableRowElement>('tr.mat-row'); }
+    get downloadIcons() { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-downloadIcon'); }
+    get deleteIcons()   { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-deleteIcon'); }
+    get linkIcons()     { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-linkIcon'); }
+    get fileIds()       { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-fileId'); }
+    get filenames()     { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-filename'); }
+    get fileTypeIcons() { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-icon'); }
+    get fileTypes()     { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-type'); }
+    get fileSizes()     { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-sizeHR'); }
+
+    private fixture: ComponentFixture<DownloadsComponent>;
+
+    constructor(fixture: ComponentFixture<DownloadsComponent>) {
+        this.fixture = fixture;
+    }
+
+    //// query helpers ////
+    private query<T>(selector: string): T {
+        return this.fixture.nativeElement.querySelector(selector);
+    }
+
+    private queryAll<T>(selector: string): T[] {
+        return this.fixture.nativeElement.querySelectorAll(selector);
+    }
+}
+
 describe('Download Module: DownloadsComponent', () => {
     const tFile1 = {
         _id: 1,
@@ -30,8 +64,7 @@ describe('Download Module: DownloadsComponent', () => {
         sizeHR: '1K',
         icon: 'tIcon1'
     };
-    const tFile2 = 
-    {
+    const tFile2 = {
         _id: 2,
         filename: 'tFilename2.zip',
         fullPath: 'tFullPath2',
@@ -52,7 +85,7 @@ describe('Download Module: DownloadsComponent', () => {
         renameFile: of(tFile1),
         deleteFile: of(tFile1)
     });
-    let mockFlex = jasmine.createSpyObj({isActive: true });
+    const mockFlex = jasmine.createSpyObj({isActive: true });
     mockFlex.media$ = of({mqAlias: 'lg'});
     const spyParamMap = jasmine.createSpyObj({get: null});
     const mockActivatedRoute = { paramMap: of(spyParamMap) };
@@ -65,7 +98,7 @@ describe('Download Module: DownloadsComponent', () => {
         fixture = TestBed.createComponent(DownloadsComponent);
         dlComponent = fixture.componentInstance;
         page = new Page(fixture);
-    
+
         // 1st change detection triggers ngOnInit
         fixture.detectChanges();
         return fixture.whenStable().then(() => {
@@ -77,8 +110,8 @@ describe('Download Module: DownloadsComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [DownloadsComponent, FilenameComponent],
-            imports: [ MatDialogModule, MatTableModule, MatPaginatorModule, MatIconModule, 
-                MatFormFieldModule, MatProgressSpinnerModule, MatSortModule, MatInputModule, 
+            imports: [ MatDialogModule, MatTableModule, MatPaginatorModule, MatIconModule,
+                MatFormFieldModule, MatProgressSpinnerModule, MatSortModule, MatInputModule,
                 BrowserAnimationsModule],
             providers: [
                 { provide: Router, useValue: routerSpy },
@@ -96,18 +129,18 @@ describe('Download Module: DownloadsComponent', () => {
             dlComponent = fixture.componentInstance;
             reloadSpy = spyOn(dlComponent, 'reloadDownloads');
         });
-    
+
         it('should be creatable', () => {
             expect(dlComponent).toBeTruthy();
         });
         it('ngOnInit Technique 1: should initialize with downloading a file if supplied', () => {
             // let route = TestBed.get(ActivatedRoute);
             // spyOn(route.snapshot.paramMap, 'get').and.returnValue('fFilename'); // as if invoked with a download param
-            let onDl = spyOn(dlComponent, 'onDownloadClicked'); // don't let onDownloadClicked be invoked in this test
+            const onDl = spyOn(dlComponent, 'onDownloadClicked'); // don't let onDownloadClicked be invoked in this test
             spyParamMap.get.and.returnValue('tFilename');
             fixture.detectChanges();
             // expect(route.snapshot.paramMap.get).toHaveBeenCalled();
-            expect(dlComponent.dataSource.data).toBeUndefined;
+            expect(dlComponent.dataSource.data).toBeUndefined();
             expect(dlComponent.dlFilename).toEqual('tFilename');
             expect(onDl).toHaveBeenCalledTimes(1);
             expect(routerSpy.navigate).toHaveBeenCalledWith(['/download']); // re-call self, dropping the file name
@@ -117,15 +150,15 @@ describe('Download Module: DownloadsComponent', () => {
             reloadSpy.and.callThrough(); // TODO: test without dependency on another function ...
             fixture.detectChanges();
             expect(dlComponent.dataSource.data).toEqual(testDlData);
-            expect(dlComponent.displayedColumns).toEqual(['fileId', 'downloadIcon', 'deleteIcon', 'linkIcon', 
+            expect(dlComponent.displayedColumns).toEqual(['fileId', 'downloadIcon', 'deleteIcon', 'linkIcon',
                 'filename', 'icon', 'type', 'sizeHR']);
             reloadSpy.calls.reset(); // set to default
-            reloadSpy.and.stub(); 
+            reloadSpy.and.stub();
         });
         it('ngOnInit Technique 2: displayedColumns should NOT contain deleteIcon if user level < 3', () => {
             mockAPI.lastLoggedInUserLevel.and.returnValue(2);
             fixture.detectChanges();
-            expect(dlComponent.displayedColumns).toEqual(['fileId', 'downloadIcon', 'linkIcon', 'filename', 
+            expect(dlComponent.displayedColumns).toEqual(['fileId', 'downloadIcon', 'linkIcon', 'filename',
                 'icon', 'type', 'sizeHR']);
             mockAPI.lastLoggedInUserLevel.and.returnValue(3); // set back to default
             });
@@ -165,11 +198,11 @@ describe('Download Module: DownloadsComponent', () => {
                 expect(mockAPI.downloadFile).toHaveBeenCalled();
             });
             it('should update progress$ observable properly with info from DownloadProgress events', fakeAsync(() => {
-                mockAPI.uploadFile.and.returnValue(interval(100).pipe(take(10),map(i => {
-                    return {type: HttpEventType.DownloadProgress, loaded: i+1, total: 100}
+                mockAPI.uploadFile.and.returnValue(interval(100).pipe(take(10), map(i => {
+                    return {type: HttpEventType.DownloadProgress, loaded: i + 1, total: 100};
                 }))); // mock of downloadFile will return an Observable of DownloadProgress slowly incrementing
                 dialogSpy.and.callFake((comp, params) => { // set up an observer to react to progress$ changes
-                    let prevValue: number = -1;
+                    let prevValue = -1;
                     params.data.progress$.subscribe((percentDone) => {
                         expect(percentDone).toBe(prevValue + 1);
                         prevValue += 1;
@@ -184,14 +217,13 @@ describe('Download Module: DownloadsComponent', () => {
                 expect(dialogReturnObj.close).not.toHaveBeenCalled();
             }));
             describe('properly finish the download when sent an HttpResponse event', () => {
-                const testBlob: Blob = new Blob(['test blob content'], {type : 'text/plain'});
                 const tRes = new HttpResponse({ body: testBlob });
                 let spyConsole: jasmine.Spy;
                 beforeEach(() => {
                     spyConsole = spyOn(console, 'log');
                     mockAPI.downloadFile.and.returnValue(of(tRes));
                     dlComponent.onDownloadClicked(tFile);
-                })
+                });
                 it('should log the downloaded file to the console', () => {
                     expect(spyConsole).toHaveBeenCalledWith('Downloaded file :', 'tFile');
                 });
@@ -210,7 +242,7 @@ describe('Download Module: DownloadsComponent', () => {
                     spyConsole = spyOn(console, 'log');
                     mockAPI.downloadFile.and.returnValue(throwError({message: 'network error'}));
                     dlComponent.onDownloadClicked(tFile);
-                })
+                });
                 it('should close the previous dialog', () => {
                     expect(dialogReturnObj.close).toHaveBeenCalled();
                 });
@@ -231,7 +263,7 @@ describe('Download Module: DownloadsComponent', () => {
                     mockAPI.downloadFile.and.returnValue({ subscribe: () => dlSubscribe}); // return our mock
                     dlComponent.onDownloadClicked(tFile);
                 });
-    
+
                 it('should abort upload', () => {
                     expect(dlSubscribe.unsubscribe).toHaveBeenCalled(); // ensure download was unsubscribed (aborted)
                 });
@@ -249,7 +281,7 @@ describe('Download Module: DownloadsComponent', () => {
             mockAPI.renameFile.and.returnValue(of(newFileExpected));
             dlComponent.onFilenameChange(tFilenameChanged);
             expect(dialogSpy).toHaveBeenCalledWith(
-                AlertMessageDialogComponent, 
+                AlertMessageDialogComponent,
                 { data: jasmine.objectContaining({heading: 'Rename Successful' })}
             );
             const i = dlComponent.dataSource.data.findIndex(el => el._id === tFilenameChanged._id);
@@ -259,9 +291,9 @@ describe('Download Module: DownloadsComponent', () => {
         it('onLinkClicked() should copy data to the clipboard', () => {
             routerSpy.createUrlTree.and.returnValue(12345); // Number has .toString() method
             const dialogSpy = spyOn(TestBed.get(MatDialog), 'open');
-            let execSpy = spyOn(document, 'execCommand').and.callThrough();
+            const execSpy = spyOn(document, 'execCommand').and.callThrough();
             fixture.detectChanges();
-            dlComponent.onLinkClicked(tFile1); 
+            dlComponent.onLinkClicked(tFile1);
             expect(routerSpy.createUrlTree).toHaveBeenCalled();
             expect(execSpy).toHaveBeenCalled();
             expect(dialogSpy).toHaveBeenCalled();
@@ -273,13 +305,13 @@ describe('Download Module: DownloadsComponent', () => {
                     .returnValue({ afterClosed : () => of({}) }); // Cancel clicked
             });
             it('should first display a confirmation dialog box', () => {
-                dlComponent.onDeleteClicked(tFile1)
+                dlComponent.onDeleteClicked(tFile1);
                 expect(dialogSpy).toHaveBeenCalled();
 
             });
             it('should not call auth.deleteFile() or reloadDownloads() if user clicks cancel', () => {
                 reloadSpy.calls.reset(); // clear calls so we can test it
-                dlComponent.onDeleteClicked(tFile1)
+                dlComponent.onDeleteClicked(tFile1);
                 expect(dialogSpy).toHaveBeenCalled();
                 expect(mockAPI.deleteFile).not.toHaveBeenCalled();
                 expect(reloadSpy).not.toHaveBeenCalled();
@@ -287,7 +319,7 @@ describe('Download Module: DownloadsComponent', () => {
             it('should call auth.deleteFile() and reloadDownloads() if user confirms', () => {
                 reloadSpy.calls.reset();
                 dialogSpy.and.returnValue({ afterClosed : () => of({okClicked: true}) });
-                let spyConsole = spyOn(console, 'log');
+                const spyConsole = spyOn(console, 'log');
                 dlComponent.onDeleteClicked(tFile1);
                 expect(dialogSpy).toHaveBeenCalled();
                 expect(mockAPI.deleteFile).toHaveBeenCalledWith(tFile1);
@@ -304,7 +336,7 @@ describe('Download Module: DownloadsComponent', () => {
             });
             afterEach(() => {
                 mockAPI.uploadFile.calls.reset(); // reset counters to eliminate test order dependency
-            })
+            });
             it('should display a progress dialog box and send a progress$ observable to that dialog', () => {
                 dlComponent.uploadPickedFile(eventMock);
                 expect(dialogSpy).toHaveBeenCalledWith(ProgressBarComponent,
@@ -312,11 +344,11 @@ describe('Download Module: DownloadsComponent', () => {
                 expect(mockAPI.uploadFile).toHaveBeenCalledTimes(1); // This is the first spec it is called in ...
                 });
             it('should update progress$ observable properly with info from UploadProgress events', fakeAsync(() => {
-                mockAPI.uploadFile.and.returnValue(interval(100).pipe(take(10),map(i => {
-                    return {type: HttpEventType.UploadProgress, loaded: i+1, total: 100}
+                mockAPI.uploadFile.and.returnValue(interval(100).pipe(take(10), map(i => {
+                    return {type: HttpEventType.UploadProgress, loaded: i + 1, total: 100};
                 }))); // mock of uploadFile will return an Observable of UploadProgress slowly incrementing
                 dialogSpy.and.callFake((comp, params) => { // set up an observer to react to progress$ changes
-                    let prevValue: number = -1;
+                    let prevValue = -1;
                     params.data.progress$.subscribe((percentDone) => {
                         expect(percentDone).toBe(prevValue + 1);
                         prevValue += 1;
@@ -337,7 +369,7 @@ describe('Download Module: DownloadsComponent', () => {
                     spyConsole = spyOn(console, 'log');
                     mockAPI.uploadFile.and.returnValue(of(tRes));
                     dlComponent.uploadPickedFile(eventMock);
-                })
+                });
                 it('should log the uploaded file to console', () => {
                     expect(spyConsole).toHaveBeenCalledWith('Uploaded file :', 'tFile');
                 });
@@ -359,7 +391,7 @@ describe('Download Module: DownloadsComponent', () => {
                     spyConsole = spyOn(console, 'log');
                     mockAPI.uploadFile.and.returnValue(throwError({message: 'network error'}));
                     dlComponent.uploadPickedFile(eventMock);
-                })
+                });
                 it('should close the previous dialog', () => {
                     expect(dialogReturnObj.close).toHaveBeenCalled();
                 });
@@ -380,7 +412,7 @@ describe('Download Module: DownloadsComponent', () => {
                     mockAPI.uploadFile.and.returnValue({ subscribe: () => uploadSubscribe}); // return our mock
                     dlComponent.uploadPickedFile(eventMock);
                 });
-    
+
                 it('should abort upload', () => {
                     expect(uploadSubscribe.unsubscribe).toHaveBeenCalled(); // ensure upload unsubscribed (aborted)
                 });
@@ -409,7 +441,7 @@ describe('Download Module: DownloadsComponent', () => {
                 dlComponent.reloadDownloads();
                 expect(mockAPI.authGetDownloads).toHaveBeenCalled();
                 expect(dlComponent.dataSource.data).toEqual(testDlData);
-            }); 
+            });
         });
     });
     describe('HTML Template', () => {
@@ -487,37 +519,3 @@ describe('Download Module: DownloadsComponent', () => {
         });
     });
 });
-
-class Page {
-    get spinner()       { return this.query<HTMLElement>('.spinner'); }
-    get dlContainer()   { return this.query<HTMLDivElement>('.download-container'); }
-    get inputs()        { return this.queryAll<HTMLInputElement>('input'); }
-    get filterInput()   { return this.inputs[0]; }
-    get uploadInput()   { return this.inputs[1]; }
-    get uploadIcon()    { return this.query<HTMLElement>('.upload-icon'); }
-    get table()         { return this.query<HTMLTableElement>('table'); }
-    get tableRows()     { return this.queryAll<HTMLTableRowElement>('tr.mat-row'); }
-    get downloadIcons() { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-downloadIcon') }
-    get deleteIcons()   { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-deleteIcon') }
-    get linkIcons()     { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-linkIcon') }
-    get fileIds()       { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-fileId') }
-    get filenames()     { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-filename') }
-    get fileTypeIcons() { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-icon') }
-    get fileTypes()     { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-type') }
-    get fileSizes()     { return this.queryAll<HTMLTableDataCellElement>('.cdk-column-sizeHR') }
-
-    private fixture: ComponentFixture<DownloadsComponent>;
-  
-    constructor(fixture: ComponentFixture<DownloadsComponent>) {
-        this.fixture = fixture;
-    }
-  
-    //// query helpers ////
-    private query<T>(selector: string): T {
-        return this.fixture.nativeElement.querySelector(selector);
-    }
-  
-    private queryAll<T>(selector: string): T[] {
-        return this.fixture.nativeElement.querySelectorAll(selector);
-    }
-}

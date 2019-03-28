@@ -18,11 +18,11 @@ export class User {
         this.email = (iUser && iUser.email !== undefined) ? iUser.email : '';
         this.level = (iUser && iUser.level !== undefined) ? iUser.level : 0;
     }
-};
+}
 
 // server response classes - Declaration of responses from the server
 export class LoginResponse {
     level: number;
     jwtToken: string;
     expiresAt: number;
-};
+}

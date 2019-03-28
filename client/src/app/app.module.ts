@@ -2,13 +2,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { APP_INITIALIZER } from '@angular/core';//for conf file read during init
+import { APP_INITIALIZER } from '@angular/core'; // for conf file read during init
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import 'hammerjs';
 
 import { AppConfig } from './app.config';
-import { AppComponent } from './app.component';
+import { HomesiteComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { SharedModule } from './shared/shared.module';
@@ -18,9 +18,10 @@ import { JwtInterceptor } from './shared/_services/jwt-interceptor';
 
 
 @NgModule({
-    declarations: [AppComponent],
+    declarations: [HomesiteComponent],
     imports: [
         /* DownloadModule, */ // Lazy loaded
+        /* MediaModule, */ // Lazy loaded
         /* PhotoModule, */ // Lazy loaded
         /* VideoModule, */ // Lazy loaded
         /* FamilyModule, */ // Lazy loaded
@@ -46,7 +47,7 @@ import { JwtInterceptor } from './shared/_services/jwt-interceptor';
             multi: true
         }
     ],
-    bootstrap: [AppComponent]
+    bootstrap: [HomesiteComponent]
 })
 export class AppModule { }
 

@@ -12,11 +12,11 @@ describe('App Module: AppConfig', () => {
     let appConfig: AppConfig;
     const appCfgMock = {
         header: {
-            title: "Homesite"
+            title: 'Homesite'
         },
         footer: {
-            title: "www.example.com",
-            email: "webmaster@example.com"
+            title: 'www.example.com',
+            email: 'webmaster@example.com'
         }
     };
     beforeEach(() => {
@@ -35,7 +35,7 @@ describe('App Module: AppConfig', () => {
         appConfig.load().then(() => {
             expect(appConfig.const).toEqual(<IAppConfig>appCfgMock);
         });
-        let req = httpMock.expectOne(`assets/config/config.${environment.confName}.json`);
+        const req = httpMock.expectOne(`assets/config/config.${environment.confName}.json`);
         expect(req.request.method).toEqual('GET');
         req.flush(appCfgMock);
     }));
@@ -43,7 +43,7 @@ describe('App Module: AppConfig', () => {
         appConfig.load().then().catch((err) => {
             expect(err).toContain('Could not load file');
         });
-        let req = httpMock.expectOne(`assets/config/config.${environment.confName}.json`);
+        const req = httpMock.expectOne(`assets/config/config.${environment.confName}.json`);
         expect(req.request.method).toEqual('GET');
         req.error(new ErrorEvent(''));
     }));

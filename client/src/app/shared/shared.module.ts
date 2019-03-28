@@ -2,12 +2,12 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ModuleWithProviders } from '@angular/compiler/src/core';
-import { 
-    MatToolbarModule, 
-    MatMenuModule, 
-    MatListModule, 
-    MatIconModule, 
-    MatButtonModule, 
+import {
+    MatToolbarModule,
+    MatMenuModule,
+    MatListModule,
+    MatIconModule,
+    MatButtonModule,
     MatProgressBarModule,
     MatCardModule
 } from '@angular/material';
@@ -68,6 +68,6 @@ export class SharedModule {
         return {
             ngModule: SharedModule,
             providers: [ JwtInterceptor, UrlHelperService ]
-        }
+        };
     }
 }

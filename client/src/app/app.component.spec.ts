@@ -1,39 +1,37 @@
 import { Component } from '@angular/core';
 import { TestBed, async } from '@angular/core/testing';
-import { AppComponent } from './app.component';
+import { HomesiteComponent } from './app.component';
 
 /* Don't want to actually test these components here */
 @Component({selector: 'shared-header', template: ''})
-class HeaderStub {}
+class HeaderStubComponent {}
 
+// tslint:disable-next-line:component-selector
 @Component({selector: 'router-outlet', template: ''})
-class RouterOutletStub {}
+class RouterOutletStubComponent {}
 
 @Component({selector: 'shared-footer', template: ''})
-class FooterStub {}
+class FooterStubComponent {}
 
 describe('App Module: AppComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [
-                AppComponent, HeaderStub, RouterOutletStub, FooterStub
+                HomesiteComponent,
+                HeaderStubComponent,
+                RouterOutletStubComponent,
+                FooterStubComponent
             ]
         }).compileComponents();
     }));
     it('should create the app', async(() => {
-        const fixture = TestBed.createComponent(AppComponent);
+        const fixture = TestBed.createComponent(HomesiteComponent);
         const app = fixture.debugElement.componentInstance;
         expect(app).toBeTruthy();
     }));
     it(`should have as title 'Homesite'`, async(() => {
-        const fixture = TestBed.createComponent(AppComponent);
+        const fixture = TestBed.createComponent(HomesiteComponent);
         const app = fixture.debugElement.componentInstance;
         expect(app.title).toEqual('Homesite');
     }));
-/*    it('should render title in a h1 tag', async(() => {
-        const fixture = TestBed.createComponent(AppComponent);
-        fixture.detectChanges();
-        const compiled = fixture.debugElement.nativeElement;
-        expect(compiled.querySelector('h1').textContent).toContain('Welcome to homesite!');
-    })); */
 });

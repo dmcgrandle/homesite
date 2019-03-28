@@ -3,13 +3,13 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ModuleWithProviders } from '@angular/compiler/src/core';
 import {
-    MatToolbarModule, 
-    MatProgressSpinnerModule, 
-    MatInputModule, 
-    MatTableModule, 
+    MatToolbarModule,
+    MatProgressSpinnerModule,
+    MatInputModule,
+    MatTableModule,
     MatPaginatorModule,
-    MatIconModule, 
-    MatSelectModule, 
+    MatIconModule,
+    MatSelectModule,
     MatButtonModule,
     MatDialogModule
 } from '@angular/material';
@@ -52,8 +52,8 @@ import { EditDialogComponent } from './edit-dialog/edit-dialog.component';
         EditDialogComponent
     ],
     entryComponents: [
-        EditDialogComponent, 
-        RegisterComponent, 
+        EditDialogComponent,
+        RegisterComponent,
         ForgotDialogComponent
     ]
 })
@@ -62,6 +62,6 @@ export class UserModule {
         return {
             ngModule: UserModule,
             providers: [AuthService]
-        }
+        };
     }
 }

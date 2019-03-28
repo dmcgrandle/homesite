@@ -8,7 +8,7 @@ export class Directory { // This is a future class, currently unused
     description: string;
     fileIds: Array<number>;
     dirIds: Array<number>;
-};
+}
 
 export class DlFile {
     _id: number;              // id of this File
@@ -30,7 +30,7 @@ export class DlFile {
         this.sizeHR = (iFile && iFile.sizeHR !== undefined) ? iFile.sizeHR : '';
         this.icon = (iFile && iFile.icon !== undefined) ? iFile.icon : '';
     }
-};
+}
 
 export class FilenameChangedObj {
     _id: number;

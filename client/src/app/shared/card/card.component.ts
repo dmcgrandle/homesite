@@ -19,10 +19,8 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
     ]
 })
 export class CardComponent {
-
     @Input() name: string;
     @Input() description: string;
     @Input() image: string;
     @Output() loaded = new EventEmitter<boolean>(false);
-
 }

@@ -33,11 +33,11 @@ class MockAppConfig {
                 ]
             }
         }
-    }
+    };
 }
 
 @Pipe({ name: 'secure' })
-class MockSecurePipe implements PipeTransform { transform(s) { return s } }
+class MockSecurePipe implements PipeTransform { transform(s) { return s; } }
 
 describe('Family Module: AboutComponent', () => {
     let aboutComponent: AboutComponent;
@@ -74,7 +74,7 @@ describe('Family Module: AboutComponent', () => {
     });
 
     it('should display the second member when the second label is clicked', () => {
-        let tabComponent: MatTabGroup = fixture.debugElement.query(By.css('mat-tab-group')).componentInstance;
+        const tabComponent: MatTabGroup = fixture.debugElement.query(By.css('mat-tab-group')).componentInstance;
         const secondMemberTab: HTMLElement = fixture.debugElement.queryAll(By.css('.mat-tab-label'))[1].nativeElement;
         expect(tabComponent.selectedIndex).toBe(0); // Initially display first member
         secondMemberTab.click(); // Click to second member
