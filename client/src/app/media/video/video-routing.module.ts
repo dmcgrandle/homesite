@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { AlbumsComponent } from './albums/albums.component';
 import { VideosComponent } from './videos/videos.component';
 import { VideoComponent } from './video/video.component';
-import { AuthService } from '../user/_services/auth.service';
+import { AuthService } from '../../user/_services/auth.service';
 
 const routes: Routes = [
   { path: 'albums', component: AlbumsComponent, canActivate: [AuthService] },

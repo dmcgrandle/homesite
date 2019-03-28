@@ -1,12 +1,13 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCardModule, MatProgressSpinnerModule, MatDialogModule } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MatDialogModule } from '@angular/material';
+import { RouterTestingModule } from '@angular/router/testing';
 
-import { SecurePipe } from '../../shared/_helpers/secure.pipe';
-import { VideoComponent } from './video.component';
+import { SecurePipe } from '../../../shared/_helpers/secure.pipe';
+import { AlbumsComponent } from './albums.component';
 
-// describe('Video Module: VideoComponent', () => {
+// describe('Video Module: AlbumsComponent', () => {
 //     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
 //     const routeSpy = jasmine.createSpyObj('Route', {
 //         snapshot: {
@@ -20,13 +21,13 @@ import { VideoComponent } from './video.component';
 //             }
 //         }
 //     });
-//     let component: GalleryVideoVideoComponent;
-//     let fixture: ComponentFixture<GalleryVideoVideoComponent>;
+//     let component: GalleryVideoAlbumsComponent;
+//     let fixture: ComponentFixture<GalleryVideoAlbumsComponent>;
 
 //     beforeEach(async(() => {
 //         TestBed.configureTestingModule({
-//             declarations: [GalleryVideoVideoComponent, SecurePipe],
-//             imports: [HttpClientModule, MatDialogModule],
+//             declarations: [GalleryVideoAlbumsComponent, SecurePipe],
+//             imports: [HttpClientModule, MatCardModule, MatProgressSpinnerModule, MatDialogModule, RouterTestingModule],
 //             providers: [
 //                 { provide: Router, useValue: routerSpy },
 //                 { provide: ActivatedRoute, useValue: routeSpy }
@@ -36,7 +37,7 @@ import { VideoComponent } from './video.component';
 //     }));
 
 //     beforeEach(() => {
-//         fixture = TestBed.createComponent(GalleryVideoVideoComponent);
+//         fixture = TestBed.createComponent(GalleryVideoAlbumsComponent);
 //         component = fixture.componentInstance;
 // //        fixture.detectChanges();
 //     });

@@ -3,7 +3,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute, ParamMap, UrlTree } from '@angular/router';
 import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
 
-import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../../../shared/alert-message-dialog/alert-message-dialog.component';
 // import { AuthService } from '../../shared/_services/auth.service';
 
 import { APIService } from '../_services/api.service';
@@ -20,7 +20,7 @@ export class VideoComponent implements OnInit {
     loadingAPI: boolean = true;
     loadingVideo: boolean = true;
 
-    constructor(private api: APIService,
+    constructor(public api: APIService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog) { }

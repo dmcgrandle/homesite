@@ -67,15 +67,15 @@ describe('Core Module: HomeComponent', () => {
         expect(page.downloadDesc).toBeDefined();
         expect(page.familyDesc).toBeDefined();
     });
-    it('should navigate to /photo/albums if the photo icon is clicked', fakeAsync(() => {
+    it('should navigate to /media/photo/albums if the photo icon is clicked', fakeAsync(() => {
         page.photoIcon.click();
         tick();
-        expect(location.path()).toEqual('/photo/albums');
+        expect(location.path()).toEqual('/media/photo/albums');
     }));
-    it('should navigate to /video/albums if the video icon is clicked', fakeAsync(() => {
+    it('should navigate to /media/video/albums if the video icon is clicked', fakeAsync(() => {
         page.videoIcon.click();
         tick();
-        expect(location.path()).toEqual('/video/albums');
+        expect(location.path()).toEqual('/media/video/albums');
     }));
     it('should navigate to /download if the downloads icon is clicked', fakeAsync(() => {
         page.downloadIcon.click();

@@ -6,7 +6,7 @@ import { Location } from '@angular/common';
 import { Subscription, Subject } from 'rxjs';
 
 // imports from homesite outside of photo module:
-import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../../../shared/alert-message-dialog/alert-message-dialog.component';
 
 // imports from within photo module:
 import { APIService } from '../_services/api.service';
@@ -51,7 +51,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
             this.api.getAlbumsByIdArray(album.albumIds).subscribe(
                 (albums) => {
                     this.displayAlbums = albums;
-                    const url = 'photo/albums' + this.router.createUrlTree([album.path]).toString();
+                    const url = 'media/photo/albums' + this.router.createUrlTree([album.path]).toString();
                     this.location.go(url); // Update the URL in the browser window without navigating.
                 },
                 (err) => this.errAlert('Problem getting albums!', err)
@@ -62,7 +62,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
     }
 
     public navToPhotos(album: Album) {
-        return this.router.navigate(['/photo/photos/' + album.path]);
+        return this.router.navigate(['/media/photo/photos/' + album.path]);
     }
 
     private errAlert(msg: string, err) {

@@ -3,7 +3,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatDialogModule } from '@angular/material';
 
-import { SecurePipe } from '../../shared/_helpers/secure.pipe';
+import { SecurePipe } from '../../../shared/_helpers/secure.pipe';
 import { VideosComponent } from './videos.component';
 
 // describe('Video Module: VideosComponent', () => {

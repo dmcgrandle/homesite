@@ -1,4 +1,4 @@
-<div #fullScreen class="photos-container" *ngIf="api.thumbs$ | async as thumbs" fxLayout="column" fxLayoutGap="4px" fxFlexFill>
+<div #photosContainer class="photos-container" *ngIf="api.thumbs$ | async as thumbs" fxLayout="column" fxLayoutGap="4px" fxFlexFill>
     <div class="title" fxLayout="row">
         <h2><span>{{api.curAlbum.name}}:</span></h2>
         <span class="fill-space"></span>
@@ -7,7 +7,7 @@
         </a>
     </div>
     <photo-focal fxFlex [focal]="thumbs[curThumbsIndex]" [loading]="focalLoading" 
-        (loaded)="focalLoading=false" (clicked)="makeFullscreen(fullScreen)"></photo-focal>
+        (loaded)="focalLoading=false" (clicked)="makeFullscreen(photosContainer)"></photo-focal>
     <photo-thumbnails [thumbs]="thumbs" [curIndex]="curThumbsIndex" (thumbChanged)="changeThumb($event)"></photo-thumbnails>
 </div>
 

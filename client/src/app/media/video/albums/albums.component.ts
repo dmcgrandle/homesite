@@ -6,7 +6,7 @@ import { Location } from '@angular/common';
 import { Subscription, Subject } from 'rxjs';
 
 // imports from homesite outside of video module:
-import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../../../shared/alert-message-dialog/alert-message-dialog.component';
 
 // imports from within video module:
 import { APIService } from '../_services/api.service';
@@ -24,7 +24,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
     getAlbumsSub: Subscription;
     cardLoaded: Subject<HTMLDivElement> = new Subject();
 
-    constructor(private api: APIService,
+    constructor(public api: APIService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog,
@@ -52,7 +52,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
             this.api.getVideoAlbumsByIdArray(album.albumIds).subscribe(
                 (albums) => { // get the albums array for this new album
                     this.displayAlbums = albums; // set albums to display
-                    const url = 'video/albums' + this.router.createUrlTree([album.path]).toString();
+                    const url = 'media/video/albums' + this.router.createUrlTree([album.path]).toString();
                     this.location.go(url); // Update the URL in the browser window without navigating.
                 },
                 (err) => this.errAlert('Problem getting albums!', err)
@@ -63,7 +63,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
     };
 
     public navToVideos(album: VideoAlbum) {
-        return this.router.navigate(['/video/videos/' + album.path]);
+        return this.router.navigate(['/media/video/videos/' + album.path]);
     }
 
     private errAlert(msg: string, err) {

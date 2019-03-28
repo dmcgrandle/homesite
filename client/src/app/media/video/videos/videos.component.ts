@@ -4,7 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 
 import { APIService } from '../_services/api.service';
-import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../../../shared/alert-message-dialog/alert-message-dialog.component';
 // import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
 import { Video } from '../_helpers/classes';
 
@@ -18,7 +18,7 @@ export class VideosComponent implements OnInit, OnDestroy {
     videos: Video[];
     posterLoaded: Subject<HTMLDivElement> = new Subject();
 
-    constructor(private api: APIService,
+    constructor(public api: APIService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog) { }
@@ -44,7 +44,7 @@ export class VideosComponent implements OnInit, OnDestroy {
     playVideo(video: Video) {
         this.api.curVideo = video;
         this.route.url.subscribe(segments =>
-            this.router.navigateByUrl('/video/video/' + segments.join('/') + '/' + this.api.curVideo.filename));
+            this.router.navigateByUrl('/media/video/video/' + segments.join('/') + '/' + this.api.curVideo.filename));
     }
 
     private setCurrentValues(videoIds: number[]) {

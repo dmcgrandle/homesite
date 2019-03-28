@@ -6,7 +6,7 @@ import { switchMap, catchError, tap, take } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 
 // imports from homesite outside of photo module:
-import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../../../shared/alert-message-dialog/alert-message-dialog.component';
 
 import { Album, Photo } from '../_helpers/classes';
 
@@ -18,6 +18,7 @@ export class APIService implements OnDestroy {
     public readonly thumbs$ = this._thumbs$.asObservable();
     public curAlbum: Album; // used to keep track of current Album between components
     public curPhoto: Photo;
+    private thumbSub: Subscription;
 
     constructor(private http: HttpClient,
         private router: Router,
@@ -25,6 +26,7 @@ export class APIService implements OnDestroy {
 
     ngOnDestroy() {
         this._thumbs$.unsubscribe();
+        if (this.thumbSub) { this.thumbSub.unsubscribe(); }
     }
 
     // actions on state:
@@ -33,7 +35,7 @@ export class APIService implements OnDestroy {
         // this.curAlbum variable will already be set up. If not
         // we were probably called by a browser typed link or refresh.
         this._thumbs$.next(null); // prevent any old data from displaying during load
-        this.getAlbumByURL(url).pipe(
+        this.thumbSub = this.getAlbumByURL(url).pipe(
             switchMap(album => this.getPhotosByIdArray(album.photoIds)),
             take(1),
             catchError(err => this.errAlert('error getting Thumbs', err))

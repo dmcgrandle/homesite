@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, HostListener, EventEmitter } from '@angular/core';
-import { KEY_CODE } from '../../shared/_classes/key-code-enum';
+import { KEY_CODE } from '../../../shared/_classes/key-code-enum';
 
 import { Photo } from '../_helpers/classes';
 

@@ -19,7 +19,7 @@ export class PhotosComponent implements OnInit {
     curThumbsIndex = 0;
     focalLoading = true;
 
-    constructor(public api: APIService, public route: ActivatedRoute) {}
+    constructor(public api: APIService, private route: ActivatedRoute) {}
 
     ngOnInit() {
         this.api.loadThumbs(this.route.url);

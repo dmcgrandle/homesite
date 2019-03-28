@@ -191,9 +191,9 @@ describe('Photo Module: PhotosComponent', () => {
             // });
             // it('should update URL in browser window and display new album when an albumCard is clicked', () => {
             //     expect(component.displayAlbums).toEqual([tAlbum1, tAlbum2, tAlbum3]);
-            //     expect(location.path()).toEqual('/photo/albums/tAlbum');
+            //     expect(location.path()).toEqual('/media/photo/albums/tAlbum');
             //     page.albumCard1.click();
-            //     expect(location.path()).toEqual('/photo/albums/tAlbum/tAlbum1');
+            //     expect(location.path()).toEqual('/media/photo/albums/tAlbum/tAlbum1');
             //     expect(component.displayAlbums).toEqual([tAlbum4]);
             //     expect(page.anyElementWithText(tAlbum4.name)).not.toBeDefined();
             //     fixture.detectChanges();
@@ -201,7 +201,7 @@ describe('Photo Module: PhotosComponent', () => {
             // });
             // it('should navigate to Photos /photo/photos/<album> when an album with only photos is clicked', fakeAsync(() => {
             //     expect(component.displayAlbums).toEqual([tAlbum1, tAlbum2, tAlbum3]);
-            //     expect(location.path()).toEqual('/photo/albums/tAlbum');
+            //     expect(location.path()).toEqual('/media/photo/albums/tAlbum');
             //     page.albumCard2.click();
             //     flush();
             //     expect(location.path()).toEqual('/photo/photos/tAlbum/tAlbum2');

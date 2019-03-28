@@ -3,8 +3,8 @@
         <img class="logo" [src]="CFG.const.header.logo | secure">
     </a>
     <div fxShow fxHide.xs fxLayout='row'>
-        <a mat-button routerLink="/photo/albums" routerLinkActive="active-link" fxFlexOffset="5">Photo Gallery</a>
-        <a mat-button routerLink="/video/albums" routerLinkActive="active-link">Video Gallery</a>
+        <a mat-button routerLink="/media/photo/albums" routerLinkActive="active-link" fxFlexOffset="5">Photo Gallery</a>
+        <a mat-button routerLink="/media/video/albums" routerLinkActive="active-link">Video Gallery</a>
         <a mat-button routerLink="/download" routerLinkActive="active-link">Downloads</a>
         <a mat-button routerLink="/family" routerLinkActive="active-link">Family</a>
     </div>
@@ -21,8 +21,8 @@
     <mat-menu #xsMenu="matMenu" fxLayout="column">
         <button mat-menu-item routerLink="/home" routerLinkActive="active-menu">Home</button>
         <mat-divider class="indent-both"></mat-divider>
-        <button mat-menu-item routerLink="/photo/albums" routerLinkActive="active-menu">Photo Gallery</button>
-        <button mat-menu-item routerLink="/video/albums" routerLinkActive="active-menu">Video Gallery</button>
+        <button mat-menu-item routerLink="/media/photo/albums" routerLinkActive="active-menu">Photo Gallery</button>
+        <button mat-menu-item routerLink="/media/video/albums" routerLinkActive="active-menu">Video Gallery</button>
         <button mat-menu-item routerLink="/download" routerLinkActive="active-menu">Downloads</button>
         <mat-divider class="indent-both"></mat-divider>
         <button mat-menu-item routerLink="/family" routerLinkActive="active-menu">Family</button>

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { 
+import {
     OverlayModule,
     OverlayContainer,
     FullscreenOverlayContainer
@@ -12,7 +12,7 @@ import {
 } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
-import { SharedModule } from '../shared/shared.module';
+import { SharedModule } from '../../shared/shared.module';
 
 import { PhotoRoutingModule } from './photo-routing.module';
 import { AlbumsComponent } from './albums/albums.component';
@@ -21,6 +21,12 @@ import { ThumbnailsComponent } from './thumbnails/thumbnails.component';
 import { FocalPhotoComponent } from './focal-photo/focal-photo.component';
 
 @NgModule({
+    declarations: [
+        AlbumsComponent,
+        PhotosComponent,
+        ThumbnailsComponent,
+        FocalPhotoComponent
+    ],
     imports: [
         CommonModule,
         PhotoRoutingModule,
@@ -29,12 +35,6 @@ import { FocalPhotoComponent } from './focal-photo/focal-photo.component';
         MatCardModule,
         MatProgressSpinnerModule,
         MatIconModule
-    ],
-    declarations: [
-        AlbumsComponent,
-        PhotosComponent,
-        ThumbnailsComponent,
-        FocalPhotoComponent
     ],
     providers: [
         {
