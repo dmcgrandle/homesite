@@ -7,8 +7,7 @@ import { AuthService } from '../../user/_services/auth.service';
 import { DlFile, FilenameChangedObj } from '../_helpers/classes';
 
 @Injectable({ providedIn: 'root' })
-export class APIService  {
-
+export class APIService {
     constructor(private http: HttpClient, private auth: AuthService) {}
 
     public authGetDownloads(): Observable<DlFile[]> {
@@ -16,7 +15,7 @@ export class APIService  {
     }
 
     public downloadFile(file: DlFile): Observable<HttpEvent<any>> {
-        const options = { responseType: 'blob', reportProgress: true  };
+        const options = { responseType: 'blob', reportProgress: true };
         const req = new HttpRequest('GET', file.fullPath, options);
         return this.http.request(req);
     }
@@ -25,7 +24,7 @@ export class APIService  {
         // Note - this returns an EVENT, so we can track progress
         const formData = new FormData();
         formData.append('upload', file);
-        const params = new HttpParams;
+        const params = new HttpParams();
         const options = { params: params, reportProgress: true };
         const req = new HttpRequest('POST', '/api/downloads/upload', formData, options);
         return this.http.request(req);

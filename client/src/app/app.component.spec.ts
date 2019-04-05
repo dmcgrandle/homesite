@@ -3,14 +3,14 @@ import { TestBed, async } from '@angular/core/testing';
 import { HomesiteComponent } from './app.component';
 
 /* Don't want to actually test these components here */
-@Component({selector: 'shared-header', template: ''})
+@Component({ selector: 'shared-header', template: '' })
 class HeaderStubComponent {}
 
 // tslint:disable-next-line:component-selector
-@Component({selector: 'router-outlet', template: ''})
+@Component({ selector: 'router-outlet', template: '' })
 class RouterOutletStubComponent {}
 
-@Component({selector: 'shared-footer', template: ''})
+@Component({ selector: 'shared-footer', template: '' })
 class FooterStubComponent {}
 
 describe('App Module: AppComponent', () => {

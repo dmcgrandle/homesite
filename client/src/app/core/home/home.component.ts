@@ -8,7 +8,5 @@ import { AppConfig } from '../../app.config';
     styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
-
-    constructor(public CFG: AppConfig) { }
-
+    constructor(public CFG: AppConfig) {}
 }

@@ -8,7 +8,10 @@ trigger:
 
 variables:
 #    imageName: 'homesite:$(build.buildId)'
-  imageName: 'homesite:latest'
+# 
+# 'homesite:latest' will refresh current usage on www.mcgrandle.com, 'homesite:0.1' will not.
+  imageName: 'homesite:0.1'
+#  imageName: 'homesite:latest'
 
 jobs:
 - job: firstJob

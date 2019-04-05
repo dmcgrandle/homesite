@@ -1,5 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule, MatToolbarModule, MatProgressBarModule } from '@angular/material';
+import {
+    MatDialogRef,
+    MAT_DIALOG_DATA,
+    MatDialogModule,
+    MatToolbarModule,
+    MatProgressBarModule
+} from '@angular/material';
 import { BehaviorSubject } from 'rxjs';
 
 import { ProgressBarComponent } from './progress-bar.component';
@@ -29,8 +35,7 @@ describe('Shared Module: ProgressBarComponent', () => {
             set: {
                 entryComponents: [ProgressBarComponent]
             }
-        })
-        .compileComponents();
+        }).compileComponents();
     }));
 
     beforeEach(() => {
@@ -71,6 +76,4 @@ describe('Shared Module: ProgressBarComponent', () => {
             expect(progressIndicator).toBe(`${i}%`);
         }
     });
-
-
 });

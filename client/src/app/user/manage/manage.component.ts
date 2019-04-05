@@ -1,6 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { MatDialog, MatTableDataSource, MatPaginator, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import {
+    MatDialog,
+    MatTableDataSource,
+    MatPaginator,
+    MatDialogRef,
+    MAT_DIALOG_DATA
+} from '@angular/material';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Location } from '@angular/common';
 import { Observable, BehaviorSubject, of, observable } from 'rxjs';
@@ -19,22 +25,20 @@ import { EditDialogComponent } from '../edit-dialog/edit-dialog.component';
     styleUrls: ['./manage.component.scss']
 })
 export class ManageComponent implements OnInit {
-
     loading$ = new BehaviorSubject<boolean>(true); // will be getting initial table
     displayedColumns: string[] = ['userId', 'name', 'username', 'email', 'level'];
     dataSource = new MatTableDataSource<User>();
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
 
-    constructor(private auth: AuthService, public dialog: MatDialog) { }
+    constructor(private auth: AuthService, public dialog: MatDialog) {}
 
     ngOnInit() {
         this.dataSource.paginator = this.paginator;
-        this.auth.authGetUsers()
-            .subscribe(users => {
-                this.dataSource.data = users;
-                this.loading$.next(false);
-            });
+        this.auth.authGetUsers().subscribe(users => {
+            this.dataSource.data = users;
+            this.loading$.next(false);
+        });
     }
 
     applyFilter(filterValue: string) {

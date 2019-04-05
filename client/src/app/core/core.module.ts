@@ -19,4 +19,4 @@ import { HomeComponent } from './home/home.component';
     ],
     declarations: [HomeComponent]
 })
-export class CoreModule { }
+export class CoreModule {}

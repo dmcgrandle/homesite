@@ -23,7 +23,7 @@ export interface IAppConfig {
         family: {
             name: string;
             members: Person[];
-            }
+        };
     };
 }
 

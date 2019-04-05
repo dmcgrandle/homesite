@@ -51,11 +51,7 @@ import { EditDialogComponent } from './edit-dialog/edit-dialog.component';
         RegisterComponent,
         EditDialogComponent
     ],
-    entryComponents: [
-        EditDialogComponent,
-        RegisterComponent,
-        ForgotDialogComponent
-    ]
+    entryComponents: [EditDialogComponent, RegisterComponent, ForgotDialogComponent]
 })
 export class UserModule {
     static forRoot(): ModuleWithProviders {

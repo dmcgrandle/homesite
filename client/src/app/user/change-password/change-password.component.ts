@@ -22,6 +22,8 @@ export class ChangePasswordComponent implements OnInit {
     token: string;
 
 @ViewChild('changePasswordForm') chgPassForm: NgForm; // for testing
+@ViewChild('nonotes') noNotes: any; // for testing
+@ViewChild('testpar') testPar: any; // for testing
 
     constructor(public auth: AuthService,
         private route: ActivatedRoute,

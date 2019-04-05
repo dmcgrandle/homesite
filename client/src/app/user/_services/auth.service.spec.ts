@@ -1,7 +1,15 @@
 import { Injectable } from '@angular/core';
 import { TestBed, inject, async } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpEvent, HttpProgressEvent, HttpEventType, HttpResponse } from '@angular/common/http';
+import {
+    HttpClientTestingModule,
+    HttpTestingController
+} from '@angular/common/http/testing';
+import {
+    HttpEvent,
+    HttpProgressEvent,
+    HttpEventType,
+    HttpResponse
+} from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AES, enc as ENC } from 'crypto-ts';
 
@@ -47,7 +55,14 @@ describe('User Module: AuthService', () => {
         let httpMock: HttpTestingController;
         beforeEach(() => {
             httpMock = TestBed.get(HttpTestingController);
-            auth.user = { _id: 1, name: 'A', username: 'B', password: 'C', email: 'D', level: 4 };
+            auth.user = {
+                _id: 1,
+                name: 'A',
+                username: 'B',
+                password: 'C',
+                email: 'D',
+                level: 4
+            };
         });
         it('should successfully get list of users', async(() => {
             const testList: User[] = [
@@ -63,10 +78,12 @@ describe('User Module: AuthService', () => {
         it('should encrypt the password when logging in', () => {
             auth.authLogin();
             expect(auth.user.password.length).toEqual(44);
-            expect(AES.decrypt(auth.user.password.toString(), '1234').toString(ENC.Utf8)).toEqual('C');
+            expect(
+                AES.decrypt(auth.user.password.toString(), '1234').toString(ENC.Utf8)
+            ).toEqual('C');
         });
         it('should successfully log in a user', () => {
-            const testRes: LoginResponse = {level: 4, jwtToken: 'A', expiresAt: 1234};
+            const testRes: LoginResponse = { level: 4, jwtToken: 'A', expiresAt: 1234 };
             auth.authLogin().subscribe(res => expect(res).toEqual(testRes));
             const req = httpMock.expectOne('/api/users/login');
             expect(req.request.method).toEqual('POST');
@@ -85,19 +102,25 @@ describe('User Module: AuthService', () => {
             req.flush(auth.user);
         }));
         it('should successfully change a password via emailed token', async(() => {
-            auth.authChangePasswordByToken('token').subscribe(user => expect(user).toEqual(auth.user));
+            auth.authChangePasswordByToken('token').subscribe(user =>
+                expect(user).toEqual(auth.user)
+            );
             const req = httpMock.expectOne('/api/users/changepw-by-token');
             expect(req.request.method).toEqual('POST');
             req.flush(auth.user);
         }));
         it('should successfully change a password by entering password', async(() => {
-            auth.authChangePasswordByPassword('newPass').subscribe(user => expect(user).toEqual(auth.user));
+            auth.authChangePasswordByPassword('newPass').subscribe(user =>
+                expect(user).toEqual(auth.user)
+            );
             const req = httpMock.expectOne('/api/users/changepw-by-pw');
             expect(req.request.method).toEqual('POST');
             req.flush(auth.user);
         }));
         it('should successfully update a user', async(() => {
-            auth.authUpdateUser(auth.user).subscribe(user => expect(user).toEqual(auth.user));
+            auth.authUpdateUser(auth.user).subscribe(user =>
+                expect(user).toEqual(auth.user)
+            );
             const req = httpMock.expectOne('/api/users/update');
             expect(req.request.method).toEqual('PUT');
             req.flush(auth.user);
@@ -110,18 +133,31 @@ describe('User Module: AuthService', () => {
         let tFile: DlFile;
         beforeEach(() => {
             httpMock = TestBed.get(HttpTestingController);
-            tFile = { _id: 1, filename: 'A', fullPath: 'B', suffix: 'C', type: 'D', size: 4, sizeHR: 'E', icon: 'F' };
+            tFile = {
+                _id: 1,
+                filename: 'A',
+                fullPath: 'B',
+                suffix: 'C',
+                type: 'D',
+                size: 4,
+                sizeHR: 'E',
+                icon: 'F'
+            };
         });
         it('should successfully get a list of downloads', async(() => {
-            const testList: DlFile[] = [ tFile, tFile ];
+            const testList: DlFile[] = [tFile, tFile];
             auth.authGetDownloads().subscribe(files => expect(files).toEqual(testList));
             const req = httpMock.expectOne('/api/downloads/list');
             expect(req.request.method).toEqual('GET');
             req.flush(testList);
         }));
         it('should successfully download a file', async(() => {
-            const testBlob: Blob = new Blob(['test blob content'], {type : 'text/plain'});
-            auth.downloadFile(tFile).subscribe(blob => expect(blob.type).toEqual('text/plain'));
+            const testBlob: Blob = new Blob(['test blob content'], {
+                type: 'text/plain'
+            });
+            auth.downloadFile(tFile).subscribe(blob =>
+                expect(blob.type).toEqual('text/plain')
+            );
             const req = httpMock.expectOne(`${tFile.fullPath}`);
             expect(req.request.method).toEqual('GET');
             expect(req.request.responseType).toEqual('blob');
@@ -135,7 +171,10 @@ describe('User Module: AuthService', () => {
         }));
         it('should successfully upload a file', async(() => {
             const testFile: File = new File([], 'A');
-            const testEvent: HttpProgressEvent =  { type: HttpEventType.UploadProgress, loaded: 55 };
+            const testEvent: HttpProgressEvent = {
+                type: HttpEventType.UploadProgress,
+                loaded: 55
+            };
             auth.uploadFile(testFile).subscribe(res => expect(res.type).toBeDefined());
             const req = httpMock.expectOne('/api/downloads/upload');
             expect(req.request.method).toEqual('POST');
@@ -146,18 +185,20 @@ describe('User Module: AuthService', () => {
 
     describe('Storage methods', () => {
         beforeEach(() => {
-            let store: Object = { // set some values for testing
+            let store: Object = {
+                // set some values for testing
                 jwtToken: 'testToken',
                 attemptedURL: 'http://test',
                 username: 'testUser',
                 level: '3',
                 successfulLogin: 'false'
             };
-            const mockLS = { // mock up the localStorage methods
-                getItem: key => key in store ? store[key] : null,
-                setItem: (key, val) => store[key] = val,
+            const mockLS = {
+                // mock up the localStorage methods
+                getItem: key => (key in store ? store[key] : null),
+                setItem: (key, val) => (store[key] = val),
                 removeItem: key => delete store[key],
-                clear: () => store = {}
+                clear: () => (store = {})
             };
             spyOn(localStorage, 'getItem').and.callFake(mockLS.getItem);
             spyOn(localStorage, 'setItem').and.callFake(mockLS.setItem);
@@ -221,15 +262,22 @@ describe('User Module: AuthService', () => {
         });
         it('should successfully store user credentials after logging in', async(() => {
             const httpMock = TestBed.get(HttpTestingController);
-            const testRes: LoginResponse = {level: 4, jwtToken: 'T', expiresAt: 1234};
-            auth.user = { _id: 1, name: 'A', username: 'B', password: 'C', email: 'D', level: 4 };
+            const testRes: LoginResponse = { level: 4, jwtToken: 'T', expiresAt: 1234 };
+            auth.user = {
+                _id: 1,
+                name: 'A',
+                username: 'B',
+                password: 'C',
+                email: 'D',
+                level: 4
+            };
             auth.authLogin().subscribe(res => {
-                    expect(res).toEqual(testRes);
-                    expect(localStorage.getItem('username')).toEqual('B');
-                    expect(localStorage.getItem('jwtToken')).toEqual('T');
-                    expect(localStorage.getItem('level').toString()).toEqual('4');
-                    expect(localStorage.getItem('expiresAt').toString()).toEqual('1234');
-                    expect(localStorage.getItem('successfulLogin')).toEqual('true');
+                expect(res).toEqual(testRes);
+                expect(localStorage.getItem('username')).toEqual('B');
+                expect(localStorage.getItem('jwtToken')).toEqual('T');
+                expect(localStorage.getItem('level').toString()).toEqual('4');
+                expect(localStorage.getItem('expiresAt').toString()).toEqual('1234');
+                expect(localStorage.getItem('successfulLogin')).toEqual('true');
             });
             const loginReq = httpMock.expectOne('/api/users/login');
             expect(loginReq.request.method).toEqual('POST');

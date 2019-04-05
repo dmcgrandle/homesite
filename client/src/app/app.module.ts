@@ -16,7 +16,6 @@ import { UserModule } from './user/user.module';
 import { CoreModule } from './core/core.module';
 import { JwtInterceptor } from './shared/_services/jwt-interceptor';
 
-
 @NgModule({
     declarations: [HomesiteComponent],
     imports: [
@@ -32,10 +31,11 @@ import { JwtInterceptor } from './shared/_services/jwt-interceptor';
         BrowserModule,
         FlexLayoutModule,
         BrowserAnimationsModule,
-        HttpClientModule,
+        HttpClientModule
     ],
     providers: [
-        AppConfig, {
+        AppConfig,
+        {
             provide: APP_INITIALIZER,
             useFactory: loadConfigDuringInit,
             deps: [AppConfig],
@@ -49,7 +49,7 @@ import { JwtInterceptor } from './shared/_services/jwt-interceptor';
     ],
     bootstrap: [HomesiteComponent]
 })
-export class AppModule { }
+export class AppModule {}
 
 export function loadConfigDuringInit(appConfig: AppConfig) {
     return () => appConfig.load();

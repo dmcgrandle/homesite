@@ -15,8 +15,15 @@
  * can be 'true' if this directive should span 2 columns for landscape items, default
  * is 'false'.
  *
-*/
-import { Directive, HostListener, OnInit, ElementRef, Input, OnDestroy } from '@angular/core';
+ */
+import {
+    Directive,
+    HostListener,
+    OnInit,
+    ElementRef,
+    Input,
+    OnDestroy
+} from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -24,40 +31,50 @@ import { filter } from 'rxjs/operators';
     selector: '[mnMasonryItem]'
 })
 export class MasonryItemDirective implements OnInit, OnDestroy {
-
     // tslint:disable-next-line: no-input-rename
     @Input('mnMasonryItem') updateElement$: Subject<HTMLElement>;
     @Input() mnSpanColumns = 'false';
     updateSub: Subscription;
 
     @HostListener('window:resize')
-    screenResize() { this.setSpan(this.el.nativeElement); }
+    screenResize() {
+        this.setSpan(this.el.nativeElement);
+    }
 
     constructor(public el: ElementRef) {}
 
     ngOnInit() {
         const myEl = this.el.nativeElement;
-        this.updateSub = this.updateElement$.pipe(filter(el => el === myEl))
+        this.updateSub = this.updateElement$
+            .pipe(filter(el => el === myEl))
             .subscribe(el => this.setSpan(el));
     }
 
     ngOnDestroy() {
-        if (this.updateSub) { this.updateSub.unsubscribe(); }
+        if (this.updateSub) {
+            this.updateSub.unsubscribe();
+        }
     }
 
     setSpan(gridItem: HTMLElement) {
         const container = gridItem.parentElement;
         let cardHeight = gridItem.firstElementChild.getBoundingClientRect().height;
         const cardWidth = gridItem.firstElementChild.getBoundingClientRect().width;
-        if ((this.mnSpanColumns === 'true') && (cardWidth > cardHeight)) {
+        if (this.mnSpanColumns === 'true' && cardWidth > cardHeight) {
             gridItem.style.setProperty('grid-column-end', 'span 2');
             cardHeight = gridItem.firstElementChild.getBoundingClientRect().height; // it changed...
         }
-        const rowGap = parseInt(getComputedStyle(container).getPropertyValue('grid-row-gap'), 10);
-        const rowHeight = parseInt(getComputedStyle(container).getPropertyValue('grid-auto-rows'), 10);
-        const itemsGutter = Math.ceil(rowGap ? 0 : (10 / rowHeight)); // add a 10px gutter if rowGap === 0
-        const span = Math.ceil((cardHeight + rowGap) / (rowHeight + rowGap)) + itemsGutter;
+        const rowGap = parseInt(
+            getComputedStyle(container).getPropertyValue('grid-row-gap'),
+            10
+        );
+        const rowHeight = parseInt(
+            getComputedStyle(container).getPropertyValue('grid-auto-rows'),
+            10
+        );
+        const itemsGutter = Math.ceil(rowGap ? 0 : 10 / rowHeight); // add a 10px gutter if rowGap === 0
+        const span =
+            Math.ceil((cardHeight + rowGap) / (rowHeight + rowGap)) + itemsGutter;
         gridItem.style.setProperty('grid-row-end', `span ${span}`);
     }
-
 }

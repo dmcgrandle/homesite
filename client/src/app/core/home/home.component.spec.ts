@@ -42,10 +42,14 @@ class Page {
 }
 
 @Component({ selector: 'test-blank', template: `` })
-class BlankComponent { }
+class BlankComponent {}
 
 @Pipe({ name: 'secure' })
-class MockSecurePipe implements PipeTransform { transform(s) { return s; } }
+class MockSecurePipe implements PipeTransform {
+    transform(s) {
+        return s;
+    }
+}
 
 describe('Core Module: HomeComponent', () => {
     const configMock = {
@@ -71,22 +75,25 @@ describe('Core Module: HomeComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [HomeComponent, BlankComponent, MockSecurePipe],
-            imports: [MatIconModule, HttpClientModule,
+            imports: [
+                MatIconModule,
+                HttpClientModule,
                 RouterTestingModule.withRoutes([
                     { path: 'photo/albums', component: BlankComponent },
                     { path: 'video/albums', component: BlankComponent },
                     { path: 'download', component: BlankComponent },
-                    { path: 'family', component: BlankComponent },
-                ])],
-            providers: [
-                { provide: AppConfig, useValue: configMock }
-            ]
+                    { path: 'family', component: BlankComponent }
+                ])
+            ],
+            providers: [{ provide: AppConfig, useValue: configMock }]
         }).compileComponents();
         location = TestBed.get(Location);
         createComponent();
     }));
 
-    it('should create', () => { expect(component).toBeTruthy(); });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
     it('should have a background image', () => {
         expect(page.backImg).toBeDefined();
@@ -120,5 +127,4 @@ describe('Core Module: HomeComponent', () => {
         tick();
         expect(location.path()).toEqual('/family');
     }));
-
 });

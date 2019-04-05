@@ -32,6 +32,6 @@ export class EqualDirective implements Validator {
 function validateEqualFactory(): ValidatorFn {
     return (c: FormGroup) => {
         const [first, second] = Object.keys(c.value || {}); // Deconstruct array syntax
-        return ((c.value[first] === c.value[second])) ? null : { equal: { valid: false } };
+        return c.value[first] === c.value[second] ? null : { equal: { valid: false } };
     };
 }

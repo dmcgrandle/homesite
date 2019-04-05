@@ -4,19 +4,19 @@
 
 export class User {
     _id: number;
-    name: string;        // Full Name: eg: "John Doe"
-    username: string;    // login name: eg: "john"
+    name: string; // Full Name: eg: "John Doe"
+    username: string; // login name: eg: "john"
     password: string;
     email: string;
     level: number;
 
     constructor(iUser?: Partial<User>) {
-        this._id = (iUser && iUser._id !== undefined) ? iUser._id : -1;
-        this.name = (iUser && iUser.name !== undefined) ? iUser.name : '';
-        this.username = (iUser && iUser.username !== undefined) ? iUser.username : '';
-        this.password = (iUser && iUser.password !== undefined) ? iUser.password : '';
-        this.email = (iUser && iUser.email !== undefined) ? iUser.email : '';
-        this.level = (iUser && iUser.level !== undefined) ? iUser.level : 0;
+        this._id = iUser && iUser._id !== undefined ? iUser._id : -1;
+        this.name = iUser && iUser.name !== undefined ? iUser.name : '';
+        this.username = iUser && iUser.username !== undefined ? iUser.username : '';
+        this.password = iUser && iUser.password !== undefined ? iUser.password : '';
+        this.email = iUser && iUser.email !== undefined ? iUser.email : '';
+        this.level = iUser && iUser.level !== undefined ? iUser.level : 0;
     }
 }
 

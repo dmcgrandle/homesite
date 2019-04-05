@@ -1,5 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatFormFieldModule, MatInputModule, MatToolbarModule, MatIconModule, MatDialogModule, MatDialog } from '@angular/material';
+import {
+    MatFormFieldModule,
+    MatInputModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatDialogModule,
+    MatDialog
+} from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -11,20 +18,24 @@ import { User } from '../_helpers/classes';
 import { ChangePasswordComponent } from './change-password.component';
 import { of, throwError } from 'rxjs';
 
-describe('User Module: ChangePasswordComponent', () => {
-    const tUser: Partial<User> = { username: 'tGuest'};
+fdescribe('User Module: ChangePasswordComponent', () => {
+    const tUser: Partial<User> = { username: 'tGuest' };
     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate']);
     const mockAuth = jasmine.createSpyObj('AuthService', {
         authChangePasswordByPassword: of(<Partial<User>>{ username: 'tGuest' }),
-        authChangePasswordByToken: of(<Partial<User>>{ username: 'tGuest' }),
+        authChangePasswordByToken: of(<Partial<User>>{ username: 'tGuest' })
     });
     mockAuth.user = tUser; // Add the user property to the mockAuth spy object
     const mockActivatedRoute: Object = {
         snapshot: {
             paramMap: {
                 get: (key: string) => {
-                    if (key === 'token') { return 'ABCDEFGHIJKL'; }
-                    if (key === 'username') { return 'tGuest'; }
+                    if (key === 'token') {
+                        return 'ABCDEFGHIJKL';
+                    }
+                    if (key === 'username') {
+                        return 'tGuest';
+                    }
                 }
             }
         }
@@ -36,15 +47,22 @@ describe('User Module: ChangePasswordComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ChangePasswordComponent],
-            imports: [HttpClientModule, FormsModule, MatInputModule, MatIconModule,
-                MatToolbarModule, MatFormFieldModule, MatDialogModule, BrowserAnimationsModule ],
+            imports: [
+                HttpClientModule,
+                FormsModule,
+                MatInputModule,
+                MatIconModule,
+                MatToolbarModule,
+                MatFormFieldModule,
+                MatDialogModule,
+                BrowserAnimationsModule
+            ],
             providers: [
                 { provide: Router, useValue: routerSpy },
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
                 { provide: AuthService, useValue: mockAuth }
             ]
-        })
-        .compileComponents();
+        }).compileComponents();
     }));
     beforeEach(() => {
         fixture = TestBed.createComponent(ChangePasswordComponent);
@@ -118,7 +136,7 @@ describe('User Module: ChangePasswordComponent', () => {
             dialog = TestBed.get(MatDialog);
             router = TestBed.get(Router);
             fixture.detectChanges();
-            spyOn(dialog, 'open').and.returnValue({ afterClosed : () => of({}) });
+            spyOn(dialog, 'open').and.returnValue({ afterClosed: () => of({}) });
             chgPassComp.successfulChange(<User>tUser);
         });
         it('should successfully initiate an Alert Message dialog open to display success message', () => {
@@ -138,7 +156,7 @@ describe('User Module: ChangePasswordComponent', () => {
             dialog = TestBed.get(MatDialog);
             router = TestBed.get(Router);
             fixture.detectChanges();
-            spyOn(dialog, 'open').and.returnValue({ afterClosed : () => of({}) });
+            spyOn(dialog, 'open').and.returnValue({ afterClosed: () => of({}) });
             chgPassComp.errorChange('tError');
         });
         it('should successfully initiate an AlertMessage dialog open to display error message', () => {
@@ -169,24 +187,59 @@ describe('User Module: ChangePasswordComponent', () => {
                 expect(buttons[1].disabled).toBeTruthy();
             });
             it('"Change Password" button should NOT enable with invalid form data', () => {
-                fixture.whenStable().then(() => { // let initial state settle
-                    chgPassComp.chgPassForm.form.setValue({ newpass: 'validP', newpasschk: 'not' });
+                fixture.whenStable().then(() => {
+                    // let initial state settle
+                    chgPassComp.chgPassForm.form.setValue({
+                        newpass: 'validP',
+                        newpasschk: 'not'
+                    });
                     chgPassComp.chgPassForm.form.get('newpass').markAsDirty(); // not pristine
                     fixture.detectChanges();
-                    fixture.whenStable().then(() => { // now let changes settle
-                        expect(chgPassComp.chgPassForm.valid).toBe(false, 'newPassChk is < 5 chars');
-                        expect(buttons[1].disabled).toBeTruthy('button should be disabled');
+                    fixture.whenStable().then(() => {
+                        // now let changes settle
+                        expect(chgPassComp.chgPassForm.valid).toBe(
+                            false,
+                            'newPassChk is < 5 chars'
+                        );
+                        expect(buttons[1].disabled).toBeTruthy(
+                            'button should be disabled'
+                        );
                     });
                 });
             });
+            // it('Find another method to get chgPassForm', () => {
+            //     fixture.whenStable().then(() => {
+            //         console.log('noNotes from component is', chgPassComp.noNotes);
+            //         const testNotes = fixture.debugElement.query(By.css('#nonotes'));
+            //         const newNotes = fixture.debugElement.query(de => de.references['nonotes']);
+            //         console.log('newNotes from query is', newNotes);
+            //         console.log('testPar from component is', chgPassComp.testPar);
+            //         const testPar = fixture.debugElement.query(By.css('#testpar'));
+            //         const newTest = fixture.debugElement.query(de => de.references['testpar']);
+            //         console.log('newTest is', newTest);
+            //         const testPar2 = fixture.debugElement.references['testpar'];
+            //         console.log('testPar2 is', testPar2);
+            //         // const testPar3 = fixture.debugElement.query()
+            //         // const testDir = fixture.debugElement.query(By.directive(testpar));
+            //         console.log('testForm from query is', testPar);
+            //     });
+            // });
             it('"Change Password" button should enable with valid form data', async(() => {
-                fixture.whenStable().then(() => { // let initial state settle
-                    chgPassComp.chgPassForm.form.setValue({ newpass: 'validP', newpasschk: 'validP' });
+                fixture.whenStable().then(() => {
+                    // let initial state settle
+                    chgPassComp.chgPassForm.form.setValue({
+                        newpass: 'validP',
+                        newpasschk: 'validP'
+                    });
                     chgPassComp.chgPassForm.form.get('newpass').markAsDirty(); // not pristine
                     fixture.detectChanges();
-                    fixture.whenStable().then(() => { // now let changes settle
+                    fixture.whenStable().then(() => {
+                        // now let changes settle
                         fixture.detectChanges();
-                        expect(chgPassComp.chgPassForm.valid).toBe(true, 'form should be valid');
+                        expect(chgPassComp.chgPassForm.valid).toBe(
+                            true,
+                            'form should be valid'
+                        );
                         expect(buttons[1].disabled).toBeFalsy('button should be enabled');
                     });
                 });
@@ -194,39 +247,53 @@ describe('User Module: ChangePasswordComponent', () => {
         });
 
         describe('Initialized with password validation', () => {
-
             beforeEach(() => {
                 const route = TestBed.get(ActivatedRoute);
                 spyOn(route.snapshot.paramMap, 'get').and.returnValue(null);
                 fixture.detectChanges();
                 buttons = chgPassElement.querySelectorAll('button');
-                const button = fixture.debugElement.nativeElement.querySelector('#signInWithGithub');
+                const button = fixture.debugElement.nativeElement.querySelector(
+                    '#signInWithGithub'
+                );
             });
-                it('should display three inputs (includes existing-pass field)', () => {
+            it('should display three inputs (includes existing-pass field)', () => {
                 expect(fixture.debugElement.queryAll(By.css('input')).length).toBe(3);
             });
             it('initially "Change Password" button should be disabled', () => {
                 expect(buttons[1].disabled).toBeTruthy();
             });
             it('"Change Password" button should NOT enable with invalid form data', async(() => {
-                fixture.whenStable().then(() => { // form controls need to register w/ group
+                fixture.whenStable().then(() => {
+                    // form controls need to register w/ group
                     chgPassComp.chgPassForm.form.setValue({
-                        exgpass: 'old', newpass: 'validP', newpasschk: 'validP'
+                        exgpass: 'old',
+                        newpass: 'validP',
+                        newpasschk: 'validP'
                     }); // sets the new values in the form and dispatches event to update
                     chgPassComp.chgPassForm.form.get('newpass').markAsDirty(); // not pristine
                     fixture.detectChanges(); // wait for events to change UI
-                    expect(chgPassComp.chgPassForm.valid).toBe(false, 'form should be invalid');
-                    expect(buttons[1].disabled).toBeTruthy('button should NOT be enabled');
+                    expect(chgPassComp.chgPassForm.valid).toBe(
+                        false,
+                        'form should be invalid'
+                    );
+                    expect(buttons[1].disabled).toBeTruthy(
+                        'button should NOT be enabled'
+                    );
                 });
             }));
             it('"Change Password" button should enable with valid form data', async(() => {
                 fixture.whenStable().then(() => {
                     chgPassComp.chgPassForm.form.setValue({
-                        exgpass: 'oldPass', newpass: 'validP', newpasschk: 'validP'
+                        exgpass: 'oldPass',
+                        newpass: 'validP',
+                        newpasschk: 'validP'
                     });
                     chgPassComp.chgPassForm.form.get('newpass').markAsDirty();
                     fixture.detectChanges();
-                    expect(chgPassComp.chgPassForm.valid).toBe(true, 'form should be valid');
+                    expect(chgPassComp.chgPassForm.valid).toBe(
+                        true,
+                        'form should be valid'
+                    );
                     expect(buttons[1].disabled).toBeFalsy('button should be enabled');
                 });
             }));

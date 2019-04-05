@@ -7,7 +7,7 @@ import {
     MatInputModule,
     MatTableModule,
     MatSortModule,
-    MatProgressSpinnerModule,
+    MatProgressSpinnerModule
 } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
@@ -20,7 +20,7 @@ import { DownloadsComponent } from './downloads/downloads.component';
 import { FilenameComponent } from './filename/filename.component';
 
 @NgModule({
-    declarations: [ DownloadsComponent, FilenameComponent ],
+    declarations: [DownloadsComponent, FilenameComponent],
     imports: [
         CommonModule,
         SharedModule,
@@ -33,7 +33,7 @@ import { FilenameComponent } from './filename/filename.component';
         MatInputModule,
         MatTableModule,
         MatSortModule,
-        MatProgressSpinnerModule,
+        MatProgressSpinnerModule
     ]
 })
-export class DownloadModule { }
+export class DownloadModule {}

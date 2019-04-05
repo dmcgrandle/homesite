@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef, MatDialog, MatDialogModule, MatSelectModule, MatInputModule,
-         MatToolbarModule, MatIconModule, MAT_DIALOG_DATA, MatFormFieldModule } from '@angular/material';
+import {
+    MatDialogRef, MatDialog, MatDialogModule, MatSelectModule, MatInputModule,
+    MatToolbarModule, MatIconModule, MAT_DIALOG_DATA, MatFormFieldModule
+} from '@angular/material';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { FormsModule } from '@angular/forms';
 import { DOWN_ARROW, ENTER } from '@angular/cdk/keycodes';
@@ -100,7 +102,7 @@ class Page {
 describe('User Module: EditDialogComponent', () => {
     const testUser: User = new User();
     const mockDialogRef = jasmine.createSpyObj('mockDialogRef', ['close']);
-    const mockDialogData: DialogData = { user: testUser};
+    const mockDialogData: DialogData = { user: testUser };
     const authSpy = jasmine.createSpyObj({ authUpdateUser: of(testUser) });
     let component: EditDialogComponent;
     let fixture: ComponentFixture<EditDialogComponent>;
@@ -114,7 +116,7 @@ describe('User Module: EditDialogComponent', () => {
         // 1st change detection triggers ngOnInit
         fixture.detectChanges();
         return fixture.whenStable().then(() => {
-        // 2nd change detection updates the display
+            // 2nd change detection updates the display
             fixture.detectChanges();
         });
     }
@@ -135,7 +137,7 @@ describe('User Module: EditDialogComponent', () => {
                 entryComponents: [EditDialogComponent]
             }
         })
-        .compileComponents();
+            .compileComponents();
     }));
 
     beforeEach(() => {
@@ -163,7 +165,7 @@ describe('User Module: EditDialogComponent', () => {
             authSpy.authUpdateUser.and.returnValue(of(new User()));
             component.onSaveClick('tPass');
             expect(dialogSpy).toHaveBeenCalledWith(AlertMessageDialogComponent, jasmine.objectContaining({
-                data: jasmine.objectContaining({heading: 'Success'})
+                data: jasmine.objectContaining({ heading: 'Success' })
             }));
             expect(mockDialogRef.close).toHaveBeenCalled();
             component.data.user.password = ''; // reset it or other tests will fail.
@@ -171,17 +173,17 @@ describe('User Module: EditDialogComponent', () => {
         it('onSaveClick() should open Error dialog if update is NOT successful', () => {
             spyOn(component, 'copyToDialogData');
             mockDialogRef.close.calls.reset();
-            authSpy.authUpdateUser.and.returnValue(throwError({error: 'Network Timeout'}));
+            authSpy.authUpdateUser.and.returnValue(throwError({ error: 'Network Timeout' }));
             component.onSaveClick('tPass');
             expect(dialogSpy).toHaveBeenCalledWith(AlertMessageDialogComponent, jasmine.objectContaining({
-                data: jasmine.objectContaining({heading: 'Error'})
+                data: jasmine.objectContaining({ heading: 'Error' })
             }));
             expect(mockDialogRef.close).toHaveBeenCalled();
             expect(component.copyToDialogData).toHaveBeenCalledWith(component.saveUser);
             component.data.user.password = '';
         });
         it('copyToDialogData() should copy the given user without password to the component.data.user object', () => {
-            const testUser1 = new User({name: 'tFooName', password: 'tPass'});
+            const testUser1 = new User({ name: 'tFooName', password: 'tPass' });
             component.copyToDialogData(testUser1);
             delete testUser1.password;
             expect(component.data.user).toEqual(testUser1);
@@ -234,7 +236,7 @@ describe('User Module: EditDialogComponent', () => {
                     testIfSaveStillDisabled(page.nameInput);
                 });
                 it('should be able to change the field and update the correct user', () => {
-                    testIfUserDoesUpdate(page.nameInput, 'testBAR', new User({name: 'testBAR'}));
+                    testIfUserDoesUpdate(page.nameInput, 'testBAR', new User({ name: 'testBAR' }));
                     testUser.name = ''; // reset after testing
                 });
             });
@@ -243,7 +245,7 @@ describe('User Module: EditDialogComponent', () => {
                     testIfSaveStillDisabled(page.usernameInput);
                 });
                 it('should be able to change the "username" field and update correct user', () => {
-                    testIfUserDoesUpdate(page.usernameInput, 'testBAZ', new User({username: 'testBAZ'}));
+                    testIfUserDoesUpdate(page.usernameInput, 'testBAZ', new User({ username: 'testBAZ' }));
                     testUser.username = '';
                 });
             });
@@ -252,7 +254,7 @@ describe('User Module: EditDialogComponent', () => {
                     testIfSaveStillDisabled(page.emailInput);
                 });
                 it('should be able to change the "email" field and update correct user', () => {
-                    testIfUserDoesUpdate(page.emailInput, 'testBAA', new User({email: 'testBAA'}));
+                    testIfUserDoesUpdate(page.emailInput, 'testBAA', new User({ email: 'testBAA' }));
                     testUser.email = '';
                 });
             });
@@ -270,7 +272,7 @@ describe('User Module: EditDialogComponent', () => {
                     spyOn(component, 'onSaveClick').and.callThrough();
                     page.saveButton.click();
                     expect(component.onSaveClick).toHaveBeenCalled();
-                    expect(authSpy.authUpdateUser).toHaveBeenCalledWith(new User({level: 3}));
+                    expect(authSpy.authUpdateUser).toHaveBeenCalledWith(new User({ level: 3 }));
                     // TODO : Test with keyboard as well, but couldn't get this to work:
                     // const event = new KeyboardEvent('keypress', {key: 'ArrowDown'}); // down arrow
                     testUser.level = 0;
@@ -284,7 +286,7 @@ describe('User Module: EditDialogComponent', () => {
                 it('should be able to change the password fields and update correct user', () => {
                     page.newPassInput.value = 'testPASS';
                     page.newPassInput.dispatchEvent(new Event('input'));
-                    testIfUserDoesUpdate(page.verifyPassInput, 'testPASS', new User({password: 'testPASS'}));
+                    testIfUserDoesUpdate(page.verifyPassInput, 'testPASS', new User({ password: 'testPASS' }));
                     testUser.password = '';
                 });
             });

@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogModule, MatFormFieldModule,
-         MatToolbarModule, MatInputModule, MatProgressSpinnerModule} from '@angular/material';
+import {
+    MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogModule, MatFormFieldModule,
+    MatToolbarModule, MatInputModule, MatProgressSpinnerModule
+} from '@angular/material';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
@@ -62,10 +64,10 @@ describe('User Module: ForgotDialogComponent', () => {
         afterClosed: of({})
     });
     const mockDialog = jasmine.createSpyObj('MatDialog', { open: mockDialogRef });
-    const mockDialogData: DialogData = { username: 'tUser'};
+    const mockDialogData: DialogData = { username: 'tUser' };
     const tEmail = 'foo@bar.com';
     const authSpy = jasmine.createSpyObj('AuthService', ['authForgot']);
-    authSpy.user = new User({email: ''});
+    authSpy.user = new User({ email: '' });
     let component: ForgotDialogComponent;
     let fixture: ComponentFixture<ForgotDialogComponent>;
     let page: Page;
@@ -80,7 +82,7 @@ describe('User Module: ForgotDialogComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [ ForgotDialogComponent ],
+            declarations: [ForgotDialogComponent],
             providers: [
                 { provide: AuthService, useValue: authSpy },
                 { provide: MatDialogRef, useValue: mockDialogRef },
@@ -106,7 +108,7 @@ describe('User Module: ForgotDialogComponent', () => {
             mockDialogRef.close.calls.reset();
             mockDialog.open.calls.reset();
             authSpy.authForgot.calls.reset();
-            authSpy.authForgot.and.returnValue(of(new User({email: tEmail})));
+            authSpy.authForgot.and.returnValue(of(new User({ email: tEmail })));
             createComponent();
         }));
 
@@ -124,11 +126,11 @@ describe('User Module: ForgotDialogComponent', () => {
             expect(page.submitButton).toBeTruthy('Err: Submit button does not exist.');
             expect(page.submitButton.disabled).toBeTruthy('Err: Submit button should be disabled to start.');
         });
-    it('should close the component and pass back correct data if cancel is clicked', () => {
-        mockDialogRef.close.calls.reset();
-        page.cancelButton.click();
-        expect(mockDialogRef.close).toHaveBeenCalled();
-    });
+        it('should close the component and pass back correct data if cancel is clicked', () => {
+            mockDialogRef.close.calls.reset();
+            page.cancelButton.click();
+            expect(mockDialogRef.close).toHaveBeenCalled();
+        });
         it('should still have a disabled submit button if too few characters entered', () => {
             expect(page.emailInput).toBeTruthy('Err: Email input does not exist.');
             expect(page.submitButton.disabled).toBeTruthy();
@@ -151,7 +153,7 @@ describe('User Module: ForgotDialogComponent', () => {
             authSpy.user.email = ''; // reset for further testing
         });
         it('should display alert on 404 error from backend api when submit button is clicked', () => {
-            authSpy.authForgot.and.returnValue(throwError(new HttpErrorResponse({status: 404})));
+            authSpy.authForgot.and.returnValue(throwError(new HttpErrorResponse({ status: 404 })));
             setEmailInput(tEmail);
             page.submitButton.click();
             expect(authSpy.authForgot).toHaveBeenCalled();
@@ -161,7 +163,7 @@ describe('User Module: ForgotDialogComponent', () => {
             authSpy.user.email = '';
         });
         it('should display alert on non-404 error from backend api when submit button is clicked', () => {
-            const errResp = new HttpErrorResponse({status: 403, statusText: 'Forbidden'});
+            const errResp = new HttpErrorResponse({ status: 403, statusText: 'Forbidden' });
             authSpy.authForgot.and.returnValue(throwError(errResp));
             setEmailInput(tEmail);
             page.submitButton.click();

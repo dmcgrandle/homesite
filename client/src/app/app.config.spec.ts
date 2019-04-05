@@ -1,5 +1,8 @@
 import { TestBed, inject, async } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+    HttpClientTestingModule,
+    HttpTestingController
+} from '@angular/common/http/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { environment } from '../environments/environment';
@@ -35,15 +38,22 @@ describe('App Module: AppConfig', () => {
         appConfig.load().then(() => {
             expect(appConfig.const).toEqual(<IAppConfig>appCfgMock);
         });
-        const req = httpMock.expectOne(`assets/config/config.${environment.confName}.json`);
+        const req = httpMock.expectOne(
+            `assets/config/config.${environment.confName}.json`
+        );
         expect(req.request.method).toEqual('GET');
         req.flush(appCfgMock);
     }));
     it('should not load the config file if error', async(() => {
-        appConfig.load().then().catch((err) => {
-            expect(err).toContain('Could not load file');
-        });
-        const req = httpMock.expectOne(`assets/config/config.${environment.confName}.json`);
+        appConfig
+            .load()
+            .then()
+            .catch(err => {
+                expect(err).toContain('Could not load file');
+            });
+        const req = httpMock.expectOne(
+            `assets/config/config.${environment.confName}.json`
+        );
         expect(req.request.method).toEqual('GET');
         req.error(new ErrorEvent(''));
     }));

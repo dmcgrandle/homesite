@@ -1,5 +1,8 @@
 import { TestBed, inject, async } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+    HttpClientTestingModule,
+    HttpTestingController
+} from '@angular/common/http/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 
@@ -21,15 +24,17 @@ describe('Shared Module: UrlHelperService', () => {
         expect(urlHelper).toBeTruthy();
     });
     it('should return a blob from a given URL', async(() => {
-            const testBlob: File = new File(['test blob content'], 'image.jpg', {type : 'text/plain'});
-            const urlTest = '/test/path/to/image.jpg';
-            const urlBlob = 'blob:http://localhost:1234/567890';
-            spyOn(URL, 'createObjectURL').and.returnValue(urlBlob);
-            spyOn(URL, 'revokeObjectURL');
-            urlHelper.get(urlTest).subscribe(result => expect(result).toEqual(urlBlob));
-            const req = httpMock.expectOne(urlTest);
-            expect(req.request.method).toEqual('GET');
-            expect(req.request.responseType).toEqual('blob');
-            req.flush(testBlob);
-        }));
+        const testBlob: File = new File(['test blob content'], 'image.jpg', {
+            type: 'text/plain'
+        });
+        const urlTest = '/test/path/to/image.jpg';
+        const urlBlob = 'blob:http://localhost:1234/567890';
+        spyOn(URL, 'createObjectURL').and.returnValue(urlBlob);
+        spyOn(URL, 'revokeObjectURL');
+        urlHelper.get(urlTest).subscribe(result => expect(result).toEqual(urlBlob));
+        const req = httpMock.expectOne(urlTest);
+        expect(req.request.method).toEqual('GET');
+        expect(req.request.responseType).toEqual('blob');
+        req.flush(testBlob);
+    }));
 });

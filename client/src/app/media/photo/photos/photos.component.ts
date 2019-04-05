@@ -14,7 +14,6 @@ import { APIService } from '../_services/api.service';
     styleUrls: ['./photos.component.scss']
 })
 export class PhotosComponent implements OnInit {
-
     // state for children:
     curThumbsIndex = 0;
     focalLoading = true;
@@ -25,7 +24,8 @@ export class PhotosComponent implements OnInit {
         this.api.loadThumbs(this.route.url);
     }
 
-    private changeThumb(newIndex: number) {// event 'thumbChanged' in template
+    private changeThumb(newIndex: number) {
+        // event 'thumbChanged' in template
         this.curThumbsIndex = newIndex;
         this.focalLoading = true;
     }

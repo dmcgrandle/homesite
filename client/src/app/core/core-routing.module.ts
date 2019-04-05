@@ -4,11 +4,11 @@ import { HomeComponent } from './home/home.component';
 import { AuthService } from '../user/_services/auth.service';
 
 const routes: Routes = [
-  { path: 'home', component: HomeComponent, canActivate: [AuthService] }
+    { path: 'home', component: HomeComponent, canActivate: [AuthService] }
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule]
 })
-export class CoreRoutingModule { }
+export class CoreRoutingModule {}

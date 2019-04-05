@@ -9,10 +9,9 @@ import { AppConfig } from '../../app.config';
     encapsulation: ViewEncapsulation.None // Had to turn off to style the .mat-tab-label height in scss
 })
 export class AboutComponent {
+    step = 0; // For the accordian selection
 
-    step = 0;           // For the accordian selection
-
-    constructor(public CFG: AppConfig) { }
+    constructor(public CFG: AppConfig) {}
 
     setStep(index: number) {
         this.step = index;

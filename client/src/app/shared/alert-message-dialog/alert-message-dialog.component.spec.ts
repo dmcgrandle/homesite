@@ -1,5 +1,10 @@
 import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
-import { MatDialogRef, MatDialogModule, MatToolbarModule, MAT_DIALOG_DATA } from '@angular/material';
+import {
+    MatDialogRef,
+    MatDialogModule,
+    MatToolbarModule,
+    MAT_DIALOG_DATA
+} from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AlertMessageDialogComponent, AlertData } from './alert-message-dialog.component';
@@ -20,7 +25,7 @@ describe('Shared Module: AlertMessageDialogComponent with data', () => {
         TestBed.configureTestingModule({
             declarations: [AlertMessageDialogComponent],
             providers: [
-                { provide: MatDialogRef , useValue: mockDialogRef},
+                { provide: MatDialogRef, useValue: mockDialogRef },
                 { provide: MAT_DIALOG_DATA, useValue: mockDialogData }
             ],
             imports: [HttpClientModule, MatDialogModule, MatToolbarModule]
@@ -55,7 +60,10 @@ describe('Shared Module: AlertMessageDialogComponent with data', () => {
         const cancelEl: HTMLElement = dialogElement.querySelector('[mat-dialog-close]');
         expect(cancelEl).not.toBeNull('Cancel button is missing.');
         if (cancelEl) {
-            expect(cancelEl.textContent).toContain('tCancel', 'Cancel button has wrong text');
+            expect(cancelEl.textContent).toContain(
+                'tCancel',
+                'Cancel button has wrong text'
+            );
         }
     });
 });
@@ -70,7 +78,7 @@ describe('Shared Module: AlertMessageDialogComponent without data', () => {
         TestBed.configureTestingModule({
             declarations: [AlertMessageDialogComponent],
             providers: [
-                { provide: MatDialogRef , useValue: mockDialogRef},
+                { provide: MatDialogRef, useValue: mockDialogRef },
                 { provide: MAT_DIALOG_DATA, useValue: mockDialogData }
             ],
             imports: [HttpClientModule, MatDialogModule, MatToolbarModule]
@@ -98,4 +106,3 @@ describe('Shared Module: AlertMessageDialogComponent without data', () => {
         expect(component.data.cancelText).toEqual('Cancel');
     });
 });
-

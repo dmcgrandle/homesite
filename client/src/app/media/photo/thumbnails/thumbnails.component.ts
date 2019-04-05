@@ -1,4 +1,11 @@
-import { Component, OnInit, Input, Output, HostListener, EventEmitter } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    Input,
+    Output,
+    HostListener,
+    EventEmitter
+} from '@angular/core';
 import { KEY_CODE } from '../../../shared/_classes/key-code-enum';
 
 import { Photo } from '../_helpers/classes';
@@ -9,7 +16,6 @@ import { Photo } from '../_helpers/classes';
     styleUrls: ['./thumbnails.component.scss']
 })
 export class ThumbnailsComponent {
-
     @Input() thumbs: Photo[];
     @Input() curIndex: number;
     @Output() thumbChanged = new EventEmitter<number>();
@@ -43,14 +49,18 @@ export class ThumbnailsComponent {
     keyEvent(event: KeyboardEvent) {
         if (event.keyCode in KEY_CODE) {
             let nextIndex = 0;
-            switch (event.keyCode) { // set nextIndex to where we are going next
+            switch (
+                event.keyCode // set nextIndex to where we are going next
+            ) {
                 case KEY_CODE.RIGHT_ARROW:
                 case KEY_CODE.DOWN_ARROW:
-                    nextIndex = (this.curIndex === this.thumbs.length - 1) ? 0 : this.curIndex + 1;
+                    nextIndex =
+                        this.curIndex === this.thumbs.length - 1 ? 0 : this.curIndex + 1;
                     break;
                 case KEY_CODE.LEFT_ARROW:
                 case KEY_CODE.UP_ARROW:
-                    nextIndex = (this.curIndex === 0) ? this.thumbs.length - 1 : this.curIndex - 1;
+                    nextIndex =
+                        this.curIndex === 0 ? this.thumbs.length - 1 : this.curIndex - 1;
                     break;
                 case KEY_CODE.END:
                     nextIndex = this.thumbs.length - 1;
@@ -68,5 +78,4 @@ export class ThumbnailsComponent {
             this.thumbChanged.emit(nextIndex);
         }
     }
-
 }

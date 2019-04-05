@@ -15,16 +15,16 @@ import { Video } from '../_helpers/classes';
     styleUrls: ['./video.component.scss']
 })
 export class VideoComponent implements OnInit {
-
     video: Video;
     loadingAPI = true;
     loadingVideo = true;
 
-    constructor(public api: APIService,
+    constructor(
+        public api: APIService,
         private route: ActivatedRoute,
         private router: Router,
-        public dialog: MatDialog) { }
-
+        public dialog: MatDialog
+    ) {}
 
     ngOnInit() {
         // If called from gallery-video-albums component then the
@@ -39,17 +39,17 @@ export class VideoComponent implements OnInit {
             console.log('video is: ');
             console.log(this.video);
             this.loadingAPI = false;
-        } else {// We need to load video from the url sent.
+        } else {
+            // We need to load video from the url sent.
             this.api.getVideoByURL(this.route.url).subscribe(
-                (video) => {
+                video => {
                     this.video = video;
                     this.loadingAPI = false;
                     console.log('video is:');
                     console.log(video);
                 },
-                (err) => this.errAlert('Problem getting video!', err)
+                err => this.errAlert('Problem getting video!', err)
             );
-
         }
     }
 
@@ -59,10 +59,8 @@ export class VideoComponent implements OnInit {
             width: '400px',
             data: { alertMessage: alertMessage, showCancel: false }
         });
-        dialogRef.afterClosed().subscribe(result => { });
+        dialogRef.afterClosed().subscribe(result => {});
         console.log(err);
         this.router.navigate(['/user/login']);
     }
-
-
 }

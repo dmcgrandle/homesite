@@ -9,7 +9,7 @@ describe('Download Module: FilenameComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [FilenameComponent],
+            declarations: [FilenameComponent]
         }).compileComponents();
     }));
 
@@ -39,7 +39,7 @@ describe('Download Module: FilenameComponent', () => {
         });
         it('should emit a value to custom "changed" event if input value changed with mouse click away', () => {
             el.value = 'newFile';
-            elDebug.triggerEventHandler('blur', {target: el});
+            elDebug.triggerEventHandler('blur', { target: el });
             fixture.detectChanges();
             expect(component.changed.emit).toHaveBeenCalledWith(
                 jasmine.objectContaining({ newFilename: 'newFile' })
@@ -47,7 +47,7 @@ describe('Download Module: FilenameComponent', () => {
         });
         it('should emit a value to custom "changed" event if input value changed with keyboard', () => {
             el.value = 'anotherNewFile';
-            elDebug.triggerEventHandler('keyup.enter', {target: el});
+            elDebug.triggerEventHandler('keyup.enter', { target: el });
             fixture.detectChanges();
             expect(component.changed.emit).toHaveBeenCalledWith(
                 jasmine.objectContaining({ newFilename: 'anotherNewFile' })

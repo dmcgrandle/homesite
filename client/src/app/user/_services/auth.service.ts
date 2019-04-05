@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import {
+    CanActivate,
+    Router,
+    ActivatedRouteSnapshot,
+    RouterStateSnapshot
+} from '@angular/router';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { HttpClient, HttpEvent, HttpParams, HttpRequest } from '@angular/common/http';
@@ -11,14 +16,12 @@ import { DlFile } from '../../download/_helpers/classes';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService implements CanActivate {
-
     public user: User;
 
-    constructor(private http: HttpClient,
-        public CFG: AppConfig,
-        private router: Router) {
-        if (!this.user && this.isAuthenticated()) {// user must have refreshed, so reset user
-            this.user = new User;
+    constructor(private http: HttpClient, public CFG: AppConfig, private router: Router) {
+        if (!this.user && this.isAuthenticated()) {
+            // user must have refreshed, so reset user
+            this.user = new User();
             this.user.username = this.lastLoggedInUsername();
             this.user.level = this.lastLoggedInUserLevel();
         }
@@ -42,11 +45,13 @@ export class AuthService implements CanActivate {
     public authLogin(): Observable<LoginResponse> {
         // before transmitting user object to server for authentication, encrypt pw
         this.user.password = this.encryptPass(this.user.password);
-        return <Observable<LoginResponse>>this.http.post('/api/users/login', this.user).pipe(
-            tap((res: LoginResponse) => {
-                this.storeLoginResponse(res);
-                this.user.level = res.level;
-            })
+        return <Observable<LoginResponse>>(
+            this.http.post('/api/users/login', this.user).pipe(
+                tap((res: LoginResponse) => {
+                    this.storeLoginResponse(res);
+                    this.user.level = res.level;
+                })
+            )
         );
     }
 
@@ -74,7 +79,9 @@ export class AuthService implements CanActivate {
     }
 
     public authUpdateUser(user: User): Observable<User> {
-        if (user.password) { user.password = this.encryptPass(user.password); }
+        if (user.password) {
+            user.password = this.encryptPass(user.password);
+        }
         const body = user;
         return this.http.put<User>('/api/users/update', body);
     }
@@ -99,7 +106,7 @@ export class AuthService implements CanActivate {
         // Note - this returns an EVENT, so we can track progress
         const formData = new FormData();
         formData.append('upload', file);
-        const params = new HttpParams;
+        const params = new HttpParams();
         const options = { params: params, reportProgress: true };
         const req = new HttpRequest('POST', '/api/downloads/upload', formData, options);
         return this.http.request(req);
@@ -110,12 +117,13 @@ export class AuthService implements CanActivate {
     }
 
     public isLoginExpired(): boolean {
-        const tokenTimeRemaining = Number(localStorage.getItem('expiresAt')) - Math.round(Date.now() / 1000);
-        return (tokenTimeRemaining < 300); // If less than 5 mins (300s) remaining, log in again.
+        const tokenTimeRemaining =
+            Number(localStorage.getItem('expiresAt')) - Math.round(Date.now() / 1000);
+        return tokenTimeRemaining < 300; // If less than 5 mins (300s) remaining, log in again.
     }
 
     public hasLoggedInBefore(): boolean {
-        return (localStorage.getItem('successfulLogin') === 'true');
+        return localStorage.getItem('successfulLogin') === 'true';
     }
 
     public lastLoggedInUsername(): string {
@@ -131,7 +139,7 @@ export class AuthService implements CanActivate {
         localStorage.removeItem('jwtToken');
         localStorage.removeItem('level');
         localStorage.removeItem('expiresAt');
-        this.user = new User;
+        this.user = new User();
     }
 
     public setAttemptedURL(url: string) {
@@ -158,5 +166,4 @@ export class AuthService implements CanActivate {
         localStorage.setItem('expiresAt', res.expiresAt);
         localStorage.setItem('successfulLogin', 'true');
     }
-
 }

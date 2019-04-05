@@ -18,46 +18,57 @@ import { VideoAlbum, Video } from '../_helpers/classes';
     styleUrls: ['./albums.component.scss']
 })
 export class AlbumsComponent implements OnInit, OnDestroy {
-
     displayAlbums: Array<VideoAlbum>;
     videosDisplayName: string;
     getAlbumsSub: Subscription;
     cardLoaded: Subject<HTMLDivElement> = new Subject();
 
-    constructor(public api: APIService,
+    constructor(
+        public api: APIService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog,
-        private location: Location) { }
+        private location: Location
+    ) {}
 
     ngOnInit() {
         // this observable changes on init, or when nav button hit (back or fwd)
         this.getAlbumsSub = this.api.getVideoAlbumsByURL(this.route.url).subscribe(
-            (albums) => {
+            albums => {
                 this.displayAlbums = albums;
-                this.videosDisplayName = (this.api.curVideoAlbum._id > 0) ? this.api.curVideoAlbum.name : '';
+                this.videosDisplayName =
+                    this.api.curVideoAlbum._id > 0 ? this.api.curVideoAlbum.name : '';
             },
-            (err) => this.errAlert('Problem getting albums!', err)
+            err => this.errAlert('Problem getting albums!', err)
         );
     }
 
     ngOnDestroy() {
-        if (this.getAlbumsSub) { this.getAlbumsSub.unsubscribe(); }
-        if (this.cardLoaded) { this.cardLoaded.unsubscribe(); }
+        if (this.getAlbumsSub) {
+            this.getAlbumsSub.unsubscribe();
+        }
+        if (this.cardLoaded) {
+            this.cardLoaded.unsubscribe();
+        }
     }
 
     public updateDisplayAlbum(album: VideoAlbum) {
         this.api.curVideoAlbum = album; // go down one level (directory).
-        if (album.albumIds.length > 0) {// means this album contains other albums
+        if (album.albumIds.length > 0) {
+            // means this album contains other albums
             this.api.getVideoAlbumsByIdArray(album.albumIds).subscribe(
-                (albums) => { // get the albums array for this new album
+                albums => {
+                    // get the albums array for this new album
                     this.displayAlbums = albums; // set albums to display
-                    const url = 'media/video/albums' + this.router.createUrlTree([album.path]).toString();
+                    const url =
+                        'media/video/albums' +
+                        this.router.createUrlTree([album.path]).toString();
                     this.location.go(url); // Update the URL in the browser window without navigating.
                 },
-                (err) => this.errAlert('Problem getting albums!', err)
+                err => this.errAlert('Problem getting albums!', err)
             );
-        } else { // Not an album of albums!  So nav to Videoss ...
+        } else {
+            // Not an album of albums!  So nav to Videoss ...
             this.navToVideos(album);
         }
     }
@@ -72,9 +83,8 @@ export class AlbumsComponent implements OnInit, OnDestroy {
             width: '400px',
             data: { alertMessage: alertMessage, showCancel: false }
         });
-        dialogRef.afterClosed().subscribe(result => { });
+        dialogRef.afterClosed().subscribe(result => {});
         console.log(err);
         this.router.navigate(['/home']);
     }
-
 }

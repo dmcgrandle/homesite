@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+    HttpClientTestingModule,
+    HttpTestingController
+} from '@angular/common/http/testing';
 import { HttpClient, HttpProgressEvent, HttpEventType } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 
 import { APIService } from './api.service';
-import { DlFile, FilenameChangedObj} from '../_helpers/classes';
+import { DlFile, FilenameChangedObj } from '../_helpers/classes';
 import { AppConfig } from '../../app.config';
 import { RouterStateSnapshot } from '@angular/router';
 
@@ -47,10 +50,19 @@ describe('Download Module: APIService', () => {
         let tFile: DlFile;
         beforeEach(() => {
             httpMock = TestBed.get(HttpTestingController);
-            tFile = { _id: 1, filename: 'A', fullPath: 'B', suffix: 'C', type: 'D', size: 4, sizeHR: 'E', icon: 'F' };
+            tFile = {
+                _id: 1,
+                filename: 'A',
+                fullPath: 'B',
+                suffix: 'C',
+                type: 'D',
+                size: 4,
+                sizeHR: 'E',
+                icon: 'F'
+            };
         });
         it('should successfully get a list of downloads', () => {
-            const testList: DlFile[] = [ tFile, tFile ];
+            const testList: DlFile[] = [tFile, tFile];
             api.authGetDownloads().subscribe(files => expect(files).toEqual(testList));
             const req = httpMock.expectOne('/api/downloads/list');
             expect(req.request.method).toEqual('GET');
@@ -58,11 +70,16 @@ describe('Download Module: APIService', () => {
         });
         it('should successfully initiate the download of a file', () => {
             // const testBlob: Blob = new Blob(['test blob content'], {type : 'text/plain'});
-            const testEvent: HttpProgressEvent =  { type: HttpEventType.DownloadProgress, loaded: 18 };
+            const testEvent: HttpProgressEvent = {
+                type: HttpEventType.DownloadProgress,
+                loaded: 18
+            };
             const http = TestBed.get(HttpClient);
             spyOn(http, 'request').and.returnValue(of(testEvent));
             api.downloadFile(tFile).subscribe(() => {
-                expect(http.request).toHaveBeenCalledWith(jasmine.objectContaining({responseType: 'blob'}));
+                expect(http.request).toHaveBeenCalledWith(
+                    jasmine.objectContaining({ responseType: 'blob' })
+                );
             });
             http.request.and.callThrough();
         });
@@ -73,7 +90,11 @@ describe('Download Module: APIService', () => {
             req.flush(tFile);
         });
         it('should successfully send a POST request to the backend with body === given FilenameChangedObj', () => {
-            const tFilenameChanged: FilenameChangedObj = {_id: 0, oldFilename: 'oFile', newFilename: 'nFile'};
+            const tFilenameChanged: FilenameChangedObj = {
+                _id: 0,
+                oldFilename: 'oFile',
+                newFilename: 'nFile'
+            };
             const req = httpMock.expectOne(`/api/downloads/rename`);
             api.renameFile(tFilenameChanged).subscribe(() => {
                 expect(req.request.body).toEqual(tFilenameChanged);
@@ -83,7 +104,10 @@ describe('Download Module: APIService', () => {
         });
         it('should successfully upload a file', () => {
             const testFile: File = new File([], 'A');
-            const testEvent: HttpProgressEvent =  { type: HttpEventType.UploadProgress, loaded: 55 };
+            const testEvent: HttpProgressEvent = {
+                type: HttpEventType.UploadProgress,
+                loaded: 55
+            };
             api.uploadFile(testFile).subscribe(res => expect(res.type).toBeDefined());
             const req = httpMock.expectOne('/api/downloads/upload');
             expect(req.request.method).toEqual('POST');
@@ -91,5 +115,4 @@ describe('Download Module: APIService', () => {
         });
         afterEach(() => httpMock.verify());
     });
-
 });

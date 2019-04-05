@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed, fakeAsync, tick, flush } from '@angul
 import { MatCardModule, MatProgressSpinnerModule, MatDialogModule, MatDialog } from '@angular/material';
 // import { HttpClientModule } from '@angular/common/http';
 import { Location } from '@angular/common';
-import { Router/*, ActivatedRoute */} from '@angular/router';
+import { Router/*, ActivatedRoute */ } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { delay } from 'rxjs/operators';
@@ -48,8 +48,8 @@ class Page {
     }
 }
 
-@Component({selector: 'test-blank', template: ``})
-class BlankComponent {}
+@Component({ selector: 'test-blank', template: `` })
+class BlankComponent { }
 
 @Pipe({ name: 'secure' })
 class MockSecurePipe implements PipeTransform { transform(s) { return s; } }
@@ -87,9 +87,11 @@ describe('Photo Module: AlbumsComponent', () => {
                 RouterTestingModule.withRoutes([
                     // { path: 'photo/albums', component: BlankComp },
                     { path: 'photo/photos', component: AlbumsComponent },
-                    { path: 'photo/photos', children: [
-                        { path: '**', component: AlbumsComponent }
-                    ]},
+                    {
+                        path: 'photo/photos', children: [
+                            { path: '**', component: AlbumsComponent }
+                        ]
+                    },
                     { path: 'home', component: BlankComponent },
                 ])
             ],

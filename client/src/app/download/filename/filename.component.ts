@@ -8,12 +8,11 @@ import { FilenameChangedObj } from '../_helpers/classes';
     styleUrls: ['./filename.component.scss']
 })
 export class FilenameComponent {
-
     @Input() id: number;
     @Input() filename: string;
     @Output() changed = new EventEmitter<FilenameChangedObj>();
 
-    constructor() { }
+    constructor() {}
 
     valueChanged(name: string): void {
         if (name !== this.filename) {
@@ -27,5 +26,5 @@ export class FilenameComponent {
         }
     }
 
-    clickedOnMe(name: string) { }
+    clickedOnMe(name: string) {}
 }

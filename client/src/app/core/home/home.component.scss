@@ -9,7 +9,7 @@
     z-index: -1;
 
     // next two values center the image, clipping edges, on small viewports:
-    margin-left: 50%; 
+    margin-left: 50%;
     transform: translateX(-50%);
 }
 
@@ -25,7 +25,7 @@
         // font-size: calc([minimum size] + ([maximum size] - [minimum size]) * ((100vw - [minimum viewport width]) / ([maximum viewport width] - [minimum viewport width])))
         font-size: calc(20px + (66 - 20) * ((100vw - 300px) / (2400 - 300)));
     }
-     
+
     .icon {
         font-size: calc(40px + (100 - 40) * ((100vw - 300px) / (2400 - 300)));
         height: calc(40px + (100 - 40) * ((100vw - 300px) / (2400 - 300)));
@@ -33,11 +33,9 @@
         color: whitesmoke;
         cursor: pointer;
     }
-    
+
     .icon-description {
         font-size: calc(10px + (20 - 10) * ((100vw - 300px) / (2400 - 300)));
         color: whitesmoke;
     }
-    
 }
-

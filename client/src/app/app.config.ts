@@ -5,7 +5,6 @@ import { IAppConfig } from './app.config.model';
 
 @Injectable()
 export class AppConfig {
-
     public const: IAppConfig;
 
     constructor(private http: HttpClient) {}
@@ -14,11 +13,12 @@ export class AppConfig {
         const jsonFile = `assets/config/config.${environment.confName}.json`;
         return new Promise<void>((resolve, reject) => {
             this.http.get(jsonFile).subscribe(
-                (res) => {
+                res => {
                     this.const = <IAppConfig>res;
                     resolve();
                 },
-                (err) => reject('Could not load file ' + jsonFile + ': ' + JSON.stringify(err))
+                err =>
+                    reject('Could not load file ' + jsonFile + ': ' + JSON.stringify(err))
             );
         });
     }

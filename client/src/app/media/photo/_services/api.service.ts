@@ -12,7 +12,6 @@ import { Album, Photo } from '../_helpers/classes';
 
 @Injectable({ providedIn: 'root' })
 export class APIService implements OnDestroy {
-
     // state for subscribers:
     private _thumbs$: BehaviorSubject<Photo[]> = new BehaviorSubject(null);
     public readonly thumbs$ = this._thumbs$.asObservable();
@@ -20,13 +19,17 @@ export class APIService implements OnDestroy {
     public curPhoto: Photo;
     private thumbSub: Subscription;
 
-    constructor(private http: HttpClient,
+    constructor(
+        private http: HttpClient,
         private router: Router,
-        public dialog: MatDialog) {}
+        public dialog: MatDialog
+    ) {}
 
     ngOnDestroy() {
         this._thumbs$.unsubscribe();
-        if (this.thumbSub) { this.thumbSub.unsubscribe(); }
+        if (this.thumbSub) {
+            this.thumbSub.unsubscribe();
+        }
     }
 
     // actions on state:
@@ -35,11 +38,13 @@ export class APIService implements OnDestroy {
         // this.curAlbum variable will already be set up. If not
         // we were probably called by a browser typed link or refresh.
         this._thumbs$.next(null); // prevent any old data from displaying during load
-        this.thumbSub = this.getAlbumByURL(url).pipe(
-            switchMap(album => this.getPhotosByIdArray(album.photoIds)),
-            take(1),
-            catchError(err => this.errAlert('error getting Thumbs', err))
-        ).subscribe(thumbs => this._thumbs$.next(thumbs));
+        this.thumbSub = this.getAlbumByURL(url)
+            .pipe(
+                switchMap(album => this.getPhotosByIdArray(album.photoIds)),
+                take(1),
+                catchError(err => this.errAlert('error getting Thumbs', err))
+            )
+            .subscribe(thumbs => this._thumbs$.next(thumbs));
     }
 
     public getPhotoById(id: number): Observable<Photo> {
@@ -47,11 +52,15 @@ export class APIService implements OnDestroy {
     }
 
     public getPhotosByIdArray(photos: Array<number>): Observable<Photo[]> {
-        return <Observable<Photo[]>>this.http.get('/api/photos/photos/(' + photos.join('+') + ')');
+        return <Observable<Photo[]>>(
+            this.http.get('/api/photos/photos/(' + photos.join('+') + ')')
+        );
     }
 
     public getThumbsByIdArray(thumbIds: Array<number>): Observable<string[]> {
-        return <Observable<string[]>>this.http.get('/api/photos/thumbs/(' + thumbIds.join('+') + ')');
+        return <Observable<string[]>>(
+            this.http.get('/api/photos/thumbs/(' + thumbIds.join('+') + ')')
+        );
     }
 
     public getAlbumById(id: number): Observable<Album> {
@@ -60,8 +69,12 @@ export class APIService implements OnDestroy {
 
     public getAlbumByPath(path: string): Observable<Album> {
         let pathString = '(' + path.split('/').join('+') + ')';
-        if (pathString === '(albums)') { pathString = '()'; } // 'albums' is our root path.
-        return <Observable<Album>>this.http.get('/api/photos/album-by-path/' + pathString);
+        if (pathString === '(albums)') {
+            pathString = '()';
+        } // 'albums' is our root path.
+        return <Observable<Album>>(
+            this.http.get('/api/photos/album-by-path/' + pathString)
+        );
     }
 
     public getAlbumsByIdArray(albumIds: Array<number>): Observable<Album[]> {
@@ -76,7 +89,7 @@ export class APIService implements OnDestroy {
         // returns an observable which resolves to the album from getAlbumByPath.
         return url.pipe(
             switchMap(segments => this.getAlbumByPath(segments.join('/'))),
-            tap(album => this.curAlbum = album)
+            tap(album => (this.curAlbum = album))
         );
     }
 
@@ -92,7 +105,7 @@ export class APIService implements OnDestroy {
         // Whew - that's a lot for just a few lines of code!  :)
         return url.pipe(
             switchMap(segments => this.getAlbumByPath(segments.join('/'))),
-            tap(album => this.curAlbum = album),
+            tap(album => (this.curAlbum = album)),
             switchMap(album => this.getAlbumsByIdArray(album.albumIds))
         );
     }
@@ -103,7 +116,7 @@ export class APIService implements OnDestroy {
             width: '400px',
             data: { alertMessage: alertMessage, showCancel: false }
         });
-        dialogRef.afterClosed().subscribe(result => { });
+        dialogRef.afterClosed().subscribe(result => {});
         console.log(err);
         this.router.navigate(['/home']);
         return throwError(err);

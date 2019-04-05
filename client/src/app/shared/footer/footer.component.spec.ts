@@ -13,8 +13,9 @@ describe('Shared Module: FooterComponent', () => {
     const authSpy = jasmine.createSpyObj(['isAuthenticated']);
 
     function getElementByInnerHTML<T>(search: string): T {
-        return (Array.from(fixture.nativeElement.querySelectorAll('*')) as T[])
-            .filter(el => el['innerHTML'].toLowerCase() === search.toLowerCase())[0];
+        return (Array.from(fixture.nativeElement.querySelectorAll('*')) as T[]).filter(
+            el => el['innerHTML'].toLowerCase() === search.toLowerCase()
+        )[0];
     }
 
     beforeEach(async(() => {
@@ -34,14 +35,18 @@ describe('Shared Module: FooterComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should create', () => { expect(component).toBeTruthy('Error: Does not create'); });
+    it('should create', () => {
+        expect(component).toBeTruthy('Error: Does not create');
+    });
 
     it('Footer toolbar should only appear if user is authenticated', () => {
         const toolbarWhenAuthenticated = fixture.nativeElement.querySelector('.toolbar');
         expect(toolbarWhenAuthenticated).toEqual(jasmine.any(HTMLElement));
         authSpy.isAuthenticated.and.returnValue(false);
         fixture.detectChanges();
-        const toolbarWhenNOTAuthenticated = fixture.nativeElement.querySelector('.toolbar');
+        const toolbarWhenNOTAuthenticated = fixture.nativeElement.querySelector(
+            '.toolbar'
+        );
         expect(toolbarWhenNOTAuthenticated).toBeNull();
     });
     it('should display the title from the footer configuration', () => {
@@ -53,7 +58,8 @@ describe('Shared Module: FooterComponent', () => {
     it('should display a link to the homesite github repo', () => {
         const gitRef = getElementByInnerHTML<HTMLAnchorElement>('homesite');
         expect(gitRef).toBeTruthy('Error: the reference to homesite should exist');
-        expect(gitRef.href.includes('github.com/dmcgrandle/homesite'))
-            .toBeTruthy('Error: there should be a link to the github for "homesite".');
+        expect(gitRef.href.includes('github.com/dmcgrandle/homesite')).toBeTruthy(
+            'Error: there should be a link to the github for "homesite".'
+        );
     });
 });

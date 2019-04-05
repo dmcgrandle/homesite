@@ -1,6 +1,14 @@
-import { Component, Input, Output, EventEmitter, AfterViewChecked, ViewChild, ElementRef } from '@angular/core';
+import {
+    Component,
+    Input,
+    Output,
+    EventEmitter,
+    AfterViewChecked,
+    ViewChild,
+    ElementRef
+} from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
-import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
+// import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
 import { Photo } from '../_helpers/classes';
 
 const ANIMATION_TIMINGS = '900ms cubic-bezier(0.25, 0.8, 0.25, 1)';
@@ -18,7 +26,6 @@ const ANIMATION_TIMINGS = '900ms cubic-bezier(0.25, 0.8, 0.25, 1)';
     ]
 })
 export class FocalPhotoComponent implements AfterViewChecked {
-
     imageHeight: number;
     @Input() focal: Photo;
     @Input() loading: boolean;

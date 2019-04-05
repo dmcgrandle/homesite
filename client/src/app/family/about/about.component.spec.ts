@@ -1,6 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCardModule, MatTabsModule, MatExpansionModule, MatTabGroup } from '@angular/material';
+import {
+    MatCardModule,
+    MatTabsModule,
+    MatExpansionModule,
+    MatTabGroup
+} from '@angular/material';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -11,8 +16,8 @@ import { AppConfig } from '../../app.config';
 class MockAppConfig {
     const: Object = {
         about: {
-            family : {
-                name : 'Tests',
+            family: {
+                name: 'Tests',
                 members: [
                     {
                         position: 'Father',
@@ -20,7 +25,7 @@ class MockAppConfig {
                         lastName: 't1-lastName',
                         avatar: 'assets/tests/lion.jpg',
                         photo: 'assets/tests/lion.jpg',
-                        bio : [ 'test bio 1 line 1', 'line 2', 'line 3' ]
+                        bio: ['test bio 1 line 1', 'line 2', 'line 3']
                     },
                     {
                         position: 'Mother',
@@ -28,8 +33,8 @@ class MockAppConfig {
                         lastName: 't2-lastName',
                         avatar: 'assets/tests/lion.jpg',
                         photo: 'assets/tests/lion.jpg',
-                        bio : [ 'test bio 2' ]
-                    },
+                        bio: ['test bio 2']
+                    }
                 ]
             }
         }
@@ -37,7 +42,11 @@ class MockAppConfig {
 }
 
 @Pipe({ name: 'secure' })
-class MockSecurePipe implements PipeTransform { transform(s) { return s; } }
+class MockSecurePipe implements PipeTransform {
+    transform(s) {
+        return s;
+    }
+}
 
 describe('Family Module: AboutComponent', () => {
     let aboutComponent: AboutComponent;
@@ -48,7 +57,12 @@ describe('Family Module: AboutComponent', () => {
         TestBed.configureTestingModule({
             declarations: [AboutComponent, MockSecurePipe],
             providers: [{ provide: AppConfig, useClass: MockAppConfig }],
-            imports: [BrowserAnimationsModule, MatCardModule, MatTabsModule, MatExpansionModule]
+            imports: [
+                BrowserAnimationsModule,
+                MatCardModule,
+                MatTabsModule,
+                MatExpansionModule
+            ]
         });
     }));
 
@@ -69,13 +83,19 @@ describe('Family Module: AboutComponent', () => {
 
     it('should have two test family members displayed', () => {
         // Should be a mat-tab-label for each member displayed
-        const memberTabs: NodeListOf<HTMLElement> = aboutElement.querySelectorAll('.mat-tab-label');
+        const memberTabs: NodeListOf<HTMLElement> = aboutElement.querySelectorAll(
+            '.mat-tab-label'
+        );
         expect(memberTabs.length).toBe(2);
     });
 
     it('should display the second member when the second label is clicked', () => {
-        const tabComponent: MatTabGroup = fixture.debugElement.query(By.css('mat-tab-group')).componentInstance;
-        const secondMemberTab: HTMLElement = fixture.debugElement.queryAll(By.css('.mat-tab-label'))[1].nativeElement;
+        const tabComponent: MatTabGroup = fixture.debugElement.query(
+            By.css('mat-tab-group')
+        ).componentInstance;
+        const secondMemberTab: HTMLElement = fixture.debugElement.queryAll(
+            By.css('.mat-tab-label')
+        )[1].nativeElement;
         expect(tabComponent.selectedIndex).toBe(0); // Initially display first member
         secondMemberTab.click(); // Click to second member
         fixture.detectChanges();

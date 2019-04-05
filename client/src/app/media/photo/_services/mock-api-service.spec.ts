@@ -28,8 +28,6 @@ export const tPhoto3: Photo = {
     thumbPath: 'assets/tests/lion-sml.jpg'
 };
 
-
-
 export const tAlbum: Album = {
     _id: 0,
     name: 'tAlbum',
@@ -82,12 +80,8 @@ export class MockAPIService {
     curAlbum: Album;
 
     /* for AlbumsComponent */
-    getAlbumsByURL = jasmine.createSpy().and.returnValue(
-        of([tAlbum1, tAlbum2, tAlbum3])
-    );
-    getAlbumsByIdArray = jasmine.createSpy().and.returnValue(
-        of([tAlbum4])
-    );
+    getAlbumsByURL = jasmine.createSpy().and.returnValue(of([tAlbum1, tAlbum2, tAlbum3]));
+    getAlbumsByIdArray = jasmine.createSpy().and.returnValue(of([tAlbum4]));
 
     /* for PhotosComponent */
     loadThumbs = jasmine.createSpy().and.callFake(() => {
@@ -98,7 +92,7 @@ export class MockAPIService {
         this.curAlbum = tAlbum1; // mock the tap() in original service
         return of(tAlbum1);
     });
-    getPhotosByIdArray = jasmine.createSpy().and.returnValue(
-        of([tPhoto1, tPhoto2, tPhoto3])
-    );
+    getPhotosByIdArray = jasmine
+        .createSpy()
+        .and.returnValue(of([tPhoto1, tPhoto2, tPhoto3]));
 }

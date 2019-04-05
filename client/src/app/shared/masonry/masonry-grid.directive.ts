@@ -42,7 +42,7 @@
  *      </div>
  *  </div>
  *
-*/
+ */
 
 import { Directive, ElementRef, Input, OnInit } from '@angular/core';
 
@@ -50,7 +50,6 @@ import { Directive, ElementRef, Input, OnInit } from '@angular/core';
     selector: '[mnMasonryGrid]'
 })
 export class MasonryGridDirective implements OnInit {
-
     // TODO: make default values configurable somehow...
     @Input() mnRowGap = '10px';
     @Input() mnColumnGap = '1em';

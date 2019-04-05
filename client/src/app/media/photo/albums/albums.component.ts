@@ -18,45 +18,55 @@ import { Album, Photo } from '../_helpers/classes';
     styleUrls: ['./albums.component.scss']
 })
 export class AlbumsComponent implements OnInit, OnDestroy {
-
     displayAlbums: Album[];
     photosDisplayName: string;
     getAlbumsSub: Subscription;
     cardLoaded: Subject<HTMLDivElement> = new Subject();
 
-    constructor(public api: APIService,
+    constructor(
+        public api: APIService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog,
-        private location: Location) { }
+        private location: Location
+    ) {}
 
     ngOnInit() {
         this.getAlbumsSub = this.api.getAlbumsByURL(this.route.url).subscribe(
             (albums: Album[]) => {
                 this.displayAlbums = albums;
-                this.photosDisplayName = (this.api.curAlbum._id > 0) ? this.api.curAlbum.name : '';
+                this.photosDisplayName =
+                    this.api.curAlbum._id > 0 ? this.api.curAlbum.name : '';
             },
-            (err) => this.errAlert('Problem getting albums!', err)
+            err => this.errAlert('Problem getting albums!', err)
         );
     }
 
     ngOnDestroy() {
-        if (this.getAlbumsSub) { this.getAlbumsSub.unsubscribe(); }
-        if (this.cardLoaded) { this.cardLoaded.unsubscribe(); }
+        if (this.getAlbumsSub) {
+            this.getAlbumsSub.unsubscribe();
+        }
+        if (this.cardLoaded) {
+            this.cardLoaded.unsubscribe();
+        }
     }
 
     public updateDisplayAlbum(album: Album) {
         this.api.curAlbum = album; // go down one level (directory).
-        if (album.albumIds.length > 0) {// means this album contains other albums
+        if (album.albumIds.length > 0) {
+            // means this album contains other albums
             this.api.getAlbumsByIdArray(album.albumIds).subscribe(
-                (albums) => {
+                albums => {
                     this.displayAlbums = albums;
-                    const url = 'media/photo/albums' + this.router.createUrlTree([album.path]).toString();
+                    const url =
+                        'media/photo/albums' +
+                        this.router.createUrlTree([album.path]).toString();
                     this.location.go(url); // Update the URL in the browser window without navigating.
                 },
-                (err) => this.errAlert('Problem getting albums!', err)
+                err => this.errAlert('Problem getting albums!', err)
             );
-        } else { // Not an album of albums!  So nav to photos ...
+        } else {
+            // Not an album of albums!  So nav to photos ...
             this.navToPhotos(album);
         }
     }
@@ -89,5 +99,4 @@ export class AlbumsComponent implements OnInit, OnDestroy {
             i.msRequestFullscreen();
         }
     }
-
 }

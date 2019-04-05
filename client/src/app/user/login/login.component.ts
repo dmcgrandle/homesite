@@ -15,17 +15,18 @@ import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/a
     styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-
     hide = true;
 
-    constructor(public CFG: AppConfig,
+    constructor(
+        public CFG: AppConfig,
         public auth: AuthService,
         public dialog: MatDialog,
-        private router: Router) { }
+        private router: Router
+    ) {}
 
     ngOnInit() {
-        this.auth.user = new User;
-        if ((this.auth.hasLoggedInBefore()) && (!this.auth.isLoginExpired())) {
+        this.auth.user = new User();
+        if (this.auth.hasLoggedInBefore() && !this.auth.isLoginExpired()) {
             // Someone has logged in before and still has an unexpired token, so
             // go ahead and auto-login with those saved credentials.
             this.auth.user['username'] = this.auth.lastLoggedInUsername();
@@ -43,49 +44,53 @@ export class LoginComponent implements OnInit {
             () => {
                 console.log('User ' + this.auth.user['username'] + ' is logged in');
                 const earlierAttempt = this.auth.getAttemptedURL();
-                if (earlierAttempt) { // there was an URL that was attempted without auth
+                if (earlierAttempt) {
+                    // there was an URL that was attempted without auth
                     this.auth.clearAttemptedURL();
                     this.router.navigate([earlierAttempt]); // now we can load it!
                 } else {
                     this.router.navigate(['/home']);
                 }
             },
-            (err) => {
+            err => {
                 const alertMessage = 'Problem logging on: ' + err.error;
                 const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
                     width: '400px',
                     data: { alertMessage: alertMessage, showCancel: false }
                 });
-                dialogRef.afterClosed().subscribe(result => { });
+                dialogRef.afterClosed().subscribe(result => {});
                 console.log(err);
                 this.router.navigate(['/user/login']);
             },
-            () => { }
+            () => {}
         );
     }
 
     onSubmitClick() {
         this.auth.authForgot().subscribe(
-            (userReturned) => {
-                const alertMessage = 'Email "' + userReturned['email'] + '" was sent reset email. ' +
+            userReturned => {
+                const alertMessage =
+                    'Email "' +
+                    userReturned['email'] +
+                    '" was sent reset email. ' +
                     'If you don\'t see it in a few minutes please check your SPAM folder.';
                 const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
                     width: '400px',
                     data: { alertMessage: alertMessage }
                 });
-                dialogRef.afterClosed().subscribe(result => { });
+                dialogRef.afterClosed().subscribe(result => {});
             },
-            (err) => {
-                const alertMessage = 'Email "' + this.auth.user['email'] + '" was not found!';
+            err => {
+                const alertMessage =
+                    'Email "' + this.auth.user['email'] + '" was not found!';
                 const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
                     data: { alertMessage: alertMessage, showCancel: false }
                 });
-                dialogRef.afterClosed().subscribe(result => { });
+                dialogRef.afterClosed().subscribe(result => {});
             },
-            () => { }
+            () => {}
         );
     }
-
 
     openRegisterDialog(): void {
         const dialogRef = this.dialog.open(RegisterComponent, {
@@ -100,6 +105,4 @@ export class LoginComponent implements OnInit {
             data: { name: this.auth.user['email'] }
         });
     }
-
-
 }

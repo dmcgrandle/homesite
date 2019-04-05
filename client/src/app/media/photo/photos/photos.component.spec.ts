@@ -5,13 +5,7 @@ import {
     Directive,
     DebugElement
 } from '@angular/core';
-import {
-    async,
-    fakeAsync,
-    tick,
-    ComponentFixture,
-    TestBed
-} from '@angular/core/testing';
+import { async, fakeAsync, tick, ComponentFixture, TestBed } from '@angular/core/testing';
 import {
     MatIconModule,
     MatCardModule,
@@ -122,9 +116,9 @@ describe('Photo Module: PhotosComponent', () => {
                 { provide: ActivatedRoute, useValue: routeMock }
             ]
         }).compileComponents();
-      }));
+    }));
 
-      beforeEach(() => {
+    beforeEach(() => {
         api = TestBed.get(APIService);
     });
 

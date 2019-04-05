@@ -17,15 +17,16 @@ export interface DialogData {
     styleUrls: ['./forgot-dialog.component.scss']
 })
 export class ForgotDialogComponent implements OnInit {
-
     token: string;
     // error: boolean = false;
     loading$: Subject<boolean> = new Subject();
 
-    constructor(public auth: AuthService,
-                public dialogRef: MatDialogRef<ForgotDialogComponent>,
-                @Inject(MAT_DIALOG_DATA) public data: DialogData,
-                public dialog: MatDialog) { }
+    constructor(
+        public auth: AuthService,
+        public dialogRef: MatDialogRef<ForgotDialogComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: DialogData,
+        public dialog: MatDialog
+    ) {}
 
     ngOnInit() {
         this.loading$.next(false);
@@ -36,7 +37,8 @@ export class ForgotDialogComponent implements OnInit {
         this.auth.authForgot().subscribe(
             (user: User) => {
                 this.loading$.next(false);
-                const alertMessage = `Email "${user.email}" was sent reset email. ` +
+                const alertMessage =
+                    `Email "${user.email}" was sent reset email. ` +
                     'If you don\'t see it in a few minutes please check your SPAM folder.';
                 const dRef = this.dialog.open(AlertMessageDialogComponent, {
                     width: '400px',
@@ -49,21 +51,23 @@ export class ForgotDialogComponent implements OnInit {
             (err: HttpErrorResponse) => {
                 this.loading$.next(false);
                 let alertMessage: string;
-                if (err.status === 404) { // email not found
+                if (err.status === 404) {
+                    // email not found
                     alertMessage = `Email "${this.auth.user.email}" was not found!`;
                 } else {
                     alertMessage = `Error: ${err.status} ${err.statusText}`;
                 }
                 const dRef = this.dialog.open(AlertMessageDialogComponent, {
-                    data: { heading: 'Error!', alertMessage: alertMessage, showCancel: false }
+                    data: {
+                        heading: 'Error!',
+                        alertMessage: alertMessage,
+                        showCancel: false
+                    }
                 });
                 dRef.afterClosed().subscribe(() => {
                     this.dialogRef.close();
                 });
             }
         );
-
     }
-
-
 }

@@ -9,11 +9,7 @@ import { AppConfig } from '../../app.config';
     styleUrls: ['./footer.component.scss']
 })
 export class FooterComponent implements OnInit {
+    constructor(public auth: AuthService, public CFG: AppConfig) {}
 
-    constructor(public auth: AuthService,
-        public CFG: AppConfig) { }
-
-    ngOnInit() {
-    }
-
+    ngOnInit() {}
 }

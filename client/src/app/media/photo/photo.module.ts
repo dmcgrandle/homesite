@@ -40,7 +40,7 @@ import { FocalPhotoComponent } from './focal-photo/focal-photo.component';
         {
             provide: OverlayContainer,
             useClass: FullscreenOverlayContainer
-        },
+        }
     ]
 })
-export class PhotoModule { }
+export class PhotoModule {}
