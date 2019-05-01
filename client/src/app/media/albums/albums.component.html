@@ -1,0 +1,22 @@
+<div *ngIf="displayAlbums" fxFlexFill fxLayout="column" class="albums-container">
+  <h2 class="title">{{mediaType}} Albums in {{api.curAlbum.name}}:</h2>
+
+  <div mnMasonryGrid class="grid-container" fxFlex>
+      <!-- If the album being displayed has both other albums AND media then display a card for these pics -->
+      <div #firstItem [mnMasonryItem]="cardLoaded" [mnSpanColumns]="spanColumns" class="grid-item" *ngIf="api.curAlbum.mediaIds.length > 0" (click)="navToMedia(api.curAlbum)">
+          <shared-card [name]="api.curAlbum.name" [description]="api.curAlbum.description"
+          [image]="api.curAlbum.featuredMedia.thumbPath" (loaded)="cardLoaded.next(firstItem)"></shared-card>
+      </div>
+      <!-- Now loop through displaying all the albums in this album. -->
+      <div #nextItem [mnMasonryItem]="cardLoaded" [mnSpanColumns]="spanColumns" class="grid-item" *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)">
+          <shared-card [name]="album.name" [description]="album.description"
+          [image]="album.featuredMedia.thumbPath" (loaded)="cardLoaded.next(nextItem)"></shared-card>
+      </div>
+  </div>
+
+</div>
+
+<div *ngIf="!displayAlbums">
+  <p>Waiting on server ...</p>
+  <mat-spinner></mat-spinner>
+</div>

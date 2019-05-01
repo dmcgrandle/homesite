@@ -7,7 +7,7 @@ import { Observable, of } from 'rxjs';
 import { UrlSegment } from '@angular/router';
 
 import { APIService } from './api.service';
-import { Album, Photo } from '../_helpers/classes';
+import { PhotoAlbum, Photo } from '../_helpers/classes';
 
 describe('Photo Module: APIService', () => {
     let api: APIService;
@@ -58,12 +58,12 @@ describe('Photo Module: APIService', () => {
         req.flush(tThumbArray);
     }));
     describe('Album Methods', () => {
-        const tAlbum: Album = {
+        const tAlbum: PhotoAlbum = {
             _id: 1,
             name: 'E',
             path: 'F',
             description: 'G',
-            photoIds: [],
+            mediaIds: [],
             albumIds: [1, 2, 3],
             featuredMedia: {
                 _id: 1,
@@ -94,7 +94,7 @@ describe('Photo Module: APIService', () => {
             req.flush(tAlbum);
         }));
         it('should successfully get an array of photo albums using an array of ids', async(() => {
-            const tAlbums: Album[] = [tAlbum, tAlbum];
+            const tAlbums: PhotoAlbum[] = [tAlbum, tAlbum];
             api.getAlbumsByIdArray([1, 2]).subscribe(albums =>
                 expect(albums).toEqual(tAlbums)
             );
@@ -120,7 +120,7 @@ describe('Photo Module: APIService', () => {
                 req.flush(tAlbum);
             }));
             it('should successfully get an array of photo albums by using an URL', async(() => {
-                const tAlbums: Album[] = [tAlbum, tAlbum];
+                const tAlbums: PhotoAlbum[] = [tAlbum, tAlbum];
                 api.getAlbumsByURL(tSegments).subscribe(albums => {
                     expect(albums).toEqual(tAlbums);
                     expect(api.curAlbum).toEqual(tAlbum);

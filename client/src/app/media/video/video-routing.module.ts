@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AlbumsComponent } from './albums/albums.component';
+import { AlbumsComponent } from 'media/albums/albums.component';
 import { VideosComponent } from './videos/videos.component';
 import { VideoComponent } from './video/video.component';
 import { AuthService } from '../../user/_services/auth.service';

@@ -4,7 +4,7 @@
         <div #videoItem [mnMasonryItem]="posterLoaded" mnSpanColumns="true" class="video-item"
             *ngFor="let video of videos; index as i">
             <div class="video-wrapper"> 
-                <img class="poster" (click)="playVideo(video)" [src]='video.posterPath | secure'
+                <img class="poster" (click)="playVideo(video)" [src]='video.thumbPath | secure'
                 (load)="posterLoaded.next(videoItem)">
                 <h5 *ngIf="!video.caption">{{video.filename}}</h5>
                 <h5 *ngIf="video.caption">{{video.caption}}</h5>

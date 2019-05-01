@@ -1,27 +1,29 @@
 // imports from Angular and other external libraries:
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, UrlTree, UrlSegment } from '@angular/router';
 import { Location } from '@angular/common';
 import { Subscription, Subject } from 'rxjs';
 
 // imports from homesite outside of photo module:
-import { AlertMessageDialogComponent } from '../../../shared/alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
 // imports from within photo module:
 import { APIService } from '../_services/api.service';
-import { Album, Photo } from '../_helpers/classes';
+import { MediaAlbum, Media } from '../_helpers/classes';
 
 @Component({
-    selector: 'photo-albums',
+    selector: 'media-albums',
     templateUrl: './albums.component.html',
     styleUrls: ['./albums.component.scss']
 })
 export class AlbumsComponent implements OnInit, OnDestroy {
-    displayAlbums: Album[];
+    displayAlbums: MediaAlbum[];
     photosDisplayName: string;
     getAlbumsSub: Subscription;
     cardLoaded: Subject<HTMLDivElement> = new Subject();
+    spanColumns = 'false';
+    mediaType: string;
 
     constructor(
         public api: APIService,
@@ -32,11 +34,16 @@ export class AlbumsComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        this.getAlbumsSub = this.api.getAlbumsByURL(this.route.url).subscribe(
-            (albums: Album[]) => {
+        this.mediaType = this.location.path().split('/')[2]; // photo or video
+        console.log(`mediaType is "${this.mediaType}"`);
+        if (this.mediaType === 'video') {
+            this.spanColumns = 'true';
+            console.log('set to true ...');
+        }
+        this.getAlbumsSub = this.api.getAlbumsByURL(this.mediaType, this.route.url).subscribe(
+            (albums: MediaAlbum[]) => {
                 this.displayAlbums = albums;
-                this.photosDisplayName =
-                    this.api.curAlbum._id > 0 ? this.api.curAlbum.name : '';
+                this.photosDisplayName = this.api.curAlbum._id > 0 ? this.api.curAlbum.name : '';
             },
             err => this.errAlert('Problem getting albums!', err)
         );
@@ -51,28 +58,27 @@ export class AlbumsComponent implements OnInit, OnDestroy {
         }
     }
 
-    public updateDisplayAlbum(album: Album) {
+    public updateDisplayAlbum(album: MediaAlbum) {
         this.api.curAlbum = album; // go down one level (directory).
         if (album.albumIds.length > 0) {
             // means this album contains other albums
-            this.api.getAlbumsByIdArray(album.albumIds).subscribe(
+            this.api.getAlbumsByIdArray(this.mediaType, album.albumIds).subscribe(
                 albums => {
+                    // console.log('location.path is ', this.location.path());
                     this.displayAlbums = albums;
-                    const url =
-                        'media/photo/albums' +
-                        this.router.createUrlTree([album.path]).toString();
+                    const url = `/media/${this.mediaType}/albums${this.router.createUrlTree([album.path]).toString()}`;
                     this.location.go(url); // Update the URL in the browser window without navigating.
                 },
                 err => this.errAlert('Problem getting albums!', err)
             );
         } else {
             // Not an album of albums!  So nav to photos ...
-            this.navToPhotos(album);
+            this.navToMedia(album);
         }
     }
 
-    public navToPhotos(album: Album) {
-        return this.router.navigate(['/media/photo/photos/' + album.path]);
+    public navToMedia(album: MediaAlbum) {
+        return this.router.navigate([`/media/${this.mediaType}/${this.mediaType}s/` + album.path]);
     }
 
     private errAlert(msg: string, err) {
@@ -85,18 +91,5 @@ export class AlbumsComponent implements OnInit, OnDestroy {
             console.log(msg, err);
             this.router.navigate(['/home']);
         });
-    }
-
-    public makeFullscreen() {
-        const i: any = document.getElementById('full-screen');
-        if (i.requestFullscreen) {
-            i.requestFullscreen();
-        } else if (i.webkitRequestFullscreen) {
-            i.webkitRequestFullscreen();
-        } else if (i.mozRequestFullScreen) {
-            i.mozRequestFullScreen();
-        } else if (i.msRequestFullscreen) {
-            i.msRequestFullscreen();
-        }
     }
 }

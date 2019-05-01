@@ -1,3 +1,16 @@
+// video classes - Declaration of Video and VideoAlbum classes
+
+import { MediaAlbum, Media } from 'media/_helpers/classes';
+
+export class VideoAlbum extends MediaAlbum {
+    // mediaIds: Array<number>;  // array of Photo ids (if any) this Album contains
+}
+
+export class Video extends Media {
+    // thumbPath: string;        // full path and filename of thumbnail
+}
+
+/*
 // video-classes.ts - Declaration of Video and video Album classes
 
 export class VideoAlbum {
@@ -6,7 +19,7 @@ export class VideoAlbum {
     path: string;             // physical directory path of this album
     description: string;      // Description of this album
     featuredMedia: Video;     // Video to be displayed as the album cover
-    videoIds: Array<number>;  // array of Video ids (if any) this album contains
+    mediaIds: Array<number>;  // array of Video ids (if any) this album contains
     albumIds: Array<number>;  // array of VideoAlbum ids (if any) this album contains
 }
 
@@ -17,3 +30,4 @@ export class Video {
     posterPath: string;       // full path and filename of poster (video thumbnail)
     caption?: string;         // optional caption for video
 }
+*/

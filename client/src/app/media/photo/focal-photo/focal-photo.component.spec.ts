@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FocalPhotoComponent } from './focal-photo.component';
 
-describe('FocalPhotoComponent', () => {
+fdescribe('FocalPhotoComponent', () => {
     let component: FocalPhotoComponent;
     let fixture: ComponentFixture<FocalPhotoComponent>;
 

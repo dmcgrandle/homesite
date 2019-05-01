@@ -63,16 +63,16 @@ router.get('/albums/:albumIds', (req, res) => {
     .catch(err => errSvc.processError(err, res));
 });
 
-router.get('/videos/:videoIds', (req, res) => {
+router.get('/videos/:mediaIds', (req, res) => {
   userSvc.isValidLevel(req.user, 2)
-    .then(() => mediaSvc.getVideos(req.params.videoIds))
+    .then(() => mediaSvc.getVideos(req.params.mediaIds))
     .then(videos => res.status(200).json(videos))
     .catch(err => errSvc.processError(err, res));
 });
 
-router.get('/posters/:videoIds', (req, res) => {
+router.get('/posters/:mediaIds', (req, res) => {
   userSvc.isValidLevel(req.user, 2)
-    .then(() => mediaSvc.getPosters(req.params.videoIds))
+    .then(() => mediaSvc.getPosters(req.params.mediaIds))
     .then(posters => res.status(200).json(posters))
     .catch(err => errSvc.processError(err, res));
 });

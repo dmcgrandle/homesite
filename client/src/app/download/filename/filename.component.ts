@@ -4,8 +4,7 @@ import { FilenameChangedObj } from '../_helpers/classes';
 
 @Component({
     selector: 'download-filename',
-    templateUrl: './filename.component.html',
-    styleUrls: ['./filename.component.scss']
+    templateUrl: './filename.component.html'
 })
 export class FilenameComponent {
     @Input() id: number;

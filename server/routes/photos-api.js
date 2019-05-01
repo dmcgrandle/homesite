@@ -58,16 +58,16 @@ router.get('/albums/:albumIds', (req, res) => {
     .catch(err => errSvc.processError(err, res));
 });
 
-router.get('/photos/:photoIds', (req, res) => {
+router.get('/photos/:mediaIds', (req, res) => {
   userSvc.isValidLevel(req.user, 2)
-    .then(() => mediaSvc.getPhotos(req.params.photoIds))
+    .then(() => mediaSvc.getPhotos(req.params.mediaIds))
     .then(photos => res.status(200).json(photos))
     .catch(err => errSvc.processError(err, res));
 });
 
-router.get('/thumbs/:photoIds', (req, res) => {
+router.get('/thumbs/:mediaIds', (req, res) => {
   userSvc.isValidLevel(req.user, 2)
-    .then(() => mediaSvc.getThumbs(req.params.photoIds))
+    .then(() => mediaSvc.getThumbs(req.params.mediaIds))
     .then(thumbs => res.status(200).json(thumbs))
     .catch(err => errSvc.processError(err, res));
 });

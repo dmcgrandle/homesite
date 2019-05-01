@@ -70,7 +70,7 @@ cfg.mediaService = {
   POSTERS: { // poster image to display for video file
     WIDTH: 600,
     FORMAT: 'jpeg',
-    PREFIX: 'poster',
+    PREFIX: 'thumb',
     SUFFIX: '.jpg',
     MAX_CREATE_AT_ONCE: 20,
   },

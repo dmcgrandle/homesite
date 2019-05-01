@@ -1,6 +1,6 @@
 import { of, BehaviorSubject } from 'rxjs';
 
-import { Album, Photo } from '../_helpers/classes';
+import { PhotoAlbum, Photo } from '../_helpers/classes';
 
 export const tPhoto: Photo = {
     _id: 0,
@@ -28,56 +28,56 @@ export const tPhoto3: Photo = {
     thumbPath: 'assets/tests/lion-sml.jpg'
 };
 
-export const tAlbum: Album = {
+export const tAlbum: PhotoAlbum = {
     _id: 0,
     name: 'tAlbum',
     path: 'tAlbum',
     description: 'test Photo Album',
     featuredMedia: tPhoto,
-    photoIds: [0],
+    mediaIds: [0],
     albumIds: [1, 2, 3]
 };
-export const tAlbum1: Album = {
+export const tAlbum1: PhotoAlbum = {
     _id: 1,
     name: 'tAlbum1',
     path: 'tAlbum/tAlbum1',
     description: 'test Photo Album 1',
     featuredMedia: tPhoto,
-    photoIds: [1, 2, 3],
+    mediaIds: [1, 2, 3],
     albumIds: [4]
 };
-export const tAlbum2: Album = {
+export const tAlbum2: PhotoAlbum = {
     _id: 2,
     name: 'tAlbum2',
     path: 'tAlbum/tAlbum2',
     description: 'test Photo Album 2',
     featuredMedia: tPhoto,
-    photoIds: [0],
+    mediaIds: [0],
     albumIds: []
 };
-export const tAlbum3: Album = {
+export const tAlbum3: PhotoAlbum = {
     _id: 3,
     name: 'tAlbum3',
     path: 'tAlbum/tAlbum3',
     description: 'test Photo Album 3',
     featuredMedia: tPhoto,
-    photoIds: [],
+    mediaIds: [],
     albumIds: []
 };
-export const tAlbum4: Album = {
+export const tAlbum4: PhotoAlbum = {
     _id: 4,
     name: 'tAlbum4',
     path: 'tAlbum/tAlbum1/tAlbum4',
     description: 'test Photo Album 4',
     featuredMedia: tPhoto,
-    photoIds: [0],
+    mediaIds: [0],
     albumIds: []
 };
 
 export class MockAPIService {
     thumbs$ = new BehaviorSubject<Photo[]>([new Photo()]);
     curPhoto: Photo;
-    curAlbum: Album;
+    curAlbum: PhotoAlbum;
 
     /* for AlbumsComponent */
     getAlbumsByURL = jasmine.createSpy().and.returnValue(of([tAlbum1, tAlbum2, tAlbum3]));

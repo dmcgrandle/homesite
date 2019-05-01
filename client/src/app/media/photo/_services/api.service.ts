@@ -8,14 +8,14 @@ import { HttpClient } from '@angular/common/http';
 // imports from homesite outside of photo module:
 import { AlertMessageDialogComponent } from '../../../shared/alert-message-dialog/alert-message-dialog.component';
 
-import { Album, Photo } from '../_helpers/classes';
+import { PhotoAlbum, Photo } from '../_helpers/classes';
 
 @Injectable({ providedIn: 'root' })
 export class APIService implements OnDestroy {
     // state for subscribers:
     private _thumbs$: BehaviorSubject<Photo[]> = new BehaviorSubject(null);
     public readonly thumbs$ = this._thumbs$.asObservable();
-    public curAlbum: Album; // used to keep track of current Album between components
+    public curAlbum: PhotoAlbum; // used to keep track of current Album between components
     public curPhoto: Photo;
     private thumbSub: Subscription;
 
@@ -40,7 +40,7 @@ export class APIService implements OnDestroy {
         this._thumbs$.next(null); // prevent any old data from displaying during load
         this.thumbSub = this.getAlbumByURL(url)
             .pipe(
-                switchMap(album => this.getPhotosByIdArray(album.photoIds)),
+                switchMap(album => this.getPhotosByIdArray(album.mediaIds)),
                 take(1),
                 catchError(err => this.errAlert('error getting Thumbs', err))
             )
@@ -63,26 +63,26 @@ export class APIService implements OnDestroy {
         );
     }
 
-    public getAlbumById(id: number): Observable<Album> {
-        return <Observable<Album>>this.http.get('/api/photos/album-by-id/' + id);
+    public getAlbumById(id: number): Observable<PhotoAlbum> {
+        return <Observable<PhotoAlbum>>this.http.get('/api/photos/album-by-id/' + id);
     }
 
-    public getAlbumByPath(path: string): Observable<Album> {
+    public getAlbumByPath(path: string): Observable<PhotoAlbum> {
         let pathString = '(' + path.split('/').join('+') + ')';
         if (pathString === '(albums)') {
             pathString = '()';
         } // 'albums' is our root path.
-        return <Observable<Album>>(
+        return <Observable<PhotoAlbum>>(
             this.http.get('/api/photos/album-by-path/' + pathString)
         );
     }
 
-    public getAlbumsByIdArray(albumIds: Array<number>): Observable<Album[]> {
+    public getAlbumsByIdArray(albumIds: Array<number>): Observable<PhotoAlbum[]> {
         const albumString = '(' + albumIds.join('+') + ')';
-        return <Observable<Album[]>>this.http.get('/api/photos/albums/' + albumString);
+        return <Observable<PhotoAlbum[]>>this.http.get('/api/photos/albums/' + albumString);
     }
 
-    public getAlbumByURL(url: Observable<UrlSegment[]>): Observable<Album> {
+    public getAlbumByURL(url: Observable<UrlSegment[]>): Observable<PhotoAlbum> {
         // This function takes in an Observable of an UrlSegment array, joins those segments
         // into a path, passes that path to getAlbumsByPath.  When that resolves it saves the
         // resulting album into curAlbum variable (class scope).  Ultimately this function
@@ -93,7 +93,7 @@ export class APIService implements OnDestroy {
         );
     }
 
-    public getAlbumsByURL(url: Observable<UrlSegment[]>): Observable<Album[]> {
+    public getAlbumsByURL(url: Observable<UrlSegment[]>): Observable<PhotoAlbum[]> {
         // This function effectively collapses three observables into one: It first takes
         // in an observable of an UrlSegment array. When that resolves, it joins those
         // segments into a path, and passes that path to getAlbumsByPath (the second

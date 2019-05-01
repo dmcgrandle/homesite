@@ -205,7 +205,8 @@ function buildAlbumsArray(paths, media) {
     album.path = fullPath;
     album.description = '';
     album.featuredMedia = {};
-    album[media + 'Ids'] = [];
+    album.mediaIds = [];
+    // album[media + 'Ids'] = [];
     album.albumIds = [];
     albums[aIndex] = album;
     // 2. Now add this album's index (which equals it's _id) to it's parent's
@@ -251,7 +252,7 @@ function buildMediaArray(albums, files, mediaType) {
   // the photos arrays that are stored within each album.
   let prevTargetAlbumPath = '';
   const medias = [];
-  const thumbPathKey = ((mediaType === 'photo') ? 'thumb' : 'poster') + 'Path';
+  // const thumbPathKey = 'thumbPath';
   let fIndex = 0; // fInxex == photo._id
   let targetAlbumIndex = 0;
   let prevTargetAlbumIndex = 0;
@@ -265,7 +266,7 @@ function buildMediaArray(albums, files, mediaType) {
     media.fullPath = mediaFullPath; // full path and filename of media
     // path and filename of thumbnail relative to root URL
     const thumbPath = getRelTorPPath(file, mediaType);
-    media[thumbPathKey] = thumbPath;
+    media.thumbPath = thumbPath;
     media.caption = ''; // optional caption for photo
     const targetAlbumPath = file.slice(0, -(mediaFilename.length + 1));
     if (targetAlbumPath === prevTargetAlbumPath) {
@@ -277,7 +278,7 @@ function buildMediaArray(albums, files, mediaType) {
         fullPath: mediaFullPath,
         caption: '',
       };
-      albums[targetAlbumIndex].featuredMedia[thumbPathKey] = thumbPath;
+      albums[targetAlbumIndex].featuredMedia.thumbPath = thumbPath;
       splitPaths.pop(); // first, drop the filename
       const numParents = splitPaths.length - 1; // have to save it since we mod splitPaths
       for (let i = 0; i < numParents; i += 1) { // walk up the tree finding all parents
@@ -291,12 +292,13 @@ function buildMediaArray(albums, files, mediaType) {
               fullPath: mediaFullPath,
               caption: '',
             };
-            albums[parentAlbumIndex].featuredMedia[thumbPathKey] = thumbPath;
+            albums[parentAlbumIndex].featuredMedia.thumbPath = thumbPath;
           }
         }
       }// end for (walking up the parent tree)
     } // end set up featuredMedia
-    albums[targetAlbumIndex][mediaType + 'Ids'].push(fIndex); // eg: add photo id to photos array
+    // albums[targetAlbumIndex][mediaType + 'Ids'].push(fIndex); // eg: add photo id to photos array
+    albums[targetAlbumIndex]['mediaIds'].push(fIndex);
     medias.push(media); // eg: add photo to the photos array
     // set up indexes for next iteration of loop:
     prevTargetAlbumPath = targetAlbumPath;
@@ -388,8 +390,8 @@ exports.getPhotoAlbums = async (albumIdsList) => {
   return albums;
 };
 
-exports.getPhotos = async (photoIds) => {
-  const idsArray = photoIds.slice(1, -1).split('+').map(Number);
+exports.getPhotos = async (mediaIds) => {
+  const idsArray = mediaIds.slice(1, -1).split('+').map(Number);
   const pArray = []; // set up promises array for all of the photos being requested
   for (let i = 0; i < idsArray.length; i += 1) {
     pArray.push(db.collection('photos').findOne({ _id: idsArray[i] }));
@@ -397,14 +399,14 @@ exports.getPhotos = async (photoIds) => {
   const photos = await Promise.all(pArray);
   for (let i = 0; i < idsArray.length; i += 1) {
     if (!photos[i]) { // validity check
-      throw new Error('403 Photo IDs list: ' + photoIds + ' is invalid.');
+      throw new Error('403 Photo IDs list: ' + mediaIds + ' is invalid.');
     }
   }
   return photos;
 };
 
-exports.getVideos = async (videoIds) => {
-  const idsArray = videoIds.slice(1, -1).split('+').map(Number);
+exports.getVideos = async (mediaIds) => {
+  const idsArray = mediaIds.slice(1, -1).split('+').map(Number);
   const pArray = []; // set up promises array for all of the videos being requested
   for (let i = 0; i < idsArray.length; i += 1) {
     pArray.push(db.collection('videos').findOne({ _id: idsArray[i] }));
@@ -412,14 +414,14 @@ exports.getVideos = async (videoIds) => {
   const videos = await Promise.all(pArray);
   for (let i = 0; i < idsArray.length; i += 1) {
     if (!videos[i]) { // validity check
-      throw new Error('403 Video IDs list: ' + videoIds + ' is invalid.');
+      throw new Error('403 Video IDs list: ' + mediaIds + ' is invalid.');
     }
   }
   return videos;
 };
 
-exports.getThumbs = async (photoIdsList) => {
-  const photos = await exports.getPhotos(photoIdsList);
+exports.getThumbs = async (mediaIdsList) => {
+  const photos = await exports.getPhotos(mediaIdsList);
   const thumbs = [];
   photos.forEach(photo => thumbs.push(photo.thumbPath));
   return thumbs;
@@ -428,7 +430,7 @@ exports.getThumbs = async (photoIdsList) => {
 exports.getPosters = async (posterIds) => {
   const videos = await exports.getVideos(posterIds);
   const posters = [];
-  videos.forEach(video => posters.push(video.posterPath));
+  videos.forEach(video => posters.push(video.thumbPath));
   return posters;
 };
 
