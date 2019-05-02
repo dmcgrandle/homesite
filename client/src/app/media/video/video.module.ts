@@ -8,7 +8,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { VideoRoutingModule } from './video-routing.module';
 import { VideosComponent } from './videos/videos.component';
 import { VideoComponent } from './video/video.component';
-import { AlbumsComponent } from './albums/albums.component';
+// import { AlbumsComponent } from './albums/albums.component';
 
 @NgModule({
   imports: [
@@ -21,6 +21,6 @@ import { AlbumsComponent } from './albums/albums.component';
     MatProgressSpinnerModule,
     MatIconModule,
   ],
-  declarations: [ VideosComponent, VideoComponent, AlbumsComponent ]
+  declarations: [ VideosComponent, VideoComponent ]
 })
 export class VideoModule { }

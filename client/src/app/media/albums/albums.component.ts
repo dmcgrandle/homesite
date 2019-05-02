@@ -22,8 +22,8 @@ export class AlbumsComponent implements OnInit, OnDestroy {
     photosDisplayName: string;
     getAlbumsSub: Subscription;
     cardLoaded: Subject<HTMLDivElement> = new Subject();
-    spanColumns = 'false';
     mediaType: string;
+    spanColumns = 'false';
 
     constructor(
         public api: APIService,
@@ -35,11 +35,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.mediaType = this.location.path().split('/')[2]; // photo or video
-        console.log(`mediaType is "${this.mediaType}"`);
-        if (this.mediaType === 'video') {
-            this.spanColumns = 'true';
-            console.log('set to true ...');
-        }
+        if (this.mediaType === 'video') { this.spanColumns = 'true'; }
         this.getAlbumsSub = this.api.getAlbumsByURL(this.mediaType, this.route.url).subscribe(
             (albums: MediaAlbum[]) => {
                 this.displayAlbums = albums;

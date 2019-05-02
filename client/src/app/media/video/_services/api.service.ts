@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { flatMap, switchMap, tap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 
 import { VideoAlbum, Video } from '../_helpers/classes';
@@ -46,6 +46,16 @@ export class APIService {
         );
     }
 
+    public getVideoAlbumByURL(url: Observable<UrlSegment[]>): Observable<VideoAlbum> {
+        return url.pipe(
+            switchMap(segments => this.getVideoAlbumByPath(segments.join('/'))),
+            tap(album => (this.curVideoAlbum = album))
+        );
+    }
+
+    /*
+
+
     public getVideoAlbumsByIdArray(albumIds: Array<number>): Observable<VideoAlbum[]> {
         const albumString = '(' + albumIds.join('+') + ')';
         return <Observable<VideoAlbum[]>>(
@@ -53,12 +63,6 @@ export class APIService {
         );
     }
 
-    public getVideoAlbumByURL(url: Observable<UrlSegment[]>): Observable<VideoAlbum> {
-        return url.pipe(
-            switchMap(segments => this.getVideoAlbumByPath(segments.join('/'))),
-            tap(album => (this.curVideoAlbum = album))
-        );
-    }
 
     public getVideoAlbumsByURL(url: Observable<UrlSegment[]>): Observable<VideoAlbum[]> {
         return url.pipe(
@@ -67,6 +71,7 @@ export class APIService {
             switchMap(album => this.getVideoAlbumsByIdArray(album.albumIds))
         );
     }
+    */
 
     public getVideoByURL(url: Observable<UrlSegment[]>): Observable<Video> {
         return url.pipe(switchMap(segments => this.getVideoByPath(segments.join('/'))));
