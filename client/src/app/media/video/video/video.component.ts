@@ -1,13 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Router, ActivatedRoute, ParamMap, UrlTree } from '@angular/router';
-import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
+// import { MatDialog } from '@angular/material';
+import { ActivatedRoute } from '@angular/router';
 
-import { AlertMessageDialogComponent } from '../../../shared/alert-message-dialog/alert-message-dialog.component';
-// import { AuthService } from '../../shared/_services/auth.service';
-
-import { APIService } from '../_services/api.service';
-import { Video } from '../_helpers/classes';
+import { MediaAPIService } from 'media/_services/media.api.service';
+import { Video } from 'media/_helpers/classes';
+import { Observable } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 
 @Component({
     selector: 'video-video',
@@ -15,52 +13,12 @@ import { Video } from '../_helpers/classes';
     styleUrls: ['./video.component.scss']
 })
 export class VideoComponent implements OnInit {
-    video: Video;
-    loadingAPI = true;
     loadingVideo = true;
+    video$: Observable<Video>;
 
-    constructor(
-        public api: APIService,
-        private route: ActivatedRoute,
-        private router: Router,
-        public dialog: MatDialog
-    ) {}
+    constructor(public api: MediaAPIService, private route: ActivatedRoute) {}
 
     ngOnInit() {
-        // If called from gallery-video-albums component then the
-        // media.curVideo variable will already be set up. If not
-        // we were probably called by a browser typed link or refresh.
-        this.route.url.subscribe(segments => {
-            console.log('segments passed were: ');
-            console.log(segments);
-        });
-        if (this.api.curVideo) {
-            this.video = this.api.curVideo;
-            console.log('video is: ');
-            console.log(this.video);
-            this.loadingAPI = false;
-        } else {
-            // We need to load video from the url sent.
-            this.api.getVideoByURL(this.route.url).subscribe(
-                video => {
-                    this.video = video;
-                    this.loadingAPI = false;
-                    console.log('video is:');
-                    console.log(video);
-                },
-                err => this.errAlert('Problem getting video!', err)
-            );
-        }
-    }
-
-    private errAlert(msg: string, err) {
-        const alertMessage = msg + err.error;
-        const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-            width: '400px',
-            data: { alertMessage: alertMessage, showCancel: false }
-        });
-        dialogRef.afterClosed().subscribe(result => {});
-        console.log(err);
-        this.router.navigate(['/user/login']);
+        this.video$ = this.api.getMediaByURL('video', this.route.url).pipe(shareReplay(1));
     }
 }

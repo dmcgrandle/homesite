@@ -17,3 +17,19 @@ export class Media {
     thumbPath: string;        // full path and filename of thumbnail
     caption?: string;         // optional caption for media
 }
+
+export class PhotoAlbum extends MediaAlbum {
+    // mediaIds: Array<number>;  // array of Photo ids (if any) this Album contains
+}
+
+export class Photo extends Media {
+    // thumbPath: string;        // full path and filename of thumbnail
+}
+
+export class VideoAlbum extends MediaAlbum {
+    // mediaIds: Array<number>;  // array of Photo ids (if any) this Album contains
+}
+
+export class Video extends Media {
+    // thumbPath: string;        // full path and filename of thumbnail
+}

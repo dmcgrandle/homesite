@@ -26,10 +26,10 @@ import {
     tPhoto1,
     tPhoto2,
     tPhoto3
-} from '../_services/mock-api-service.spec';
+} from '../../_services/mock-api-service.spec';
 import { ThumbnailsComponent } from '../thumbnails/thumbnails.component';
 import { PhotosComponent } from './photos.component';
-import { APIService } from '../_services/api.service';
+import { APIService } from '../../_services/old.photo.api.service';
 
 
 class Page {

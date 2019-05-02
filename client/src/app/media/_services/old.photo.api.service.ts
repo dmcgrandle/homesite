@@ -6,9 +6,9 @@ import { switchMap, catchError, tap, take } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 
 // imports from homesite outside of photo module:
-import { AlertMessageDialogComponent } from '../../../shared/alert-message-dialog/alert-message-dialog.component';
+import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
-import { PhotoAlbum, Photo } from '../_helpers/classes';
+import { PhotoAlbum, Photo } from 'media/_helpers/classes';
 
 @Injectable({ providedIn: 'root' })
 export class APIService implements OnDestroy {

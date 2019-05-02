@@ -1,4 +1,5 @@
-<div class="container" *ngIf="!loadingAPI" fxFlexFill fxLayout="column">
+
+<div class="container" *ngIf="video$ | async as video" fxFlexFill fxLayout="column">
     <div *ngIf="loadingVideo" class="spinner"><mat-spinner></mat-spinner></div>
     <!-- Note: relative wrapper and no flexbox for video is intentional - needs to work with Chrome, FF and Safari (IOS) -->
     <div fxFlex class="wrapper">
@@ -7,9 +8,4 @@
     </div>
     <h5 fxFlexAlign="center" *ngIf="!video.caption">{{video.filename}}</h5>
     <h5 fxFlexAlign="center" *ngIf="video.caption">{{video.caption}}</h5>
-</div>
-
-<div *ngIf="loadingAPI">
-    <h3>Video is loading ...</h3>
-    <mat-spinner></mat-spinner>
 </div>

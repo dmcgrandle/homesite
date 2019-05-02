@@ -5,8 +5,8 @@ import { Observable, throwError } from 'rxjs';
 import { share, switchMap, catchError } from 'rxjs/operators';
 
 // imports from within photo module:
-import { Photo } from '../_helpers/classes';
-import { APIService } from '../_services/api.service';
+import { Photo } from 'media/_helpers/classes';
+import { MediaAPIService } from 'media/_services/media.api.service';
 
 @Component({
     selector: 'photo-photos',
@@ -18,10 +18,10 @@ export class PhotosComponent implements OnInit {
     curThumbsIndex = 0;
     focalLoading = true;
 
-    constructor(public api: APIService, private route: ActivatedRoute) {}
+    constructor(public api: MediaAPIService, private route: ActivatedRoute) {}
 
     ngOnInit() {
-        this.api.loadThumbs(this.route.url);
+        this.api.loadThumbs('photo', this.route.url);
     }
 
     private changeThumb(newIndex: number) {

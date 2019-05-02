@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 // import { FullscreenOverlayContainer } from '@angular/cdk/overlay';
-import { Photo } from '../_helpers/classes';
+import { Photo } from 'media/_helpers/classes';
 
 const ANIMATION_TIMINGS = '900ms cubic-bezier(0.25, 0.8, 0.25, 1)';
 

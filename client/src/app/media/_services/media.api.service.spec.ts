@@ -6,18 +6,18 @@
 // import { Observable, of } from 'rxjs';
 // import { UrlSegment } from '@angular/router';
 
-// import { APIService } from './api.service';
+// import { MediaAPIService } from './media.api.service';
 // import { Album, Photo } from '../_helpers/classes';
 
 // describe('Photo Module: APIService', () => {
-//     let api: APIService;
+//     let api: MediaAPIService;
 //     let httpMock: HttpTestingController;
 //     beforeEach(() => {
 //         TestBed.configureTestingModule({
 //             imports: [HttpClientTestingModule],
-//             providers: [APIService]
+//             providers: [MediaAPIService]
 //         });
-//         api = TestBed.get(APIService);
+//         api = TestBed.get(MediaAPIService);
 //         httpMock = TestBed.get(HttpTestingController);
 //     });
 

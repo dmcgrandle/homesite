@@ -9,7 +9,7 @@ import { Subscription, Subject } from 'rxjs';
 import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
 
 // imports from within photo module:
-import { APIService } from '../_services/api.service';
+import { MediaAPIService } from '../_services/media.api.service';
 import { MediaAlbum, Media } from '../_helpers/classes';
 
 @Component({
@@ -26,7 +26,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
     spanColumns = 'false';
 
     constructor(
-        public api: APIService,
+        public api: MediaAPIService,
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog,

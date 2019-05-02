@@ -6,7 +6,7 @@ import {
 import { Observable, of } from 'rxjs';
 import { UrlSegment } from '@angular/router';
 
-import { APIService } from './api.service';
+import { APIService } from './old.photo.api.service';
 import { PhotoAlbum, Photo } from '../_helpers/classes';
 
 describe('Photo Module: APIService', () => {

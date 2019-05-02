@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { KEY_CODE } from '../../../shared/_classes/key-code-enum';
 
-import { Photo } from '../_helpers/classes';
+import { Photo } from 'media/_helpers/classes';
 
 @Component({
     selector: 'photo-thumbnails',
