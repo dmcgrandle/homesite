@@ -5,11 +5,8 @@ import { Router, ActivatedRoute, UrlTree, UrlSegment } from '@angular/router';
 import { Location } from '@angular/common';
 import { Subscription, Subject } from 'rxjs';
 
-// imports from homesite outside of photo module:
-import { AlertMessageDialogComponent } from '../../shared/alert-message-dialog/alert-message-dialog.component';
-
 // imports from within photo module:
-import { MediaAPIService } from '../_services/media.api.service';
+import { MediaAPIService } from '../_services/media-api.service';
 import { MediaAlbum, Media } from '../_helpers/classes';
 
 @Component({
@@ -21,7 +18,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
     displayAlbums: MediaAlbum[];
     photosDisplayName: string;
     getAlbumsSub: Subscription;
-    cardLoaded: Subject<HTMLDivElement> = new Subject();
+    cardLoaded$: Subject<HTMLDivElement> = new Subject();
     mediaType: string;
     spanColumns = 'false';
 
@@ -41,7 +38,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
                 this.displayAlbums = albums;
                 this.photosDisplayName = this.api.curAlbum._id > 0 ? this.api.curAlbum.name : '';
             },
-            err => this.errAlert('Problem getting albums!', err)
+            err => this.api.errAlert('Problem getting albums!', err)
         );
     }
 
@@ -49,8 +46,8 @@ export class AlbumsComponent implements OnInit, OnDestroy {
         if (this.getAlbumsSub) {
             this.getAlbumsSub.unsubscribe();
         }
-        if (this.cardLoaded) {
-            this.cardLoaded.unsubscribe();
+        if (this.cardLoaded$) {
+            this.cardLoaded$.unsubscribe();
         }
     }
 
@@ -65,7 +62,7 @@ export class AlbumsComponent implements OnInit, OnDestroy {
                     const url = `/media/${this.mediaType}/albums${this.router.createUrlTree([album.path]).toString()}`;
                     this.location.go(url); // Update the URL in the browser window without navigating.
                 },
-                err => this.errAlert('Problem getting albums!', err)
+                err => this.api.errAlert('Problem getting albums!', err)
             );
         } else {
             // Not an album of albums!  So nav to photos ...
@@ -75,17 +72,5 @@ export class AlbumsComponent implements OnInit, OnDestroy {
 
     public navToMedia(album: MediaAlbum) {
         return this.router.navigate([`/media/${this.mediaType}/${this.mediaType}s/` + album.path]);
-    }
-
-    private errAlert(msg: string, err) {
-        const alertMessage = msg + err.error;
-        const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-            width: '400px',
-            data: { alertMessage: alertMessage, showCancel: false }
-        });
-        dialogRef.afterClosed().subscribe(() => {
-            console.log(msg, err);
-            this.router.navigate(['/home']);
-        });
     }
 }

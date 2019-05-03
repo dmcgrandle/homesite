@@ -1,4 +1,4 @@
-<div class="videos-container" *ngIf="videos" fxFlexFill fxLayout="column">
+<div class="videos-container" *ngIf="videos$ | async as videos" fxFlexFill fxLayout="column">
     <h3 class="title">Videos in Album {{api.curAlbum.name}}:</h3>
     <div mnMasonryGrid mnMinColSize="220px" class="video-grid" fxFlex>
         <div #videoItem [mnMasonryItem]="posterLoaded" mnSpanColumns="true" class="video-item"
@@ -13,7 +13,7 @@
     </div>
 </div>
 
-<div *ngIf="!videos">
+<div *ngIf="!(videos$ | async)">
     <p>Waiting on the server ...</p>
     <mat-spinner></mat-spinner>
 </div>

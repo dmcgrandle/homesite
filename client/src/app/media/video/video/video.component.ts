@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 // import { MatDialog } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 
-import { MediaAPIService } from 'media/_services/media.api.service';
+import { MediaAPIService } from 'media/_services/media-api.service';
 import { Video } from 'media/_helpers/classes';
 import { Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
