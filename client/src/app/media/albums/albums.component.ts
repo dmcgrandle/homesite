@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 
 // imports from within photo module:
 import { MediaAPIService } from '../_services/media-api.service';
@@ -17,6 +17,7 @@ import { MediaAlbum } from '../_helpers/classes';
 export class AlbumsComponent implements OnInit, OnDestroy {
     photosDisplayName: string;
     cardLoaded$: Subject<HTMLDivElement> = new Subject();
+    updateAlbumsSub: Subscription;
     mediaType: string;
     spanColumns = 'false';
 
@@ -33,13 +34,15 @@ export class AlbumsComponent implements OnInit, OnDestroy {
         if (this.mediaType === 'video') {
             this.spanColumns = 'true';
         }
-        this.api.updateAlbumsByUrl(this.mediaType, this.route.url);
+        this.api.updateAlbums(null); // display spinner until loaded.
+        this.updateAlbumsSub = this.api.getAlbumsByURL(this.mediaType, this.route.url).subscribe(
+            albums => this.api.updateAlbums(albums)
+        );
     }
 
     ngOnDestroy() {
-        if (this.cardLoaded$) {
-            this.cardLoaded$.unsubscribe();
-        }
+        this.cardLoaded$.unsubscribe();
+        this.updateAlbumsSub.unsubscribe();
     }
 
     public updateDisplayAlbum(album: MediaAlbum) {

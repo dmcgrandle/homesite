@@ -14,7 +14,6 @@ import { MediaAlbum, Media, Photo, Video } from '../_helpers/classes';
 export class MediaAPIService implements OnDestroy {
     private _albums$: BehaviorSubject<MediaAlbum[]> = new BehaviorSubject(null);
     public albums$: Observable<MediaAlbum[]> = this._albums$.asObservable();
-    public fetchSub: Subscription;
     public curAlbum: MediaAlbum;
 
     constructor(
@@ -24,17 +23,7 @@ export class MediaAPIService implements OnDestroy {
     ) {}
 
     ngOnDestroy() {
-        if (this.fetchSub) {
-            this.fetchSub.unsubscribe();
-        }
         this._albums$.unsubscribe();
-    }
-
-    public updateAlbumsByUrl(mediaType: string, url: Observable<UrlSegment[]>) {
-        this._albums$.next(null);
-        this.fetchSub = this.getAlbumsByURL(mediaType, url).subscribe(albums =>
-            this._albums$.next(albums)
-        );
     }
 
     public updateAlbums(albums: MediaAlbum[]) {
