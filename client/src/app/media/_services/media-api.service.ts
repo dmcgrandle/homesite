@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router, UrlSegment } from '@angular/router';
-import { Observable, throwError } from 'rxjs';
+import { Observable, BehaviorSubject, throwError, Subscription } from 'rxjs';
 import { switchMap, tap, take, catchError } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 
@@ -11,15 +11,35 @@ import { AlertMessageDialogComponent } from 'shared/alert-message-dialog/alert-m
 import { MediaAlbum, Media, Photo, Video } from '../_helpers/classes';
 
 @Injectable({ providedIn: 'root' })
-export class MediaAPIService {
-    public curAlbum: MediaAlbum; // used to keep track of current Album between components
-    public curVideo: Video;
+export class MediaAPIService implements OnDestroy {
+    private _albums$: BehaviorSubject<MediaAlbum[]> = new BehaviorSubject(null);
+    public albums$: Observable<MediaAlbum[]> = this._albums$.asObservable();
+    public fetchSub: Subscription;
+    public curAlbum: MediaAlbum;
 
     constructor(
         private http: HttpClient,
         private router: Router,
         public dialog: MatDialog
     ) {}
+
+    ngOnDestroy() {
+        if (this.fetchSub) {
+            this.fetchSub.unsubscribe();
+        }
+        this._albums$.unsubscribe();
+    }
+
+    public updateAlbumsByUrl(mediaType: string, url: Observable<UrlSegment[]>) {
+        this._albums$.next(null);
+        this.fetchSub = this.getAlbumsByURL(mediaType, url).subscribe(albums =>
+            this._albums$.next(albums)
+        );
+    }
+
+    public updateAlbums(albums: MediaAlbum[]) {
+        this._albums$.next(albums);
+    }
 
     public getMediaById(mediaType, id: number): Observable<Media> {
         return <Observable<Media>>(
@@ -123,11 +143,10 @@ export class MediaAPIService {
 
     errAlert(msg: string, err): Observable<never> {
         const alertMessage = msg + err.error;
-        const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
+        this.dialog.open(AlertMessageDialogComponent, {
             width: '400px',
             data: { alertMessage: alertMessage, showCancel: false }
         });
-        dialogRef.afterClosed().subscribe(result => {});
         console.log(err);
         this.router.navigate(['/home']);
         return throwError(err);

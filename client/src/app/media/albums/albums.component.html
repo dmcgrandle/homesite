@@ -1,4 +1,4 @@
-<div *ngIf="displayAlbums" fxFlexFill fxLayout="column" class="albums-container">
+<div *ngIf="api.albums$ | async as albums" fxFlexFill fxLayout="column" class="albums-container">
   <h2 class="title">{{mediaType | titlecase}} Albums in {{api.curAlbum.name}}:</h2>
 
   <div mnMasonryGrid class="grid-container" fxFlex>
@@ -8,7 +8,7 @@
           [image]="api.curAlbum.featuredMedia.thumbPath" (loaded)="cardLoaded$.next(firstItem)"></shared-card>
       </div>
       <!-- Now loop through displaying all the albums in this album. -->
-      <div #nextItem [mnMasonryItem]="cardLoaded$" [mnSpanColumns]="spanColumns" class="grid-item" *ngFor="let album of displayAlbums" (click)="updateDisplayAlbum(album)">
+      <div #nextItem [mnMasonryItem]="cardLoaded$" [mnSpanColumns]="spanColumns" class="grid-item" *ngFor="let album of albums" (click)="updateDisplayAlbum(album)">
           <shared-card [name]="album.name" [description]="album.description"
           [image]="album.featuredMedia.thumbPath" (loaded)="cardLoaded$.next(nextItem)"></shared-card>
       </div>
@@ -16,7 +16,7 @@
 
 </div>
 
-<div *ngIf="!displayAlbums">
+<div *ngIf="!(api.albums$ | async)">
   <p>Waiting on server ...</p>
   <mat-spinner></mat-spinner>
 </div>

@@ -1,46 +1,21 @@
-import {
-    Component,
-    OnInit,
-    ViewChild,
-    ViewChildren,
-    HostListener,
-    Testability,
-    OnDestroy
-} from '@angular/core';
-import {
-    HttpClient,
-    HttpParams,
-    HttpRequest,
-    HttpEvent,
-    HttpEventType,
-    HttpResponse
-} from '@angular/common/http';
-import {
-    MatDialog,
-    MatTableDataSource,
-    MatPaginator,
-    MatSort,
-    MatDialogRef,
-    MAT_DIALOG_DATA,
-    MatSortable
-} from '@angular/material';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { HttpEventType, HttpResponse } from '@angular/common/http';
+import { MatDialog, MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Observable, interval, BehaviorSubject, Subscription } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { MediaObserver, MediaChange } from '@angular/flex-layout';
 import { saveAs } from 'file-saver';
 
 import {
     AlertMessageDialogComponent,
     AlertData
-} from '../../shared/alert-message-dialog/alert-message-dialog.component';
+} from 'shared/alert-message-dialog/alert-message-dialog.component';
 import {
     ProgressBarComponent,
     ProgressData
-} from '../../shared/progress-bar/progress-bar.component';
+} from 'shared/progress-bar/progress-bar.component';
 import { DlFile, FilenameChangedObj } from '../_helpers/classes';
 import { APIService } from '../_services/api.service';
-import { appInitializerFactory } from '@angular/platform-browser/src/browser/server-transition';
 
 @Component({
     selector: 'download-downloads',
@@ -150,6 +125,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
                     // All done!
                     console.log('Downloaded file :', file.filename);
                     // console.log('event is ', event);
+                    console.log(event);
                     saveAs(event.body, file.filename);
                     dialogRef.close(); // close the progress bar
                     const alertData: AlertData = {

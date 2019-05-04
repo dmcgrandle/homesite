@@ -25,7 +25,9 @@ export class VideosComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         // We need to load the curAlbum from the url sent.
-        this.videos$ = this.api.getMediasByURL('video', this.route.url).pipe(shareReplay(1));
+        this.videos$ = this.api
+            .getMediasByURL('video', this.route.url)
+            .pipe(shareReplay(1));
     }
 
     ngOnDestroy() {
@@ -33,10 +35,10 @@ export class VideosComponent implements OnInit, OnDestroy {
     }
 
     playVideo(video: Video) {
-        this.api.curVideo = video;
+        // this.api.curVideo = video;
         this.route.url.subscribe(segments =>
             this.router.navigateByUrl(
-                `/media/video/video/${segments.join('/')}/${this.api.curVideo.filename}`
+                `/media/video/video/${segments.join('/')}/${video.filename}`
             )
         );
     }
