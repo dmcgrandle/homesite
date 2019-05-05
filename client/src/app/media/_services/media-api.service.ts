@@ -1,19 +1,19 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router, UrlSegment } from '@angular/router';
-import { Observable, BehaviorSubject, throwError, Subscription } from 'rxjs';
-import { switchMap, tap, take, catchError } from 'rxjs/operators';
+import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 
 // imports from homesite outside of media module:
 import { AlertMessageDialogComponent } from 'shared/alert-message-dialog/alert-message-dialog.component';
 
-import { MediaAlbum, Media, Photo, Video } from '../_helpers/classes';
+import { MediaAlbum, Media } from '../_helpers/classes';
 
 @Injectable({ providedIn: 'root' })
 export class MediaAPIService implements OnDestroy {
     private _albums$: BehaviorSubject<MediaAlbum[]> = new BehaviorSubject(null);
-    public albums$: Observable<MediaAlbum[]> = this._albums$.asObservable();
+    public readonly albums$: Observable<MediaAlbum[]> = this._albums$.asObservable();
     public curAlbum: MediaAlbum;
 
     constructor(
@@ -32,7 +32,7 @@ export class MediaAPIService implements OnDestroy {
 
     public getMediaById(mediaType, id: number): Observable<Media> {
         return <Observable<Media>>(
-            this.http.get(`/api/${mediaType}s/${mediaType}-by-id/' + id`)
+            this.http.get(`/api/${mediaType}s/${mediaType}-by-id/${id}`)
         );
     }
 

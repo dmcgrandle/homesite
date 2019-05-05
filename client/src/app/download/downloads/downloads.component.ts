@@ -71,6 +71,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         if (this.flexMediaWatcher) {
             this.flexMediaWatcher.unsubscribe();
         }
+        this.loading$.unsubscribe();
     }
 
     setupDownloadsTable() {

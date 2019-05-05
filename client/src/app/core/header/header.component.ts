@@ -4,7 +4,7 @@ import { AuthService } from '../../user/_services/auth.service';
 import { AppConfig } from '../../app.config';
 
 @Component({
-    selector: 'shared-header',
+    selector: 'core-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss']
 })
