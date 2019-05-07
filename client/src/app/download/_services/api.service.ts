@@ -8,6 +8,8 @@ import { DlFile, FilenameChangedObj } from '../_helpers/classes';
 
 @Injectable({ providedIn: 'root' })
 export class APIService {
+    that = this;
+
     constructor(private http: HttpClient, private auth: AuthService) {}
 
     public authGetDownloads(): Observable<DlFile[]> {
@@ -22,6 +24,7 @@ export class APIService {
 
     public uploadFile(file: File): Observable<HttpEvent<any>> {
         // Note - this returns an EVENT, so we can track progress
+        console.log('file is', file);
         const formData = new FormData();
         formData.append('upload', file);
         const params = new HttpParams();

@@ -11,12 +11,17 @@
             <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
         </mat-form-field>
         <span class="fill-space"></span>
+
+        <shared-upload-file *ngIf="api.lastLoggedInUserLevel() > 2" [uploadFile]="api.uploadFile"
+            (finished)="reloadDownloads()" [that]="api.that" class="upload-icon">
+        </shared-upload-file>
+
         <!-- For file upload: set up a hidden input and 'click' it when the "upload" icon is clicked -->
-        <input hidden type="file" #file (change)="uploadPickedFile($event)">
+        <!-- <input hidden type="file" #file (change)="uploadPickedFile($event)">
         <mat-icon *ngIf="api.lastLoggedInUserLevel() > 2" class="upload-icon clickable" (click)="file.click()"
             matTooltip="Upload A File" matTooltipPosition="left" matTooltipShowDelay="1000">
             publish
-        </mat-icon>
+        </mat-icon> -->
     </div>
 
     <div fxFlex class="table-container" fxLayout="column" >

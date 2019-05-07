@@ -1,12 +1,20 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule, MatIconModule } from '@angular/material';
+import {
+    MatToolbarModule,
+    MatIconModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatDividerModule
+} from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { SharedModule } from '../shared/shared.module';
 
 import { CoreRoutingModule } from './core-routing.module';
 import { HomeComponent } from './home/home.component';
+import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
     imports: [
@@ -14,9 +22,13 @@ import { HomeComponent } from './home/home.component';
         CoreRoutingModule,
         SharedModule,
         FlexLayoutModule,
-        MatCardModule,
-        MatIconModule
+        MatMenuModule,
+        MatIconModule,
+        MatButtonModule,
+        MatDividerModule,
+        MatToolbarModule
     ],
-    declarations: [HomeComponent]
+    exports: [HeaderComponent, FooterComponent],
+    declarations: [HomeComponent, HeaderComponent, FooterComponent]
 })
 export class CoreModule {}

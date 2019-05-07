@@ -223,61 +223,6 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         });
     }
 
-    uploadPickedFile(event) {
-        // Upload clicked and file selected
-        let upload: Subscription;
-        const progress$ = new BehaviorSubject<number>(0); // start with zero progress
-        const pData: ProgressData = { heading: 'Download', progress$: progress$ };
-        const dialogRef = this.dialog.open(ProgressBarComponent, { data: pData });
-        upload = this.api.uploadFile(event.target.files[0]).subscribe(
-            progEvent => {
-                // called as upload progresses
-                if (progEvent.type === HttpEventType.UploadProgress) {
-                    const percentDone = Math.round(
-                        (100 * progEvent.loaded) / progEvent.total
-                    );
-                    progress$.next(percentDone); // update progress bar via observable
-                    // console.log(`File is ${percentDone}% loaded.`);
-                } else if (progEvent instanceof HttpResponse) {
-                    // All done!
-                    console.log('Uploaded file :', progEvent.body.filename);
-                    this.reloadDownloads();
-                    dialogRef.close(); // close the progress bar
-                    this.dialog.open(AlertMessageDialogComponent, {
-                        data: {
-                            heading: 'Upload Complete',
-                            alertMessage: 'You successfully uploaded the file:',
-                            alertMessage2: progEvent.body.filename,
-                            showCancel: false
-                        }
-                    });
-                }
-            },
-            err => {
-                dialogRef.close();
-                console.log('Upload Error:', err);
-                this.dialog.open(AlertMessageDialogComponent, {
-                    width: '340px',
-                    data: {
-                        heading: 'Upload Error!',
-                        alertMessage: err.message,
-                        showCancel: false
-                    }
-                });
-            }
-        );
-        dialogRef.afterClosed().subscribe(data => {
-            if (data && data.stopClicked) {
-                upload.unsubscribe(); // abort the upload.
-                const message = 'Transfer was aborted.';
-                this.dialog.open(AlertMessageDialogComponent, {
-                    width: '340px',
-                    data: { heading: 'Alert!', alertMessage: message, showCancel: false }
-                });
-            }
-        });
-    }
-
     reloadDownloads() {
         this.loading$.next(true);
         this.api.authGetDownloads().subscribe(downloads => {
