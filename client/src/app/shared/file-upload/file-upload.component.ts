@@ -11,11 +11,11 @@ import {
 } from '../progress-bar/progress-bar.component';
 
 @Component({
-    selector: 'shared-upload-file',
-    templateUrl: './upload-file.component.html',
-    styleUrls: ['./upload-file.component.scss']
+    selector: 'shared-file-upload',
+    templateUrl: './file-upload.component.html',
+    styleUrls: ['./file-upload.component.scss']
 })
-export class UploadFileComponent implements OnInit {
+export class FileUploadComponent implements OnInit {
     @Input() uploadFile: Function; // eg: api.uploadFile(event.target.files[0])
     @Input() that: any; // "this" context of original uploadFile function to bind
     @Output() finished = new EventEmitter<boolean>();
