@@ -41,9 +41,7 @@
                 <td mat-cell class="clickable center-align" *matCellDef="let row"
                     matTooltip="DELETE this item permanently" matTooltipPosition="right" matTooltipShowDelay="1000">
                     <shared-file-delete [filename]="row.filename" (confirmed)="onDeleteConfirmed(row)">
-
                     </shared-file-delete>
-                    <!-- <mat-icon (click)="onDeleteClicked(row)">delete_forever</mat-icon> -->
                 </td>
             </ng-container>
 

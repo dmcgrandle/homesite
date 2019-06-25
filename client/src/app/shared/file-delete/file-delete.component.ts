@@ -11,7 +11,7 @@ import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-messa
 })
 export class FileDeleteComponent implements OnInit {
     @Input() filename: string; // name of file to confirm for deletion
-    @Output() confirmed = new EventEmitter<boolean>(); // true=confirmed, false=cancel
+    @Output() confirmed = new EventEmitter<boolean>();
 
     constructor(public dialog: MatDialog) {}
 
@@ -29,12 +29,9 @@ export class FileDeleteComponent implements OnInit {
             }
         });
         dialogRef.afterClosed().subscribe(data => {
-            if (data.okClicked) {
+            if (data && data.okClicked) {
                 this.confirmed.emit(true);
-            } else {
-                // this.confirmed.emit(false);
             }
-
         });
     }
 }
