@@ -9,6 +9,7 @@ import {
     MatButtonModule,
     MatProgressBarModule,
     MatTooltipModule,
+    MatDialogModule,
     MatCardModule
 } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -32,6 +33,7 @@ import { FileDeleteComponent } from './file-delete/file-delete.component';
         RouterModule,
         FlexLayoutModule,
         MatCardModule,
+        MatDialogModule,
         MatToolbarModule,
         MatListModule,
         MatIconModule,
@@ -44,6 +46,7 @@ import { FileDeleteComponent } from './file-delete/file-delete.component';
         PageNotFoundComponent,
         ProgressBarComponent,
         FileUploadComponent,
+        FileDeleteComponent,
         SecurePipe,
         MasonryGridDirective,
         MasonryItemDirective

@@ -201,6 +201,13 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         });
     }
 
+    onDeleteConfirmed(file: DlFile) {
+        this.api.deleteFile(file).subscribe(returnedFile => {
+            console.log('Deleted file ' + returnedFile.filename);
+            this.reloadDownloads();
+        });
+    }
+
     onDeleteClicked(file: DlFile) {
         const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
             //           width: '360px', // commented this out so long filenames wouldn't wrap
