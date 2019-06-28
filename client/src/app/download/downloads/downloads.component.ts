@@ -110,6 +110,10 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         this.dataSource.filter = filterValue.trim().toLowerCase();
     }
 
+    onDownloadFinished() {
+        console.log('download finished.');
+    }
+
     onDownloadClicked(file: DlFile) {
         let download: Subscription;
         const progress$ = new BehaviorSubject<number>(0); // start with zero progress
@@ -205,28 +209,6 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         this.api.deleteFile(file).subscribe(returnedFile => {
             console.log('Deleted file ' + returnedFile.filename);
             this.reloadDownloads();
-        });
-    }
-
-    onDeleteClicked(file: DlFile) {
-        const dialogRef = this.dialog.open(AlertMessageDialogComponent, {
-            //           width: '360px', // commented this out so long filenames wouldn't wrap
-            data: {
-                heading: 'Warning!',
-                alertMessage: 'Are you certain you want to delete file:',
-                alertMessage2: `"${file.filename}"`,
-                showCancel: true,
-                okText: 'Yes',
-                cancelText: 'No'
-            }
-        });
-        dialogRef.afterClosed().subscribe(data => {
-            if (data.okClicked) {
-                this.api.deleteFile(file).subscribe(returnedFile => {
-                    console.log('Deleted file ' + returnedFile.filename);
-                    this.reloadDownloads();
-                });
-            } // if cancel clicked, do nothing.
         });
     }
 

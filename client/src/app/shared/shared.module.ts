@@ -25,6 +25,7 @@ import { CardComponent } from './card/card.component';
 import { MasonryGridDirective } from './masonry/masonry-grid.directive';
 import { MasonryItemDirective } from './masonry/masonry-item.directive';
 import { FileUploadComponent } from './file-upload/file-upload.component';
+import { FileDownloadComponent } from './file-download/file-download.component';
 import { FileDeleteComponent } from './file-delete/file-delete.component';
 
 @NgModule({
@@ -46,6 +47,7 @@ import { FileDeleteComponent } from './file-delete/file-delete.component';
         PageNotFoundComponent,
         ProgressBarComponent,
         FileUploadComponent,
+        FileDownloadComponent,
         FileDeleteComponent,
         SecurePipe,
         MasonryGridDirective,
@@ -61,7 +63,8 @@ import { FileDeleteComponent } from './file-delete/file-delete.component';
         MasonryGridDirective,
         MasonryItemDirective,
         FileUploadComponent,
-        FileDeleteComponent
+        FileDeleteComponent,
+        FileDownloadComponent
     ],
     entryComponents: [AlertMessageDialogComponent, ProgressBarComponent]
 })

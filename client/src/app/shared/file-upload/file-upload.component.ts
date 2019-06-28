@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { MatDialog } from '@angular/material';
@@ -15,14 +15,12 @@ import {
     templateUrl: './file-upload.component.html',
     styleUrls: ['./file-upload.component.scss']
 })
-export class FileUploadComponent implements OnInit {
+export class FileUploadComponent {
     @Input() uploadFile: Function; // eg: api.uploadFile(event.target.files[0])
     @Input() that: any; // "this" context of original uploadFile function to bind
     @Output() finished = new EventEmitter<boolean>();
 
     constructor(public dialog: MatDialog) {}
-
-    ngOnInit() {}
 
     uploadPickedFile(event) {
         // Upload clicked and file selected

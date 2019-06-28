@@ -31,7 +31,8 @@
                 <th mat-header-cell *matHeaderCellDef></th>
                 <td mat-cell class="clickable center-align" *matCellDef="let row" matTooltip="Download this item"
                     matTooltipPosition="right" matTooltipShowDelay="1000">
-                    <mat-icon (click)="onDownloadClicked(row)">get_app</mat-icon>
+                    <shared-file-download [filename]="row.filename" [download$]="api.downloadFile(row)">
+                    </shared-file-download>
                 </td>
             </ng-container>
 
