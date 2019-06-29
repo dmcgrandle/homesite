@@ -1,6 +1,6 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Subscription, BehaviorSubject } from 'rxjs';
-import { HttpEventType, HttpResponse } from '@angular/common/http';
+import { Component, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Subscription, BehaviorSubject, Observable } from 'rxjs';
+import { HttpEventType, HttpResponse, HttpEvent } from '@angular/common/http';
 import { MatDialog } from '@angular/material';
 
 import { AlertMessageDialogComponent } from '../alert-message-dialog/alert-message-dialog.component';
@@ -15,23 +15,27 @@ import {
     templateUrl: './file-upload.component.html',
     styleUrls: ['./file-upload.component.scss']
 })
-export class FileUploadComponent {
-    @Input() uploadFile: Function; // eg: api.uploadFile(event.target.files[0])
-    @Input() that: any; // "this" context of original uploadFile function to bind
+export class FileUploadComponent implements OnDestroy {
+    // cb must be a fat-arrow defined callback function to retain it's 'this' context of the parent component.
+    @Input() cb: (file: File) => Observable<HttpEvent<any>>;
     @Output() finished = new EventEmitter<boolean>();
+    uploadSub: Subscription;
 
     constructor(public dialog: MatDialog) {}
+
+    ngOnDestroy() {
+        if (this.uploadSub) {
+            this.uploadSub.unsubscribe();
+        }
+    }
 
     uploadPickedFile(event) {
         // Upload clicked and file selected
         console.log('upload called with ', event.target.files[0]);
-        let upload: Subscription;
         const progress$ = new BehaviorSubject<number>(0); // start with zero progress
         const pData: ProgressData = { heading: 'Download', progress$: progress$ };
         const dialogRef = this.dialog.open(ProgressBarComponent, { data: pData });
-        // since we passed a function from a service, bind to the original 'this'
-        const boundUpload = this.uploadFile.bind(this.that);
-        upload = boundUpload(event.target.files[0]).subscribe(
+        this.uploadSub = this.cb(event.target.files[0]).subscribe(
             progEvent => {
                 // called as upload progresses
                 if (progEvent.type === HttpEventType.UploadProgress) {
@@ -71,7 +75,7 @@ export class FileUploadComponent {
         );
         dialogRef.afterClosed().subscribe(data => {
             if (data && data.stopClicked) {
-                upload.unsubscribe(); // abort the upload.
+                this.uploadSub.unsubscribe(); // abort the upload.
                 const message = 'Transfer was aborted.';
                 this.dialog.open(AlertMessageDialogComponent, {
                     width: '340px',

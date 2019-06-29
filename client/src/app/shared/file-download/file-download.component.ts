@@ -21,7 +21,7 @@ import {
 })
 export class FileDownloadComponent implements OnDestroy {
     @Input() download$: Observable<HttpEvent<any>>; // Observable to use for downloading eg: api.downloadFile(file)
-    @Input() filename: string; // the filename to be downloaded
+    @Input() name: string;
     downloadSub: Subscription;
 
     constructor(public dialog: MatDialog) {}
@@ -45,15 +45,15 @@ export class FileDownloadComponent implements OnDestroy {
                     // console.log(`File is ${percentDone}% downloaded.`);
                 } else if (event instanceof HttpResponse) {
                     // All done!
-                    console.log('Downloaded file :', this.filename);
+                    console.log('Downloaded file :', this.name);
                     // console.log('event is ', event);
                     console.log(event);
-                    saveAs(event.body, this.filename);
+                    saveAs(event.body, this.name);
                     dialogRef.close(); // close the progress bar
                     const alertData: AlertData = {
                         heading: 'Download Complete',
                         alertMessage: 'You successfully downloaded the file:',
-                        alertMessage2: this.filename,
+                        alertMessage2: this.name,
                         showCancel: false
                     };
                     this.dialog.open(AlertMessageDialogComponent, { data: alertData });

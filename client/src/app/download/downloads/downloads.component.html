@@ -12,8 +12,8 @@
         </mat-form-field>
         <span class="fill-space"></span>
 
-        <shared-file-upload *ngIf="api.lastLoggedInUserLevel() > 2" [uploadFile]="api.uploadFile"
-            (finished)="reloadDownloads()" [that]="api.that" class="upload-icon">
+        <shared-file-upload *ngIf="api.lastLoggedInUserLevel() > 2" [cb]="uploadCB"
+            (finished)="reloadDownloads()" class="upload-icon">
         </shared-file-upload>
     </div>
 
@@ -31,7 +31,7 @@
                 <th mat-header-cell *matHeaderCellDef></th>
                 <td mat-cell class="clickable center-align" *matCellDef="let row" matTooltip="Download this item"
                     matTooltipPosition="right" matTooltipShowDelay="1000">
-                    <shared-file-download [filename]="row.filename" [download$]="api.downloadFile(row)">
+                    <shared-file-download [name]="row.filename" [download$]="api.downloadFile(row)">
                     </shared-file-download>
                 </td>
             </ng-container>

@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { HttpEventType, HttpResponse } from '@angular/common/http';
+import { HttpEventType, HttpResponse, HttpEvent } from '@angular/common/http';
 import { MatDialog, MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, Observable } from 'rxjs';
 import { MediaObserver, MediaChange } from '@angular/flex-layout';
 import { saveAs } from 'file-saver';
 
@@ -113,6 +113,9 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     onDownloadFinished() {
         console.log('download finished.');
     }
+
+    // Note - need to define this as a fat-arrow function to retain it's 'this' context:
+    uploadCB: (file: File) => Observable<HttpEvent<any>> = (file: File) => this.api.uploadFile(file);
 
     onDownloadClicked(file: DlFile) {
         let download: Subscription;
