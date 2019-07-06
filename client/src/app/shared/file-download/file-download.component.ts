@@ -1,10 +1,9 @@
-import { Component, OnDestroy, Input } from '@angular/core';
+import { Component, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription, Observable, BehaviorSubject } from 'rxjs';
 import { HttpEventType, HttpResponse, HttpEvent } from '@angular/common/http';
 import { MatDialog } from '@angular/material';
 import { saveAs } from 'file-saver';
 
-import { DlFile } from 'download/_helpers/classes';
 import {
     AlertMessageDialogComponent,
     AlertData
@@ -22,6 +21,7 @@ import {
 export class FileDownloadComponent implements OnDestroy {
     @Input() download$: Observable<HttpEvent<any>>; // Observable to use for downloading eg: api.downloadFile(file)
     @Input() name: string;
+    @Output() finished: EventEmitter<boolean> = new EventEmitter();
     downloadSub: Subscription;
 
     constructor(public dialog: MatDialog) {}
@@ -56,7 +56,8 @@ export class FileDownloadComponent implements OnDestroy {
                         alertMessage2: this.name,
                         showCancel: false
                     };
-                    this.dialog.open(AlertMessageDialogComponent, { data: alertData });
+                    const ref = this.dialog.open(AlertMessageDialogComponent, { data: alertData });
+                    ref.afterClosed().subscribe(() => this.finished.next(true));
                 }
             },
             err => {

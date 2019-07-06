@@ -24,6 +24,4 @@ export class FilenameComponent {
             this.filename = name;
         }
     }
-
-    clickedOnMe(name: string) {}
 }

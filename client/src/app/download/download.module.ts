@@ -15,12 +15,16 @@ import { UserModule } from '../user/user.module';
 import { SharedModule } from '../shared/shared.module';
 
 import { DownloadRoutingModule } from './download-routing.module';
-// import { ProgressBarComponent } from './progress-bar/progress-bar.component';
 import { DownloadsComponent } from './downloads/downloads.component';
 import { FilenameComponent } from './filename/filename.component';
+import { GetFileComponent } from './get-file/get-file.component';
 
 @NgModule({
-    declarations: [DownloadsComponent, FilenameComponent],
+    declarations: [
+        DownloadsComponent,
+        FilenameComponent,
+        GetFileComponent
+    ],
     imports: [
         CommonModule,
         SharedModule,

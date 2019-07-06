@@ -1,19 +1,14 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { HttpEventType, HttpResponse, HttpEvent } from '@angular/common/http';
+import { HttpEvent } from '@angular/common/http';
 import { MatDialog, MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Subscription, Observable } from 'rxjs';
 import { MediaObserver, MediaChange } from '@angular/flex-layout';
-import { saveAs } from 'file-saver';
 
 import {
     AlertMessageDialogComponent,
     AlertData
 } from 'shared/alert-message-dialog/alert-message-dialog.component';
-import {
-    ProgressBarComponent,
-    ProgressData
-} from 'shared/progress-bar/progress-bar.component';
 import { DlFile, FilenameChangedObj } from '../_helpers/classes';
 import { APIService } from '../_services/api.service';
 
@@ -36,7 +31,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     constructor(
         public api: APIService,
         public dialog: MatDialog,
-        private route: ActivatedRoute,
+        // private route: ActivatedRoute,
         private router: Router,
         private flexMedia: MediaObserver
     ) {}
@@ -45,32 +40,32 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         // This component can be called two ways (techniques):
         // 1. with a specified download in the URL, so simply download to the user
         // 2. without a specified download, so display all downloads available
-        this.route.paramMap.subscribe(params => {
-            this.dlFilename = params.get('download');
-            if (this.dlFilename) {
-                // technique 1
-                this.onDownloadClicked(<DlFile>{
-                    fullPath: `/protected/downloads/${this.dlFilename}`,
-                    filename: this.dlFilename
-                });
-                this.router.navigate(['/download']); // Enter again (re-Init) without file specified
-            } else {
-                // technique 2
-                this.flexMediaWatcher = this.flexMedia.media$.subscribe(
-                    (change: MediaChange) => {
-                        this.currentScreenWidth = change.mqAlias;
-                        this.setupDownloadsTable();
-                    }
-                ); // set up a watcher to make columns in DownloadsTable responsive
+        // this.route.paramMap.subscribe(params => {
+        //     this.dlFilename = params.get('download');
+        //     if (this.dlFilename) {
+        //         // technique 1
+        //         this.onDownloadClicked(<DlFile>{
+        //             fullPath: `/protected/downloads/${this.dlFilename}`,
+        //             filename: this.dlFilename
+        //         });
+        //         this.router.navigate(['/download']); // Enter again (re-Init) without file specified
+        //     } else {
+        // technique 2
+        this.flexMediaWatcher = this.flexMedia.media$.subscribe(
+            (change: MediaChange) => {
+                this.currentScreenWidth = change.mqAlias;
                 this.setupDownloadsTable();
             }
-        });
+        ); // set up a watcher to make columns in DownloadsTable responsive
+        this.setupDownloadsTable();
+            // }
+        // });
     }
 
     ngOnDestroy() {
-        if (this.flexMediaWatcher) {
-            this.flexMediaWatcher.unsubscribe();
-        }
+        // if (this.flexMediaWatcher) {
+        this.flexMediaWatcher.unsubscribe();
+        // }
         this.loading$.unsubscribe();
     }
 
@@ -110,62 +105,8 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         this.dataSource.filter = filterValue.trim().toLowerCase();
     }
 
-    onDownloadFinished() {
-        console.log('download finished.');
-    }
-
     // Note - need to define this as a fat-arrow function to retain it's 'this' context:
     uploadCB: (file: File) => Observable<HttpEvent<any>> = (file: File) => this.api.uploadFile(file);
-
-    onDownloadClicked(file: DlFile) {
-        let download: Subscription;
-        const progress$ = new BehaviorSubject<number>(0); // start with zero progress
-        const pData: ProgressData = { heading: 'Download', progress$: progress$ };
-        const dialogRef = this.dialog.open(ProgressBarComponent, { data: pData });
-        download = this.api.downloadFile(file).subscribe(
-            event => {
-                // console.log('event is ', event)
-                if (event.type === HttpEventType.DownloadProgress) {
-                    const percentDone = Math.round((100 * event.loaded) / event.total);
-                    progress$.next(percentDone); // update progress bar via observable
-                    // console.log(`File is ${percentDone}% downloaded.`);
-                } else if (event instanceof HttpResponse) {
-                    // All done!
-                    console.log('Downloaded file :', file.filename);
-                    // console.log('event is ', event);
-                    console.log(event);
-                    saveAs(event.body, file.filename);
-                    dialogRef.close(); // close the progress bar
-                    const alertData: AlertData = {
-                        heading: 'Download Complete',
-                        alertMessage: 'You successfully downloaded the file:',
-                        alertMessage2: file.filename,
-                        showCancel: false
-                    };
-                    this.dialog.open(AlertMessageDialogComponent, { data: alertData });
-                }
-            },
-            err => {
-                dialogRef.close();
-                console.log('Download Error:', err);
-                const alertData: AlertData = {
-                    heading: 'Download Error!',
-                    alertMessage: err.message,
-                    showCancel: false
-                };
-                this.dialog.open(AlertMessageDialogComponent, { data: alertData });
-            }
-        );
-        dialogRef.afterClosed().subscribe(data => {
-            if (data && data.stopClicked) {
-                download.unsubscribe(); // abort the upload.
-                const message = 'Download was aborted.';
-                this.dialog.open(AlertMessageDialogComponent, {
-                    data: { heading: 'Alert!', alertMessage: message, showCancel: false }
-                });
-            }
-        });
-    }
 
     onFilenameChange(filenameChanged: FilenameChangedObj) {
         this.api.renameFile(filenameChanged).subscribe((file: DlFile) => {
@@ -186,8 +127,9 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     onLinkClicked(file: DlFile) {
         // This whole function is such a hack.  It's amazing there isn't a better way
         // to access the clipboard in Angular ... that I could find ...
-        const url = document.URL + this.router.createUrlTree([file.filename]).toString();
+        const url = `${document.URL}/file${this.router.createUrlTree([file.filename]).toString()}`;
         // create a "fake" textarea to store text and then copy to clipboard from
+        console.log('url is: ', url);
         const clipArea = document.createElement('textarea');
         clipArea.style.position = 'fixed'; // out of the flow
         clipArea.style.left = '0';
