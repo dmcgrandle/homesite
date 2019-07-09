@@ -27,6 +27,7 @@ import { MasonryItemDirective } from './masonry/masonry-item.directive';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { FileDownloadComponent } from './file-download/file-download.component';
 import { FileDeleteComponent } from './file-delete/file-delete.component';
+import { CopyToClipboardComponent } from './copy-to-clipboard/copy-to-clipboard.component';
 
 @NgModule({
     imports: [
@@ -44,6 +45,7 @@ import { FileDeleteComponent } from './file-delete/file-delete.component';
     ],
     exports: [
         CardComponent,
+        CopyToClipboardComponent,
         PageNotFoundComponent,
         ProgressBarComponent,
         FileUploadComponent,
@@ -56,6 +58,7 @@ import { FileDeleteComponent } from './file-delete/file-delete.component';
     declarations: [
         PageNotFoundComponent,
         AlertMessageDialogComponent,
+        CopyToClipboardComponent,
         ProgressBarComponent,
         SecurePipe,
         EqualDirective,

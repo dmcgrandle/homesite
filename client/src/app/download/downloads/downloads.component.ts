@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { HttpEvent } from '@angular/common/http';
 import { MatDialog, MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Subscription, Observable } from 'rxjs';
 import { MediaObserver, MediaChange } from '@angular/flex-layout';
 
@@ -23,7 +23,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     dataSource = new MatTableDataSource<DlFile>();
     dlFilename: string;
     currentScreenWidth = '';
-    flexMediaWatcher: Subscription;
+    flexMediaWatcherSub: Subscription;
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
@@ -31,41 +31,23 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     constructor(
         public api: APIService,
         public dialog: MatDialog,
-        // private route: ActivatedRoute,
         private router: Router,
         private flexMedia: MediaObserver
     ) {}
 
     ngOnInit() {
-        // This component can be called two ways (techniques):
-        // 1. with a specified download in the URL, so simply download to the user
-        // 2. without a specified download, so display all downloads available
-        // this.route.paramMap.subscribe(params => {
-        //     this.dlFilename = params.get('download');
-        //     if (this.dlFilename) {
-        //         // technique 1
-        //         this.onDownloadClicked(<DlFile>{
-        //             fullPath: `/protected/downloads/${this.dlFilename}`,
-        //             filename: this.dlFilename
-        //         });
-        //         this.router.navigate(['/download']); // Enter again (re-Init) without file specified
-        //     } else {
-        // technique 2
-        this.flexMediaWatcher = this.flexMedia.media$.subscribe(
+        // set up a watcher to make columns in DownloadsTable responsive
+        this.flexMediaWatcherSub = this.flexMedia.media$.subscribe(
             (change: MediaChange) => {
                 this.currentScreenWidth = change.mqAlias;
                 this.setupDownloadsTable();
             }
-        ); // set up a watcher to make columns in DownloadsTable responsive
+        );
         this.setupDownloadsTable();
-            // }
-        // });
     }
 
     ngOnDestroy() {
-        // if (this.flexMediaWatcher) {
-        this.flexMediaWatcher.unsubscribe();
-        // }
+        this.flexMediaWatcherSub.unsubscribe();
         this.loading$.unsubscribe();
     }
 
@@ -121,32 +103,6 @@ export class DownloadsComponent implements OnInit, OnDestroy {
                 el => el._id === filenameChanged._id
             );
             this.dataSource.data[i] = file;
-        });
-    }
-
-    onLinkClicked(file: DlFile) {
-        // This whole function is such a hack.  It's amazing there isn't a better way
-        // to access the clipboard in Angular ... that I could find ...
-        const url = `${document.URL}/file${this.router.createUrlTree([file.filename]).toString()}`;
-        // create a "fake" textarea to store text and then copy to clipboard from
-        console.log('url is: ', url);
-        const clipArea = document.createElement('textarea');
-        clipArea.style.position = 'fixed'; // out of the flow
-        clipArea.style.left = '0';
-        clipArea.style.top = '0';
-        clipArea.style.opacity = '0'; // so there is no flicker
-        clipArea.textContent = url; // store text in the fake
-        document.body.appendChild(clipArea);
-        clipArea.select(); // select the fake text to be copied
-        document.execCommand('copy'); // finally actually copy to clipboard!
-        document.body.removeChild(clipArea); // get rid of the fake
-        this.dialog.open(AlertMessageDialogComponent, {
-            data: {
-                heading: 'Link',
-                alertMessage: 'This link was copied to the clipboard:',
-                alertMessage2: url,
-                showCancel: false
-            }
         });
     }
 

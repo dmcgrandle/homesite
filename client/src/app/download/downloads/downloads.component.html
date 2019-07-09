@@ -52,7 +52,8 @@
                 <td mat-cell class="clickable center-align" *matCellDef="let row"
                     matTooltip="Link to send to others to download this item" matTooltipPosition="right"
                     matTooltipShowDelay="1000">
-                    <mat-icon (click)="onLinkClicked(row)">link</mat-icon>
+                    <shared-copy-to-clipboard [text]="row.filename" [makeUrl]="true">
+                    </shared-copy-to-clipboard>
                 </td>
             </ng-container>
 
