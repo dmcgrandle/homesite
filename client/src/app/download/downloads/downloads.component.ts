@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { HttpEvent } from '@angular/common/http';
 import { MatDialog, MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
-import { Router } from '@angular/router';
 import { BehaviorSubject, Subscription, Observable } from 'rxjs';
 import { MediaObserver, MediaChange } from '@angular/flex-layout';
 
@@ -21,7 +20,6 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     loading$ = new BehaviorSubject<boolean>(true);
     displayedColumns: string[];
     dataSource = new MatTableDataSource<DlFile>();
-    dlFilename: string;
     currentScreenWidth = '';
     flexMediaWatcherSub: Subscription;
 
@@ -31,7 +29,6 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     constructor(
         public api: APIService,
         public dialog: MatDialog,
-        private router: Router,
         private flexMedia: MediaObserver
     ) {}
 
@@ -88,7 +85,8 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     }
 
     // Note - need to define this as a fat-arrow function to retain it's 'this' context:
-    uploadCB: (file: File) => Observable<HttpEvent<any>> = (file: File) => this.api.uploadFile(file);
+    uploadCallback: (file: File) => Observable<HttpEvent<any>> = (file: File) =>
+        this.api.uploadFile(file)
 
     onFilenameChange(filenameChanged: FilenameChangedObj) {
         this.api.renameFile(filenameChanged).subscribe((file: DlFile) => {

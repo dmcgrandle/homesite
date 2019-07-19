@@ -11,7 +11,7 @@
 /server/node_modules
 
 # Angular build target
-/server/public
+/server/dist
 
 # Angular coverage data
 /client/coverage/*
@@ -36,7 +36,7 @@ docker.run
 !.vscode/extensions.json
 
 # misc
-/server/keys-dev
+keys-dev
 config/keys
 /.sass-cache
 /connect.lock

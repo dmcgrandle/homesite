@@ -11,8 +11,7 @@
             <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
         </mat-form-field>
         <span class="fill-space"></span>
-
-        <shared-file-upload *ngIf="api.lastLoggedInUserLevel() > 2" [cb]="uploadCB"
+        <shared-file-upload *ngIf="api.lastLoggedInUserLevel() > 2" [cb]="uploadCallback"
             (finished)="reloadDownloads()" class="upload-icon">
         </shared-file-upload>
     </div>
