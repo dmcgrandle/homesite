@@ -4,6 +4,7 @@
       "strict": true,
       "baseUrl": "./",
       "outDir": "dist",
+      "sourceMap": true,
       "removeComments": true,
       "experimentalDecorators": true,
       "target": "es6",
@@ -22,6 +23,7 @@
       "./src/**/*.ts"
     ],
     "exclude": [
-      "./src/public/"
+      "./src/public/",
+      "./src/protected/"
     ]
   }

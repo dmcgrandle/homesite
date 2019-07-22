@@ -13,16 +13,19 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Homesite node server via NPM",
-            "cwd": "${workspaceFolder}/server",
+            "name": "Node Webpack Debug server for Homesite",
+            "cwd": "${workspaceRoot}/server/dist",
+            "program": "${workspaceRoot}/server/src/start.ts",
+            "outFiles": ["${workspaceRoot}/server/dist/bundle.js"],
             "env": {"DEBUG": "homesite:*"},
-            "console": "integratedTerminal",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run",
-                "devstart"
-            ],
-            "port": 3001
+            // "console": "integratedTerminal",
+            "sourceMaps": true,
+            // "runtimeExecutable": "npm",
+            // "runtimeArgs": [
+            //     "run",
+            //     "diststart"
+            // ],
+            // "port": 3001
         },
         {
             "type": "chrome",

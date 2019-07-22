@@ -5,8 +5,7 @@
 // const jwt = require('jsonwebtoken');
 import * as jwt from 'jsonwebtoken';
 // const tokenSvc = require('./token-service');
-import { TokenService } from 'src/services/token-service';
-const tokenSvc = new TokenService();
+import { tokenSvc } from 'src/services/token-service';
 
 test('test: create new token and verify', async () => {
   expect.assertions(4);

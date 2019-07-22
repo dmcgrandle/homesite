@@ -4,20 +4,15 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 
-const router = express.Router();
-
 // Project Imports:
 import { RequestWithUser, Download } from 'src/model';
-import { TokenService } from '../services/token-service';
-import { UserService } from '../services/user-service';
-import { DownloadService } from '../services/download-service';
-import { ErrorService } from '../services/err-service';
+import { tokenSvc } from '../services/token-service';
+import { userSvc } from '../services/user-service';
+import { dlSvc } from '../services/download-service';
+import { errSvc } from '../services/err-service';
 
-// instantiate needed services:
-const tokenSvc = new TokenService();
-const userSvc = new UserService();
-const dlSvc = new DownloadService();
-const errSvc = new ErrorService();
+// define a router to export:
+const router = express.Router();
 
 // middleware that is specific to this router
 router.use((req, res, next) => {

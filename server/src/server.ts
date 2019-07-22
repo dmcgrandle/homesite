@@ -1,4 +1,4 @@
-/* app.ts - main entry point for homesite. */
+/* server.ts - main entry point for homesite. */
 
 // Imports:
 // const express = require('express');

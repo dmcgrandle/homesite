@@ -2,8 +2,7 @@
   Unit testing for methods in file-service.js
 -----------------------------------------------------------------------------*/
 
-import { FileService } from 'src/services/file-service';
-fileSvc = new FileService();
+import { fileSvc } from 'src/services/file-service';
 
 const dir = '/test/example_data/';
 
@@ -22,7 +21,7 @@ test(`testing downloadFiles(${dir})`, async () => {
 test(`testing mediaFiles(${dir})`, async () => {
   expect.assertions(1);
   const expectedResult = ['t2.jpg', 'sub/t2.jpg'];
-  const data = await fileSvc.mediaFiles(dir, s => s === '.jpg');
+  const data = await fileSvc.mediaFiles(dir, (s: string) => s === '.jpg');
   expect(data).toEqual(expectedResult);
 });
 

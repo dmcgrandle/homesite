@@ -2,7 +2,8 @@
 
 # compiled output and static content
 /client/dist
-/public
+/server/src/public
+/server/src/protected
 /client/tmp
 /server/tmp
 
