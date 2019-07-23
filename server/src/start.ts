@@ -1,9 +1,10 @@
 /* 
   start.ts - entry point for homesite nodejs server.
 
-  Begin by importing the config asynchronously.  This is done in this way so that webpack
-  will code split and create the config and key files as separate chunks so they can
-  be modified by a user with particular details later and loaded at runtime.
+  Begin by importing the config asynchronously and setting to a global var.  
+  This is done via async imports so that webpack will code split and create the config 
+  and key files as separate chunks so they can be modified by a user with particular 
+  details later and loaded at runtime.
 
   The rest of this file is mostly standard boilerplate from the express generator.
  
@@ -15,25 +16,24 @@ import('./config')
   .then((importedAsyncFunc: any) => importedAsyncFunc.default)
   .then((importedConfig: Config) => {
     config = importedConfig;
-    console.log('config is ', config);
   
-    var server = require('./server');
-    var debugNew = require('debug')('homesite:server');
-    var http = require('http');
+    const server = require('./server');
+    const debugNew = require('debug')('homesite:server');
+    const http = require('http');
   
     /**
      * Get port from environment and store in Express.
      */
   
-    var port = normalizePort(process.env.PORT || '3000');
-    var app = server.Server.bootstrap().app;
+    const port = normalizePort(process.env.PORT || '3000');
+    const app = server.Server.bootstrap().app;
     app.set('port', port);
   
     /**
      * Create HTTP server.
      */
   
-    var httpServer = http.createServer(app);
+    const httpServer = http.createServer(app);
   
     /**
      * Listen on provided port, on all network interfaces.
@@ -72,7 +72,7 @@ import('./config')
         throw error;
       }
   
-      var bind = typeof port === 'string'
+      const bind = typeof port === 'string'
         ? 'Pipe ' + port
         : 'Port ' + port;
   
@@ -96,8 +96,8 @@ import('./config')
      */
   
     function onListening() {
-      var addr = httpServer.address();
-      var bind = typeof addr === 'string'
+      const addr = httpServer.address();
+      const bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
       debugNew('Listening on ' + bind);

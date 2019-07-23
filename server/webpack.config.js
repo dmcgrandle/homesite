@@ -3,7 +3,6 @@ const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-// const CreateSymlinkPlugin = require('create-symlink-webpack-plugin');
 
 module.exports = {
   entry: './src/start.ts',
@@ -32,12 +31,7 @@ module.exports = {
       { from: 'default-users.json', to: '.' },
       { from: 'src/public', to: 'public' },
       { from: 'src/keys/README.md', to: 'config' },
-      // { from: 'src/protected', to: 'protected' },
     ]),
-  //   new CreateSymlinkPlugin([
-  //     { origin: '../src/public', symlink: 'public' },
-  //     { origin: '../src/protected', symlink: 'protected' }
-  // ])
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js']

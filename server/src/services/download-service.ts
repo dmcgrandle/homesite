@@ -91,7 +91,7 @@ namespace ds {
 
     private async saveDataToDB(collection: string, data: Download[]) {
       try {
-        if (await this.db.collection(collection).count() > 0) { // already exists
+        if (await this.db.collection(collection).countDocuments() > 0) { // already exists
           await this.db.collection(collection).drop(); // wipe it out.
         }
         await this.db.collection(collection).insertMany(data);

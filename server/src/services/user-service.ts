@@ -24,18 +24,6 @@ import { errSvc } from './err-service';
 
 const cfg = config.userService;
 
-// if (fs.existsSync('./config.js')) {
-//   import('./config.js').then((importedCfg: any) => {
-//     cfg = importedCfg.userService;
-//     console.log('cfg in user.service is ', cfg);
-//   })
-// }
-
-// module level constants and services:
-// const cfg = config.userService;
-// const tokenSvc = new TokenService();
-// const errSvc = new ErrorService();
-
 namespace us {
   export class UserService {
     // need the bang (!) to stop typescript from complaining that the assignment is inside a try block

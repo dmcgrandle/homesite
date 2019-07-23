@@ -24,7 +24,7 @@ const cfg = config.dbService;
 // syntax makes it more clear that this module returns a promise and
 // exactly what it resolves to.
 export const database: Promise<Db> = new Promise((resolve, reject) => {
-  MongoClient.connect(cfg.db_url)
+  MongoClient.connect(cfg.db_url, { useNewUrlParser: true })
     .then((client) => {
       console.log(Date.now() + ' : Connected to ' + cfg.db_url
         + ' using database "' + cfg.db_name + '"');

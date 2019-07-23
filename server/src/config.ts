@@ -1,37 +1,6 @@
 /* config.ts - main config for server in homesite */
 
-// project imports
-import { Config, SMTPAuth } from './model';
-
-// global-requires used in this config file:
-// let cfg: Config;
-// let privateKey: string;
-// let publicKey: string;
-// let emailSecret: string;
-// let smtpConfigAuth: SMTPAuth;
-
-// const privateKey: string = require('./keys/jwtRS256.key').default;
-// import('./keys/jwtRS256.key').then((data: any) => {
-//   console.log('imported from jwtRS256.key', data);
-//   privateKey = data.default;
-//   return import('./keys/jwtRS256.key.pub');
-// }).then((data) => {
-//   console.log('imported from jwtRS256.key.pub', data);
-//   publicKey = data.default;
-//   return import('./keys/email-secret.key');
-// }).then((data) => {
-//   console.log('imported from email-secret.key', data);
-//   emailSecret = data.default;
-//   return import('./keys/smtp-auth.user');
-// }).then((data) => {
-//   console.log('imported from smtp-auth.user', data);
-//   smtpConfigAuth = data.default;
-
-// const publicKey: string = require('./keys/jwtRS256.key.pub');
-// const emailSecret: string = require('./keys/email-secret.key');
-// const smtpConfigAuth: SMTPAuth = require('./keys/smtp-auth.user');
-
-// global config variable to add all config objects to
+import { Config } from './model';
 
 async function initConfig(): Promise<Config> {
   return ({
