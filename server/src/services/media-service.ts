@@ -12,13 +12,22 @@ import { spawn } from 'child_process';
 
 // Project Imports:
 import { MediaAlbum, Media, PhotoAlbum, Photo, VideoAlbum, Video } from '../model';
-import config from '../config';
+// import config from '../config';
 import { database } from './db-service';
 import { fileSvc } from './file-service';
 import { errSvc } from './err-service';
 
-// module level constants and services:
 const cfg = config.mediaService;
+// let cfg: any;
+
+// if (fs.existsSync('./config.js')) {
+//   import('./config.js').then((importedCfg: any) => {
+//     cfg = importedCfg.mediaService;
+//     console.log('cfg in media.service is ', cfg);
+//   })
+// }
+// module level constants and services:
+// const cfg = config.mediaService;
 
 namespace ms {
   export class MediaService {

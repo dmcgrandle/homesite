@@ -3,10 +3,19 @@
 
 // External Imports:
 // const mongoClient = require('mongodb').MongoClient;
+import * as fs from 'fs-extra';
 import { MongoClient, Db } from 'mongodb';
 
+// let cfg: any;
+
+// if (fs.existsSync('./config.js')) {
+//   import('./config.js').then((importedCfg: any) => {
+//     cfg = importedCfg.dbService;
+//     console.log('cfg in token.service is ', cfg);
+//   })
+// }
 // Project Imports:
-import config from '../config';
+// import config from '../config';
 const cfg = config.dbService;
 
 // Note - this could have been set up using the async/wait notation like:

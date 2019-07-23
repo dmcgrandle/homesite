@@ -1,4 +1,4 @@
-const key = "-----BEGIN RSA PRIVATE KEY-----\n\
+const key: string = "-----BEGIN RSA PRIVATE KEY-----\n\
 MIIJKQIBAAKCAgEA7dboh/Wub/WfSovcwbsRCeSBl3yRdphtikmQshtZbCn4ypY6\
 C97pd0mcDSIA+UrZNfaGa2W51Q5clGdg62nWRTqCDu2N6C9w8a6+ISkFPwvJUlWQ\
 cb0i6xdX/NZew9Zst1R9lc+AlX3Y1tbs0HCPaNDddPHQnE6Sx5LVKk/zDYWfO9Or\
@@ -50,4 +50,4 @@ fGFoa4Yi+ZTCLK8moXJqb3BEAJ6sQfiF6YcH6+9AEEasp5R4Qxnz//A7qZQjS9dh\
 AUrk5ZQPOqtAu7nJ1zJfZ+ijLazGyseaueDc0N7AA4W0FCmg2YyTHYQMmkZt\
 \n-----END RSA PRIVATE KEY-----"
 
-module.exports = key;
+export default key;

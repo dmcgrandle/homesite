@@ -1,4 +1,4 @@
-/* server.ts - main entry point for homesite. */
+/* server.ts - main express node server file for homesite, imported by start.ts */
 
 // Imports:
 // const express = require('express');

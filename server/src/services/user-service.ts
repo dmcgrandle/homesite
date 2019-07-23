@@ -18,13 +18,21 @@ import * as cryptoTS from 'crypto-ts';
 
 // Project Imports:
 import { User } from '../model';
-import config from '../config';
 import { database } from './db-service';
 import { tokenSvc } from './token-service';
 import { errSvc } from './err-service';
 
-// module level constants and services:
 const cfg = config.userService;
+
+// if (fs.existsSync('./config.js')) {
+//   import('./config.js').then((importedCfg: any) => {
+//     cfg = importedCfg.userService;
+//     console.log('cfg in user.service is ', cfg);
+//   })
+// }
+
+// module level constants and services:
+// const cfg = config.userService;
 // const tokenSvc = new TokenService();
 // const errSvc = new ErrorService();
 

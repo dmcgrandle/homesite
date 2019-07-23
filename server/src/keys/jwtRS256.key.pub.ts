@@ -13,4 +13,4 @@ jOvoABnk4bvNoJ57NlVtJvEW9E+yfP4Kw3OV6qEWFvsA6AsGzw/BR07x79QhnbdB\
 cr3HH0QB7Y5FXpJcZXJ5jRkCAwEAAQ==\
 \n-----END PUBLIC KEY-----"
 
-module.exports = key;
+export default key;

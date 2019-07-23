@@ -1,14 +1,19 @@
 /* token-service.js - provides authentication services */
 
 // External Imports:
-// const jwt = require('jsonwebtoken');
+import * as fs from 'fs-extra';
 import * as jwt from 'jsonwebtoken';
-// const expressJwt = require('express-jwt');
 import * as expressJwt from 'express-jwt';
 import { Options } from 'express-unless';
 
-// Project Imports:
-import config from '../config';
+
+// let cfg: any;
+
+// if (fs.existsSync('./config.js')) {
+//   import('./config.js').then((importedCfg: any) => {
+//     cfg = importedCfg.tokenService;
+//     console.log('cfg in token.service is ', cfg);
+
 const cfg = config.tokenService;
 
 namespace ts {
@@ -51,3 +56,8 @@ namespace ts {
   }
 }
 export const tokenSvc = new ts.TokenService();
+  
+
+// Project Imports:
+// import config from '../config';
+// const cfg = config.tokenService;

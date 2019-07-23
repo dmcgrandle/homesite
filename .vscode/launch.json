@@ -16,7 +16,7 @@
             "name": "Node Webpack Debug server for Homesite",
             "cwd": "${workspaceRoot}/server/dist",
             "program": "${workspaceRoot}/server/src/start.ts",
-            "outFiles": ["${workspaceRoot}/server/dist/bundle.js"],
+            "outFiles": ["${workspaceRoot}/server/dist/server.js"],
             "env": {"DEBUG": "homesite:*"},
             // "console": "integratedTerminal",
             "sourceMaps": true,

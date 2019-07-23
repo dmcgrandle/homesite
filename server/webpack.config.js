@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const CreateSymlinkPlugin = require('create-symlink-webpack-plugin');
+// const CreateSymlinkPlugin = require('create-symlink-webpack-plugin');
 
 module.exports = {
   entry: './src/start.ts',
@@ -18,12 +18,7 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
-      },
-      {
-        test: /\.(png|svg|jpg|gif)$/,
-        use: ['file-loader']
+        use: 'ts-loader'
       }
     ]
   },
@@ -35,8 +30,8 @@ module.exports = {
     new CopyPlugin([
       { from: 'file-type-description.txt', to: '.' },
       { from: 'default-users.json', to: '.' },
-      { from: 'config.js', to: '.' },
       { from: 'src/public', to: 'public' },
+      { from: 'src/keys/README.md', to: 'config' },
       // { from: 'src/protected', to: 'protected' },
     ]),
   //   new CreateSymlinkPlugin([
@@ -48,7 +43,8 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js']
   },
   output: {
-    filename: 'bundle.js',
+    filename: 'server.js',
+    chunkFilename: 'config/key.[id].js',
     path: path.resolve(__dirname, 'dist'),
     devtoolModuleFilenameTemplate: '[absolute-resource-path]'
   }
