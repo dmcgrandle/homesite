@@ -18,7 +18,7 @@
             "program": "${workspaceRoot}/server/src/start.ts",
             "outFiles": ["${workspaceRoot}/server/dist/server.js"],
             "env": {"DEBUG": "homesite:*"},
-            // "console": "integratedTerminal",
+            "console": "integratedTerminal",
             "sourceMaps": true,
             // "runtimeExecutable": "npm",
             // "runtimeArgs": [

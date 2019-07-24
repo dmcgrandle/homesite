@@ -12,21 +12,12 @@ import { spawn as spawnProc } from 'child_process';
 
 // Project Imports:
 import { Download, FileObject, FilenameChangedObj } from '../model';
-// import config from './config';
 import { database } from './db-service';
 import { fileSvc } from './file-service';
 import { errSvc } from './err-service';
 
 // module level constants and services:
 const cfg = config.downloadService;
-
-// let cfg: any;
-// if (fs.existsSync('./config.js')) {
-//   import('./config.js').then((importedCfg: any) => {
-//     cfg = importedCfg.downloadService;
-//     console.log('cfg in download.service is ', cfg);
-//   })
-// }
 
 namespace ds {
 

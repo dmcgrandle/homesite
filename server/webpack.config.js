@@ -24,14 +24,14 @@ module.exports = {
   plugins: [
     new webpack.ProgressPlugin(),
     new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: [
-      '**/*', '!protected', '!protected/**/*'
+      '**/*', '!protected', '!protected/**/*', '!public', '!public/**/*'
     ] }),
     new CopyPlugin([
       { from: 'file-type-description.txt', to: '.' },
       { from: 'default-users.json', to: '.' },
-      { from: 'src/public', to: 'public' },
+      // { from: 'src/protected', to: 'protected' },
       { from: 'src/keys/README.md', to: 'config' },
-    ]),
+    ], { copyUnmodified: true }),
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js']

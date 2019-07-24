@@ -18,7 +18,7 @@ import('./config')
     config = importedConfig;
   
     const server = require('./server');
-    const debugNew = require('debug')('homesite:server');
+    const debug = require('debug')('homesite:server');
     const http = require('http');
   
     /**
@@ -100,6 +100,6 @@ import('./config')
       const bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
-      debugNew('Listening on ' + bind);
+      debug('Listening on ' + bind);
     }
   });

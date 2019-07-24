@@ -4,13 +4,12 @@
     "private": true,
     "scripts": {
         "tsc": "tsc",
-        "start": "node ./bin/www",
+        "start": "cd dist && node server.js",
         "test": "jest .",
-        "coverage": "jest --collectCoverageFrom=services/**.js --collectCoverageFrom=routes/**.js --collectCoverageFrom=app.js --coverage .",
+        "coverage": "jest --collectCoverageFrom=services/**.ts --collectCoverageFrom=routes/**.ts --collectCoverageFrom=server.ts --coverage .",
         "devstart": "nodemon --inspect=3001 ./bin/www",
-        "diststart": "cd dist && nodemon --inspect=3001 bundle.js",
-        "dev2start": "cd dist && nodemon --inspect=3001 start.js",
-        "build": "webpack"
+        "diststart": "cd dist && nodemon --inspect=3001 server.js",
+        "build": "webpack --watch"
     },
     "dependencies": {
         "bcrypt": "^3.0.4",

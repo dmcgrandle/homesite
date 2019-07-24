@@ -1,22 +1,24 @@
 /* protected.js - Checks all protected static content for a valid auth token  */
 
 // Imports
-// const express = require('express');
 import * as express from 'express';
-// const path = require('path');
 import * as path from 'path';
+import Debug from 'debug';
 
 // Project Imports:
 import { tokenSvc } from '../services/token-service';
 
 // Instantiate services:
 const router = express.Router();
+const debug = Debug('homesite:protected');
 
 // Middleware that is specific to this router:
 // First middleware is a logger
 router.use((req, res, next) => {
   // console.log('Accessing Protected Resource - Time: ', Date(Date.now()));
-  console.log('Accessing Protected Resource - Time: ', Date.now());
+  debug(`Accessing Resource: ${(new Date()).toLocaleString()} - ${req.originalUrl}`);
+  // console.log('Accessing Protected Resource: - Time: ', (new Date()).toLocaleString());
+  // req.originalUrl
   next();
 });
 // This is the authentication check for the protected files
