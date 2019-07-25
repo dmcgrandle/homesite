@@ -3,6 +3,7 @@
 // External Imports:
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
+import { switchMap, tap } from 'rxjs/operators';
 
 // Project Imports:
 import { RequestWithUser, User } from 'src/model';
@@ -10,7 +11,7 @@ import { tokenSvc } from '../services/token-service';
 import { userSvc } from '../services/user-service';
 import { errSvc } from '../services/err-service';
 
-// define a router to export:
+// define a router to configure and export:
 const router = express.Router();
 
 // middleware that is specific to this router
@@ -98,16 +99,24 @@ router.delete('/one', (req: RequestWithUser, res: express.Response) => {
     .catch(err => errSvc.processError(err, res));
 });
 
-/* GET list of users in the system.  Needs level 4+ access */
+/**
+ * GET list of users
+ * @remarks
+ * 
+ * Set up an API GET response for '/api/list' that returns an array of Users
+ * 
+ * @callback - validates user level, gets user list and sends back to client.
+ */
 router.get('/list', (req: RequestWithUser, res: express.Response) => {
-  userSvc.isValidLevel(req.user, 4)
-    .then(() => userSvc.getListSansPasswords())
-    .then((userList: User[]) => res.status(200).json(userList))
-    .catch(err => errSvc.processError(err, res));
+  userSvc.rxErrIfNotValidLevel(req.user, 4).pipe(
+    switchMap(() => userSvc.rxGetListSansPasswords())
+  ).subscribe(
+    userList => res.status(200).json(userList),
+    err => errSvc.processError(err, res)
+  );
 });
 
 /* Logout is now done in the client, server is stateless
-
 router.put('/logout', function (req, res, next) {
   // note: express-jwt has decoded the token and put info into req.user
   console.log('req.user: ' + JSON.stringify(req.user));

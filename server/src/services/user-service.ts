@@ -15,6 +15,9 @@ import * as assert from 'assert';
 import * as nodemailer from 'nodemailer';
 import * as bcrypt from 'bcrypt';
 import * as cryptoTS from 'crypto-ts';
+import Debug from 'debug';
+import { Observable, from, throwError, of, fromEvent, zip } from 'rxjs';
+import { switchMap, catchError, map, throwIfEmpty, tap, take, switchMapTo, concatAll, toArray } from 'rxjs/operators';
 
 // Project Imports:
 import { User } from '../model';
@@ -22,6 +25,8 @@ import { database } from './db-service';
 import { tokenSvc } from './token-service';
 import { errSvc } from './err-service';
 
+// Constants:
+const debug = Debug('homesite:user-service');
 const cfg = config.userService;
 
 namespace us {
@@ -103,6 +108,13 @@ namespace us {
       return userReturned;
     };
 
+    rxGetUser: (username: string) => Observable<User> = (username) => {
+      return from(this.db.collection(cfg.DB_COLLECTION_NAME).findOne({ username: username })).pipe(
+        take(1),
+        throwIfEmpty(() => new Error('404 Unknown User.  Please try another username or register a new user.'))
+      )
+    }
+
     getUserById: (id: number) => Promise<User> = async (id) => {
       const userReturned = await this.db.collection(cfg.DB_COLLECTION_NAME).findOne({ _id: id });
       if (!userReturned) throw new Error('404 Unknown User.  Please try another username or register a new user.');
@@ -132,17 +144,44 @@ namespace us {
       return usersReturned;
     };
 
-    isValidLevel: (user: User | undefined, level: number) => Promise<boolean> = async (user, level) => {
-      if (user) {
-        const userReturned = await this.getUser(user.username);
-        if (userReturned.level === 0) throw new Error('401 User Deleted');
-        if (userReturned.level === 1) throw new Error('401 User is not activated yet, please try again in a few hours.');
-        if (userReturned.level < level) throw new Error('403 User ' + user.username + ' is not high enough level.');
-        return true; // no errors thrown
-      } else {
-        return false; // no valid user given
-      }
+    private removePassword(user: User): User {
+      const copyUser = new User(user);
+      delete copyUser.password;
+      return copyUser;
+    }
+
+    /**  */
+    rxGetListSansPasswords: () => Observable<User[]> = () => 
+    from((this.db.collection(cfg.DB_COLLECTION_NAME).find({}).toArray()) as Promise<User[]>).pipe(
+      concatAll(), // flatten the array - ie: emit each array member individually
+      map(user => this.removePassword(user)),
+      toArray() // gather all users back into an array again
+    );
+
+    isValidLevel: (user: User | undefined, level: number) => Promise<void> = async (user, level) => {
+      if (!user) { throw new Error('404 No User given') };
+      const userReturned = await this.getUser(user.username);
+      if (userReturned.level === 0) throw new Error('401 User Deleted');
+      if (userReturned.level === 1) throw new Error('401 User is not activated yet, please try again in a few hours.');
+      if (userReturned.level < level) throw new Error('403 User ' + user.username + ' is not high enough level.');
     };
+
+    rxErrIfNotValidLevel: (user: User | undefined, level: number) => Observable<User> = (user, level) => {
+      if (!user) { return throwError(new Error('404 No User given')) };
+      return this.rxGetUser(user.username).pipe(
+        switchMap(user => {
+          if (user.level === 0) {
+            return throwError(new Error(`401 User ${user.username} has been Deleted`))
+          } else if (user.level === 1) {
+            return throwError(new Error(`401 User is not activated yet, please try again in a few hours.`))
+          } else if (user.level < level) {
+            return throwError(new Error(`403 User ${user.username} is not high enough level.`))
+          } else {
+            return of(user);
+          }
+        })
+      );
+    }
 
     testLevelAtOrAbove3: (req: any, res: any, next: Function) => void = (req, res, next) => {
       // Middleware function to test the user level is at or above 3.  Wrapper around 'isValidLevel()'
