@@ -4,7 +4,11 @@
 // External Imports:
 // const fs = require('fs-extra');
 import { Transform } from 'stream';
-import * as fs from 'fs-extra';
+import { join } from 'path';
+import { Stats, promises as fs } from 'fs';
+import { Observable, fromEvent } from 'rxjs';
+import { filter, tap } from 'rxjs/operators';
+// import * as fs from 'fs-extra';
 // const klaw = require('klaw');
 import * as klaw from 'klaw';
 import * as through2 from 'through2';
@@ -66,7 +70,7 @@ namespace xs {
       // overwhelm the memory of systems in constrained environments. Resulting performance
       // degradation from doing each one-at-a-time appears to be minimal.
       /* eslint-disable-next-line no-await-in-loop */
-      const s: fs.Stats = await fs.stat(path + file);
+      const s: Stats = await fs.stat(path + file);
       if (s.isFile() && (file[0] !== '.') && testFunc(file)) {
         newFileObjectArray.push({ filename: file, size: s.size });
       }
@@ -78,7 +82,7 @@ namespace xs {
 
     mediaDirs: (topDir: string) => Promise<string[]> = (topDir) => new Promise((resolve, reject) => {
       try {
-        const items: Array<string> = [];
+        const items: string[] = [];
         const filterExcludeFiles = new FilterEFConstructor();
         klaw('.' + topDir)
           .pipe(filterExcludeFiles)
@@ -95,7 +99,7 @@ namespace xs {
     mediaFiles: (topDir: string, testMediaFunc: Function) => Promise<string[]>
     = (topDir, testMediaFunc) => new Promise((resolve, reject) => {
       // Note - testMediaFunc must be a test media function passed which will test for the correct
-      // file suffix. See function 'isPhotoSuffix' in media-service.js for example.
+      // file suffix. See function 'isPhotoSuffix' in media-service.ts for example.
       try {
         const items: string[] = [];
         const filterExcludeIfNotMedia = new (FilterExcludeIfNotMediaConstructor as any)(testMediaFunc);
@@ -124,6 +128,33 @@ namespace xs {
       logFS('Renaming file: "', oldFile, '" to be "', newFile, '"');
       return fs.rename(oldFile, newFile);
     };
+
+    dirsAndFiles: (dir: string) => Observable<FileObject> = (dir) => new Observable((observer) => {
+      // Create an async recursive function for walking the directory tree:
+      const walk: (dir: string) => Promise<void> = async (dir) => {
+        const files = await fs.readdir(join(__dirname, dir));
+        for (const file of files) {
+          const filepath = join(dir, file);
+          const stat: Stats = await fs.stat(join(__dirname, filepath));
+          if (stat.isFile() || stat.isDirectory()) {
+            observer.next({
+              isFile: stat.isFile(),
+              filename: file,
+              size: stat.size,
+              path: dir,
+            } as FileObject);
+          }
+          if (stat.isDirectory()) {
+            await walk(filepath);
+          }
+        }
+      }
+      // now call that async function and complete the Observable when it resolves
+      walk(dir)
+        .then(() => observer.complete())
+        .catch(err => observer.error(err))
+    });
+
   }
 }
 

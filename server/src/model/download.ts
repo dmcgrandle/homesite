@@ -1,4 +1,43 @@
-export interface DownloadInterface {
+interface FileObjectInterface {
+    isFile?: boolean;
+    filename: string;
+    size: number;
+    path?: string;
+}
+
+export class FileObject implements FileObjectInterface {
+    isFile?: boolean;
+    filename: string;
+    size: number;
+    path?: string;
+
+    constructor(fo?: Partial<FileObject>) {
+        this.isFile = fo && fo.isFile !== undefined ? fo.isFile : undefined;
+        this.filename = fo && fo.filename !== undefined ? fo.filename : '';
+        this.size = fo && fo.size !== undefined ? fo.size : 0;
+        this.path = fo && fo.path !== undefined ? fo.path : undefined;
+    }
+}
+
+interface FilenameChangedObjInterface {
+    _id: number;
+    oldFilename: string;
+    newFilename: string;
+}
+
+export class FilenameChangedObj implements FilenameChangedObjInterface {
+    _id: number;
+    oldFilename: string;
+    newFilename: string;
+
+    constructor(fco?: Partial<FilenameChangedObj>) {
+        this._id = fco && fco._id !== undefined ? fco._id : 0;
+        this.oldFilename = fco && fco.oldFilename !== undefined ? fco.oldFilename : '';
+        this.newFilename = fco && fco.newFilename !== undefined ? fco.newFilename : '';
+    }
+}
+
+interface DownloadInterface {
     _id: number;
     filename: string;
     fullPath: string;
@@ -7,18 +46,6 @@ export interface DownloadInterface {
     size: number;
     sizeHR: string;
     icon: string;
-}
-
-export interface FileObject {
-    filename: string;
-    size: number;
-    path?: string;
-}
-
-export interface FilenameChangedObj {
-    _id: number;
-    oldFilename: string;
-    newFilename: string;
 }
 
 export class Download implements DownloadInterface {

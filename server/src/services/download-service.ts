@@ -4,11 +4,13 @@
 const logDS = require('debug')('homesite:download-service');
 
 // External Imports:
-import * as fs from 'fs-extra';
-import { Db } from 'mongodb';
+// import * as fs from 'fs-extra';
+import { Db, InsertWriteOpResult } from 'mongodb';
 import { Request, Response, NextFunction } from 'express';
 import * as multer from 'multer';
 import { spawn as spawnProc } from 'child_process';
+import { Observable, Subscription, from, empty } from 'rxjs';
+import { tap, filter, concatMap, map, toArray, mergeMap, catchError } from 'rxjs/operators';
 
 // Project Imports:
 import { Download, FileObject, FilenameChangedObj } from '../model';
@@ -26,24 +28,23 @@ namespace ds {
     private db!: Db;
 
     constructor() {
-      this.init();
+      this.readDownloadsFromDisk().subscribe(
+        () => console.log((new Date()).toLocaleString() + ' : created new "download" document in db.'), 
+        err => errSvc.exit(err, 1)
+      );
     }
 
-    private async init() {
-      try {
-        this.db = await database;
-        const files: FileObject[] = await fileSvc.downloadFiles(cfg.DOWNLOAD_DIR.PATH, this.isDownloadSuffix);
-        const downloads: Download[] = await this.buildDownloads(files);
-        await this.saveDataToDB(cfg.DB_COLLECTION_NAME, downloads);
-        console.log(Date.now() + ' : created new "download" document in db.');
-      } catch (err) {
-        errSvc.exit(err, 1);
-      }
-    }
-
-    private isDownloadSuffix(/* str */) { // TODO: restrict file types.  For now, wide open
-      //    const suffix = str.substr(-4,4).toLowerCase();
-      return true;
+    private readDownloadsFromDisk(): Observable<InsertWriteOpResult> {
+      return from(database).pipe(
+        tap(db => this.db = db),
+        mergeMap(() => fileSvc.dirsAndFiles(cfg.DOWNLOAD_DIR.PATH)),
+        filter((file: FileObject) => file.filename[0] !== '.'), // filter hidden
+        filter(file => file.isFile === true), // no directories
+        filter(file => file.path === cfg.DOWNLOAD_DIR.PATH), // no files from subdirectories
+        concatMap((file, index) => this.rxToDownload(file, index)),
+        toArray(),
+        mergeMap(downloads => this.rxSaveDataToDB(cfg.DB_COLLECTION_NAME, downloads)),
+      );
     }
 
     // Set up Multer
@@ -87,6 +88,13 @@ namespace ds {
         }
         await this.db.collection(collection).insertMany(data);
       } catch (err) { errSvc.exit(err); }
+    }
+
+    private rxSaveDataToDB(collection: string, data: Download[]): Observable<InsertWriteOpResult> {
+      return from(this.db.collection(collection).countDocuments()).pipe(
+        mergeMap(count => count > 0 ? from(this.db.collection(collection).drop()) : empty()),
+        mergeMap(() => from(this.db.collection(collection).insertMany(data)))
+      );
     }
 
     private grepPromise(search: string): Promise<string | undefined> {
@@ -162,6 +170,22 @@ namespace ds {
         downloads.push(download);
       }
       return downloads;
+    }
+
+    private rxToDownload(file: FileObject, index: number): Observable<Download> {
+      const suffix: string = file.filename.slice(file.filename.lastIndexOf('.')).toLowerCase();
+      return from(this.getTypeDescription(suffix.slice(1))).pipe(
+        map(type => ({
+          _id: index,
+          filename: file.filename,
+          fullPath: cfg.DOWNLOAD_DIR.PATH + file.filename,
+          suffix: suffix,
+          type: type,
+          size: file.size,
+          sizeHR: this.humanFileSize(file.size, cfg.USE_SI_SIZE),
+          icon: 'fiv-viv fiv-icon-' + suffix.slice(1),
+        } as Download))
+      )
     }
 
     updateDownloadsDB: (file: FileObject) => Promise<Download> = async (file) => {
