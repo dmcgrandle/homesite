@@ -16,7 +16,7 @@ const router = express.Router();
 
 // middleware that is specific to this router
 router.use((req, res, next) => {
-  console.log(Date.now() + " : Photos API called - '" + req.originalUrl + "'");
+  console.log((new Date()).toLocaleString() + " : Photos API called - '" + req.originalUrl + "'");
   next();
 });
 router.use(tokenSvc.middlewareCheck());

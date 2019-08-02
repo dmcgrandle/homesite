@@ -30,24 +30,24 @@ namespace ms {
     private async init() {
       try {
         this.db = await database;
-        // console.log(Date(Date.now()) + ' : About to scan ' + cfg.PHOTO_DIR.PATH);
+        // console.log(Date((new Date()).toLocaleString()) + ' : About to scan ' + cfg.PHOTO_DIR.PATH);
         const photoDirs: string[] = await fileSvc.mediaDirs(cfg.PHOTO_DIR.PATH);
         const photoFiles: string[] = await fileSvc.mediaFiles(cfg.PHOTO_DIR.PATH, this.isPhotoSuffix);
-        // console.log(Date(Date.now()) + ' : Done scanning ' + cfg.PHOTO_DIR.PATH);
+        // console.log(Date((new Date()).toLocaleString()) + ' : Done scanning ' + cfg.PHOTO_DIR.PATH);
         await this.makeThumbsIfNeeded(photoFiles);
         const photoData = this.buildPhotos(photoDirs, photoFiles);
         await this.saveDataToDB('photoAlbums', photoData.albums);
         await this.saveDataToDB('photos', photoData.photos);
-        console.log(Date.now() + ' : created new "photoAlbums" document in db.');
-        // console.log(Date(Date.now()) + ' : About to scan ' + cfg.VIDEO_DIR.PATH);
+        console.log((new Date()).toLocaleString() + ' : created new "photoAlbums" document in db.');
+        // console.log(Date((new Date()).toLocaleString()) + ' : About to scan ' + cfg.VIDEO_DIR.PATH);
         const videoDirs: string[] = await fileSvc.mediaDirs(cfg.VIDEO_DIR.PATH);
         const videoFiles: string[] = await fileSvc.mediaFiles(cfg.VIDEO_DIR.PATH, this.isVideoSuffix);
-        // console.log(Date(Date.now()) + ' : Done scanning ' + cfg.VIDEO_DIR.PATH);
+        // console.log(Date((new Date()).toLocaleString()) + ' : Done scanning ' + cfg.VIDEO_DIR.PATH);
         await this.makePostersIfNeeded(videoFiles);
         const videoData = this.buildVideos(videoDirs, videoFiles);
         await this.saveDataToDB('videoAlbums', videoData.albums);
         await this.saveDataToDB('videos', videoData.videos);
-        console.log(Date.now() + ' : created new "videoAlbums" document in db.');
+        console.log((new Date()).toLocaleString() + ' : created new "videoAlbums" document in db.');
       } catch (err) { errSvc.exit(err, 1); }
     }
 
@@ -81,7 +81,7 @@ namespace ms {
           }
         }
         await Promise.all(newPArray); // wait on creation of up to MAX items
-        console.log(Date.now() + ' : Finished creating ' + numToDo + ' thumbnails.');
+        console.log((new Date()).toLocaleString() + ' : Finished creating ' + numToDo + ' thumbnails.');
         if (thumbsRemaining.length > 0) await this.createSomeThumbs(thumbsRemaining); // recurse remaining
       }
     }
@@ -109,7 +109,7 @@ namespace ms {
         }
       }
       if (pArray2.length > 0) {
-        console.log(Date.now() + ' : About to create ' + pArray2.length
+        console.log((new Date()).toLocaleString() + ' : About to create ' + pArray2.length
           + ' thumbnails.  This could take a while...');
         await this.createSomeThumbs(pArray2);
       }
@@ -172,7 +172,7 @@ namespace ms {
             postersRemaining.shift(); // drop the first item in the array.
           }
           if (pArray2.length > 0) {
-            console.log(Date.now() + ' : Creating ' + pArray2.length + ' posters...');
+            console.log((new Date()).toLocaleString() + ' : Creating ' + pArray2.length + ' posters...');
             await Promise.all(pArray2);
           }
         } catch (err) { errSvc.exit(err, 1); }
@@ -191,7 +191,7 @@ namespace ms {
       try {
         await fs.ensureDir(path.join(__dirname, cfg.VIDEO_DIR.PATH + cfg.VIDEO_DIR.CACHE_DIR));
         const posterFiles = files.slice(); // clone the files array since we'll be modifying it
-        console.log(Date.now() + ' : Found ' + posterFiles.length + ' videos.  Will create posters if needed.');
+        console.log((new Date()).toLocaleString() + ' : Found ' + posterFiles.length + ' videos.  Will create posters if needed.');
         await this.createSomePosters(posterFiles);
       } catch (err) { errSvc.exit(err, 1); }
     }

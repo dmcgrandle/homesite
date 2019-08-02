@@ -16,7 +16,7 @@ const router = express.Router();
 
 // middleware that is specific to this router
 router.use((req, res, next) => {
-  console.log(Date.now() + " : Login API called - '" + req.originalUrl + "'");
+  console.log((new Date()).toLocaleString() + " : Login API called - '" + req.originalUrl + "'");
   next();
 });
 // This next call checks for a valid jwt token, needed for ALL calls to /users

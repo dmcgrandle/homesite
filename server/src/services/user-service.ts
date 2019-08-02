@@ -54,7 +54,7 @@ namespace us {
           }
           const res = await this.db.collection(cfg.DB_COLLECTION_NAME).insertMany(defUsers);
           assert.equal(defUsers.length, res.insertedCount); // checking creation was successful
-          console.log(Date.now() + ' : created new "user" document in db.');
+          console.log((new Date()).toLocaleString() + ' : created new "user" document in db.');
         }
       } catch (err) { errSvc.exit(err, 1); }
     }

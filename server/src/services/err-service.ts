@@ -7,7 +7,7 @@ namespace es {
   export class ErrorService {
 
     processError = (err: any, res: Response) => {
-      console.log(Date.now() + ' : ' + err.stack);
+      console.log((new Date()).toLocaleString() + ' : ' + err.stack);
       const statusCode = Number(err.message.slice(0, 3));
       if (!statusCode) {
         res.status(500).send('Server Error "' + err.message + '" - see server log for details');
