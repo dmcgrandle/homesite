@@ -118,7 +118,7 @@ export class AuthService implements CanActivate {
 
     public isLoginExpired(): boolean {
         const tokenTimeRemaining =
-            Number(localStorage.getItem('expiresAt')) - Math.round((new Date()).toLocaleString() / 1000);
+            Number(localStorage.getItem('expiresAt')) - Math.round(Date.now() / 1000);
         return tokenTimeRemaining < 300; // If less than 5 mins (300s) remaining, log in again.
     }
 
