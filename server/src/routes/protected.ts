@@ -14,13 +14,15 @@ const debug = Debug('homesite:protected');
 
 // Middleware that is specific to this router:
 // First middleware is a logger
-router.use((req, res, next) => {
-  // console.log('Accessing Protected Resource - Time: ', Date(Date.now()));
-  debug(`Accessing Resource: ${(new Date()).toLocaleString()} - ${req.originalUrl}`);
-  // console.log('Accessing Protected Resource: - Time: ', (new Date()).toLocaleString());
-  // req.originalUrl
-  next();
-});
+router.use(
+    (req, res, next): void => {
+        // console.log('Accessing Protected Resource - Time: ', Date(Date.now()));
+        debug(`Accessing Resource: ${new Date().toLocaleString()} - ${req.originalUrl}`);
+        // console.log('Accessing Protected Resource: - Time: ', (new Date()).toLocaleString());
+        // req.originalUrl
+        next();
+    }
+);
 // This is the authentication check for the protected files
 router.use(tokenSvc.middlewareCheck());
 
@@ -28,13 +30,16 @@ router.use(tokenSvc.middlewareCheck());
 router.use(express.static(path.join(__dirname, 'protected')));
 
 // If the static serve doesn't work, then throw an error.  TODO: implement as error
-router.all('*', (req, res, next) => {
-  console.log('Whoops!  This should have been served statically ...');
-  console.log('req.originalUrl: ' + req.originalUrl);
-  console.log('req.baseUrl: ' + req.baseUrl);
-  console.log('req.path: ' + req.path);
-  console.log('__dirname: ' + path.join(__dirname));
-  next();
-});
+router.all(
+    '*',
+    (req, res, next): void => {
+        console.log('Whoops!  This should have been served statically ...');
+        console.log('req.originalUrl: ' + req.originalUrl);
+        console.log('req.baseUrl: ' + req.baseUrl);
+        console.log('req.path: ' + req.path);
+        console.log('__dirname: ' + path.join(__dirname));
+        next();
+    }
+);
 
 export default router;

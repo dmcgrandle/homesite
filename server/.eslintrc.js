@@ -1,9 +1,9 @@
 module.exports = {
     // extends: "airbnb-base",
     parser: '@typescript-eslint/parser',
-    parserOptions: {
-        project: './tsconfig.json'
-    },
+    // parserOptions: {
+    //     project: './tsconfig.json'
+    // },
     plugins: ['@typescript-eslint'],
     extends: ['plugin:@typescript-eslint/recommended'],
     env: {
@@ -28,7 +28,7 @@ module.exports = {
         }
     ],
     rules: {
-        // "prefer-template": 0,
+        // "@typescript-eslint/no-explicit-any": 0,
         // "prefer-destructuring": 0,
         // "no-console": 0,
         // "no-underscore-dangle": ["error", { "allow": ["_id"] }], // We need _id for mongodb client

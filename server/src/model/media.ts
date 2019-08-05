@@ -6,8 +6,8 @@ export interface MediaAlbum {
     path: string;             // physical directory path of this Album
     description: string;      // Description of this Album
     featuredMedia: Media;     // Media to be displayed as the album cover
-    mediaIds: Array<number>;  // array of Media ids (if any) this Album contains
-    albumIds: Array<number>;  // array of Album ids (if any) this Album contains (nested albums)
+    mediaIds: number[];  // array of Media ids (if any) this Album contains
+    albumIds: number[];  // array of Album ids (if any) this Album contains (nested albums)
 }
 
 export interface Media {
@@ -18,14 +18,24 @@ export interface Media {
     caption?: string;         // optional caption for media
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface PhotoAlbum extends MediaAlbum {
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Photo extends Media {
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface VideoAlbum extends MediaAlbum {
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Video extends Media {
+}
+
+// TODO: can probably delete this intermediate type when refactored to use Observables
+export interface MediaData {
+    albums: MediaAlbum[];
+    media: Media[];
 }

@@ -1,5 +1,11 @@
 {
     "eslint.workingDirectories": [
         "./client", "./server"
-    ]
+    ],
+    "eslint.autoFixOnSave":  false,
+    "eslint.validate":  [
+        "javascript",
+        {"language":  "typescript",  "autoFix":  true  }
+    ],
+
 }

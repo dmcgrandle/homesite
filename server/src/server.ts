@@ -18,39 +18,40 @@ import videosRouter from './routes/videos-api';
 import downloadsRouter from './routes/downloads-api';
 
 export class Server {
-  public app: express.Application;
+    public app: express.Application;
 
-  constructor() {
-    this.app = express();
-    this.config();
-    this.api();
-    this.static();
-  }
+    public constructor() {
+        console.log('Server constructor is executed.')
+        this.app = express();
+        this.config();
+        this.api();
+        this.static();
+    }
 
-  public static bootstrap(): Server {
-    return new Server();
-  }
+    public static bootstrap(): Server {
+        return new Server();
+    }
 
-  public config() {
-    this.app.use(logger('dev'));
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: false }));
-    // this.app.use(cookieParser());
-    this.app.use(express.static(path.join(__dirname, 'public')));
-    // this.app.use(express.static(path.join(__dirname, '../mcg/dist/mcg')));
-    // this.app.use(express.static(path.join(__dirname, 'public')));
-  }
-  public api() {
-    this.app.use('/api/users', usersRouter);
-    this.app.use('/api/photos', photosRouter);
-    this.app.use('/api/videos', videosRouter);
-    this.app.use('/api/downloads', downloadsRouter);
-  }
-  public static() {
-    this.app.use('/protected', protectedRouter);
-    // setup get to resolve to index.html to allow angular router for client routes:
-    this.app.get('*', (req, res) => res.sendFile('index.html', { root: 'public' }));
-  }
+    public config(): void {
+        this.app.use(logger('dev'));
+        this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: false }));
+        // this.app.use(cookieParser());
+        this.app.use(express.static(path.join(__dirname, 'public')));
+        // this.app.use(express.static(path.join(__dirname, '../mcg/dist/mcg')));
+        // this.app.use(express.static(path.join(__dirname, 'public')));
+    }
+    public api(): void {
+        this.app.use('/api/users', usersRouter);
+        this.app.use('/api/photos', photosRouter);
+        this.app.use('/api/videos', videosRouter);
+        this.app.use('/api/downloads', downloadsRouter);
+    }
+    public static(): void {
+        this.app.use('/protected', protectedRouter);
+        // setup get to resolve to index.html to allow angular router for client routes:
+        this.app.get('*', (req, res): void => res.sendFile('index.html', { root: 'public' }));
+    }
 }
 
 // Use Routers:
