@@ -60,28 +60,7 @@ const stripPath = (item: klaw.Item, topDir: string): string => {
     return s > 0 ? item.path.substr(s + topDir.length) : '';
 };
 
-async function filterDirsAndTestFunc(
-    path: string,
-    files: string[],
-    testFunc: Function
-): Promise<FileObject[]> {
-    const newFileObjectArray: FileObject[] = [];
-    for (let i = 0; i < files.length; i += 1) {
-        const file = files[i];
-        // Next line is inside a loop because setting up an array of promises could potentially
-        // overwhelm the memory of systems in constrained environments. Resulting performance
-        // degradation from doing each one-at-a-time appears to be minimal.
-        /* eslint-disable-next-line no-await-in-loop */
-        const s: Stats = await fs.stat(path + file);
-        if (s.isFile() && file[0] !== '.' && testFunc(file)) {
-            newFileObjectArray.push({ filename: file, size: s.size });
-        }
-    }
-    return newFileObjectArray;
-}
-
 class FileService {
-
     public mediaDirs = (topDir: string): Promise<string[]> =>
         new Promise(
             (resolve, reject): void => {
@@ -111,6 +90,7 @@ class FileService {
                 // file suffix. See function 'isPhotoSuffix' in media-service.ts for example.
                 try {
                     const items: string[] = [];
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const filterExcludeIfNotMedia = new (FilterExcludeIfNotMediaConstructor as any)(
                         testMediaFunc
                     );
@@ -128,22 +108,6 @@ class FileService {
             }
         );
 
-    public downloadFiles = (dir: string, testFunc: Function): Promise<FileObject[]> =>
-        new Promise(
-            (resolve, reject): void => {
-                // This function reads all the files in 'dir' and returns a promise which will
-                // resolve to an array of them, minus any hidden files, directories.  Also can
-                // be further filtered by a passed 'testFunc'.
-                fs.readdir('.' + dir)
-                    .then(
-                        (files: string[]): Promise<FileObject[]> =>
-                            filterDirsAndTestFunc('.' + dir, files, testFunc)
-                    )
-                    .then((filteredFiles: FileObject[]): void => resolve(filteredFiles))
-                    .catch((err): void => reject(err));
-            }
-        );
-
     public deleteFile = (file: string): Promise<void> => fs.unlink(file);
 
     public renameFile = (oldFile: string, newFile: string): Promise<void> => {
@@ -151,27 +115,27 @@ class FileService {
         return fs.rename(oldFile, newFile);
     };
 
-    public dirsAndFiles = (dir: string): Observable<FileObject> =>
+    public dirsAndFiles = (dir: string, doHidden: boolean): Observable<FileObject> =>
         new Observable(
             (observer): void => {
                 // Create an async recursive function for walking the directory tree:
-                const walk: (dir: string) => Promise<void> = async (
-                    dir
-                ): Promise<void> => {
+                const walk = async (dir: string): Promise<void> => {
                     const files = await fs.readdir(join(__dirname, dir));
                     for (const file of files) {
                         const filepath = join(dir, file);
                         const stat: Stats = await fs.stat(join(__dirname, filepath));
-                        if (stat.isFile() || stat.isDirectory()) {
-                            observer.next({
-                                isFile: stat.isFile(),
-                                filename: file,
-                                size: stat.size,
-                                path: dir
-                            });
-                        }
-                        if (stat.isDirectory()) {
-                            await walk(filepath);
+                        if ((file[0] !== '.') || doHidden) {
+                            if (stat.isFile() || stat.isDirectory()) {
+                                observer.next({
+                                    isFile: stat.isFile(),
+                                    filename: file,
+                                    size: stat.size,
+                                    path: dir
+                                });
+                            }
+                            if (stat.isDirectory()) {
+                                await walk(filepath);
+                            }
                         }
                     }
                 };

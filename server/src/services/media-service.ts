@@ -3,15 +3,48 @@
 ------------------------------------------------------------------------------*/
 
 // External Imports:
-import { Db } from 'mongodb';
+import { Db, InsertWriteOpResult } from 'mongodb';
 import * as fs from 'fs-extra';
+import {
+    from,
+    Observable,
+    combineLatest,
+    of,
+    EMPTY,
+    EmptyError,
+    iif,
+    defer,
+    Subscription
+} from 'rxjs';
+import {
+    tap,
+    mergeMap,
+    reduce,
+    filter,
+    concatMap,
+    toArray,
+    map,
+    share,
+    catchError,
+    shareReplay,
+    groupBy
+} from 'rxjs/operators';
 import * as path from 'path';
 import * as sharp from 'sharp';
 import * as uniqueFilename from 'unique-filename';
 import { spawn } from 'child_process';
 
 // Project Imports:
-import { MediaAlbum, Media, PhotoAlbum, Photo, VideoAlbum, Video, MediaData } from '../model';
+import {
+    MediaAlbum,
+    Media,
+    PhotoAlbum,
+    Photo,
+    VideoAlbum,
+    Video,
+    MediaData,
+    FileObject
+} from '../model';
 import { database } from './db-service';
 import { fileSvc } from './file-service';
 import { errSvc } from './err-service';
@@ -21,43 +54,272 @@ const cfg = config.mediaService;
 export class MediaService {
     // need the bang (!) to stop typescript from complaining that the assignment is inside a try block
     private db!: Db;
+    private pSub!: Subscription;
+    private vSub!: Subscription;
 
     public async init(): Promise<void> {
         try {
-            this.db = await database;
+            // this.db = await database;
+            this.pSub = this.readMedia(cfg.PHOTO_DIR.PATH, 'photo').subscribe(
+                (): void => {
+                    console.log(new Date().toLocaleString(), ' : saved photoAlbums to db.')
+                },
+                (err): void => errSvc.exit(err)
+            );
+            this.vSub = this.readMedia(cfg.VIDEO_DIR.PATH, 'video').subscribe(
+                (): void =>{
+                    console.log(new Date().toLocaleString(), ' : saved videoAlbums to db.')
+                },
+                (err): void => errSvc.exit(err)
+            );
             // console.log(Date((new Date()).toLocaleString()) + ' : About to scan ' + cfg.PHOTO_DIR.PATH);
-            const photoDirs: string[] = await fileSvc.mediaDirs(cfg.PHOTO_DIR.PATH);
-            const photoFiles: string[] = await fileSvc.mediaFiles(
-                cfg.PHOTO_DIR.PATH,
-                this.isPhotoSuffix
-            );
-            // console.log(Date((new Date()).toLocaleString()) + ' : Done scanning ' + cfg.PHOTO_DIR.PATH);
-            await this.makeThumbsIfNeeded(photoFiles);
-            const photoData = this.buildPhotos(photoDirs, photoFiles);
-            await this.saveDataToDB('photoAlbums', photoData.albums);
-            await this.saveDataToDB('photos', photoData.media);
-            console.log(
-                new Date().toLocaleString() +
-                    ' : created new "photoAlbums" document in db.'
-            );
-            // console.log(Date((new Date()).toLocaleString()) + ' : About to scan ' + cfg.VIDEO_DIR.PATH);
-            const videoDirs: string[] = await fileSvc.mediaDirs(cfg.VIDEO_DIR.PATH);
-            const videoFiles: string[] = await fileSvc.mediaFiles(
-                cfg.VIDEO_DIR.PATH,
-                this.isVideoSuffix
-            );
-            // console.log(Date((new Date()).toLocaleString()) + ' : Done scanning ' + cfg.VIDEO_DIR.PATH);
-            await this.makePostersIfNeeded(videoFiles);
-            const videoData = this.buildVideos(videoDirs, videoFiles);
-            await this.saveDataToDB('videoAlbums', videoData.albums);
-            await this.saveDataToDB('videos', videoData.media);
-            console.log(
-                new Date().toLocaleString() +
-                    ' : created new "videoAlbums" document in db.'
-            );
+            // const photoDirs: string[] = await fileSvc.mediaDirs(cfg.PHOTO_DIR.PATH);
+            // const photoFiles: string[] = await fileSvc.mediaFiles(
+            //     cfg.PHOTO_DIR.PATH,
+            //     this.isPhotoSuffix
+            // );
+            // // console.log(Date((new Date()).toLocaleString()) + ' : Done scanning ' + cfg.PHOTO_DIR.PATH);
+            // await this.makeThumbsIfNeeded(photoFiles);
+            // const photoData = this.buildPhotos(photoDirs, photoFiles);
+            // await this.saveDataToDB('photoAlbums', photoData.albums);
+            // await this.saveDataToDB('photos', photoData.media);
+            // console.log(
+            //     new Date().toLocaleString() + ' : created new "photoAlbums" document in db.'
+            // );
+            // // console.log(Date((new Date()).toLocaleString()) + ' : About to scan ' + cfg.VIDEO_DIR.PATH);
+            // const videoDirs: string[] = await fileSvc.mediaDirs(cfg.VIDEO_DIR.PATH);
+            // const videoFiles: string[] = await fileSvc.mediaFiles(
+            //     cfg.VIDEO_DIR.PATH,
+            //     this.isVideoSuffix
+            // );
+            // // console.log(Date((new Date()).toLocaleString()) + ' : Done scanning ' + cfg.VIDEO_DIR.PATH);
+            // await this.makePostersIfNeeded(videoFiles);
+            // const videoData = this.buildVideos(videoDirs, videoFiles);
+            // await this.saveDataToDB('videoAlbums', videoData.albums);
+            // await this.saveDataToDB('videos', videoData.media);
+            // console.log(
+            //     new Date().toLocaleString() + ' : created new "videoAlbums" document in db.'
+            // );
         } catch (err) {
             errSvc.exit(err, 1);
         }
+    }
+
+    public onDestroy(): void {
+        this.pSub.unsubscribe();
+        this.vSub.unsubscribe();
+    }
+
+    private readMedia(
+        dir: string,
+        mediaType: string
+    ): Observable<MediaAlbum[]> {
+        const tests = mediaType === 'photo' ? cfg.EXT.PHOTO : cfg.EXT.VIDEO;
+        const source$ = from(database).pipe(
+            tap((db): Db => (this.db = db)),
+            mergeMap((): Observable<FileObject> => fileSvc.dirsAndFiles(dir, false)),
+            share()
+        );
+        const medias$ = source$.pipe(
+            filter((item): boolean => item.isFile === true), // only files
+            filter((file): boolean => this.isMedia(file.filename, tests)), // only valid suffixes
+            concatMap((file): Observable<FileObject> => this.makeThumbIfNeeded(file, mediaType)),
+            map((file, index): Media => this.toMedia(file, index, mediaType)),
+            toArray(),
+            // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+            mergeMap(medias => this.rxSaveDataToDB(mediaType + 's', medias))
+            // tap(
+            //     (medias): void => {
+            //         console.log('done saving photos');
+            //     }
+            // )
+        );
+        const groupedFileObjects$ = source$.pipe(
+            // create as many higher-order observables as we have directories and group
+            groupBy((item): string => item.path || ''),
+            mergeMap(
+                (group$): Observable<FileObject[]> =>
+                    group$.pipe(
+                        reduce<FileObject, FileObject[]>((acc, cur): FileObject[] => [...acc, cur], [
+                            { filename: group$.key, size: -1 }
+                        ])
+                    )
+            ),
+            // tap(
+            //     (obs): void => {
+            //         console.log('Mergemapped grouped observable is ', obs);
+            //     }
+            // ),
+            toArray(),
+            // tap(
+            //     (fileObs): void => {
+            //         console.log('done groupingFileObjects');
+            //     }
+            // )
+        );
+
+        return combineLatest(medias$, groupedFileObjects$).pipe(
+            map(
+                (obsArray): MediaAlbum[] => {
+                    const [medias, gFOs] = obsArray;
+                    const albums = gFOs.map(
+                        (dirContents, index): MediaAlbum => 
+                            this.toMediaAlbum(medias, gFOs, dirContents, index, tests)
+                    );
+                    // console.log('albums is ', albums);
+                    return albums;
+                }
+            ),
+            // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+            mergeMap(albums => this.rxSaveDataToDB(mediaType + 'Albums', albums))
+        );
+    }
+
+    private getMediaIds(
+        medias: Media[],
+        dirContents: FileObject[],
+        tests: string[]
+    ): number[] {
+        const mediasInDir = dirContents.filter(
+            (item): boolean | undefined =>
+                item.isFile === true && this.isMedia(item.filename, tests)
+        );
+        return mediasInDir.map(
+            (file): number => {
+                const fMedia = medias.find(
+                    (media): boolean => media.fullPath === path.join(file.path || '', file.filename)
+                );
+                return fMedia ? fMedia._id : -1;
+            }
+        );
+    }
+
+    private getAlbumIds(
+        groupedFileObjects: FileObject[][],
+        dirContents: FileObject[]
+    ): number[] {
+        const dirsInDirContents = dirContents.filter(
+            (item): boolean | undefined => item.isFile === false
+        );
+        const result = dirsInDirContents.map(
+            (dir): number => {
+                const foundId = groupedFileObjects.findIndex(
+                    (dirArray): boolean =>
+                        dirArray[0].filename === path.join(dir.path || '', dir.filename)
+                );
+                return foundId;
+            }
+        );
+        return result;
+    }
+
+    private makeThumbIfNeeded(file: FileObject, mediaType: string): Observable<FileObject> {
+        let thumb: string;
+        if (mediaType === 'photo') {
+            thumb = this.getFullThumbPath(file.filename);
+        } else {
+            thumb = this.getFullPosterPath(file.filename);
+        }
+        // prettier-ignore
+        return from(fs.pathExists(thumb)).pipe(
+            concatMap((exists): Observable<sharp.OutputInfo | string> => {
+                if (!exists) {
+                    const fileIn = path.join(__dirname, file.path || '', file.filename);
+                    const result$ = defer((): Observable<sharp.OutputInfo | string> => {
+                        if (mediaType === 'photo') {
+                            return from(sharp(fileIn)
+                                .resize(cfg.THUMBS.WIDTH, null, { fit: 'inside' })
+                                .toFormat(cfg.THUMBS.FORMAT)
+                                .toFile(thumb)
+                                // .catch((err): any => {
+                                //     console.log(err, `in sharp catch for ${file.filename}`);
+                                //     return err;
+                                // })
+                            )
+                        } else {
+                            return from(this.ffmpegPromise('ffmpeg', 
+                                [
+                                    '-ss',
+                                    '00:00:03',
+                                    '-i',
+                                    fileIn,
+                                    '-vframes',
+                                    '1',
+                                    '-q:v',
+                                    '2',
+                                    '-vf',
+                                    'scale=' + cfg.POSTERS.WIDTH + ':-1',
+                                    thumb
+                                ]
+                            ))
+                        }
+                    }).pipe(
+                        catchError((err): Observable<never> => {
+                            console.log(err, `creating thumb for ${file.filename} in ${file.path}`);
+                            return EMPTY; // bad file won't be added back into Observable stream
+                        })
+                    )
+                    return result$;
+                }
+                return of('Thumb exists'); // Just send back something to be mapped into file
+            }),
+            map((): FileObject => file) // map file back into Observable stream
+        );
+    }
+
+    private toMedia(file: FileObject, id: number, mediaType: string): Media {
+        return {
+            _id: id,
+            filename: file.filename,
+            path: file.path || '',
+            fullPath: path.join(file.path || '', file.filename),
+            thumbPath: this.getRelTorPPath(file.filename, mediaType)
+        };
+    }
+
+    private toMediaAlbum(
+        medias: Media[],
+        groupedFileObjects: FileObject[][],
+        dirContents: FileObject[],
+        id: number,
+        tests: string[]
+    ): MediaAlbum {
+        {
+            const mediaIds = this.getMediaIds(medias, dirContents, tests);
+            // if there is media in this directory, use the first one as featuredMedia, else default
+            const mFound = medias.find((media): boolean => media._id === mediaIds[0]);
+            const defFeatured = medias.find((media): boolean => media._id === cfg.DEFAULT_FEATURE._id);
+            const splitPath = dirContents[0].filename.split('/'); // get name and path from fullPath
+            const name = splitPath[splitPath.length - 1]; // extract name from the end of fullPath
+            const path = splitPath.slice(3).join('/'); // remove prefix from beginning
+            return {
+                _id: id,
+                name: name !== '' ? name : 'root',
+                path: path,
+                fullPath: dirContents[0].filename,
+                description: name,
+                featuredMedia: mFound ? mFound : defFeatured ? defFeatured : new Media(),
+                mediaIds: mediaIds,
+                albumIds: this.getAlbumIds(groupedFileObjects, dirContents)
+            };
+        }
+    }
+
+    private rxSaveDataToDB<T>(collection: string, data: T[]): Observable<T[]> {
+        return from(this.db.collection(collection).countDocuments()).pipe(
+            mergeMap(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (count): Observable<any> =>
+                    count > 0 ? from(this.db.collection(collection).drop()) : of(0)
+            ),
+            mergeMap(
+                (): Observable<InsertWriteOpResult> =>
+                    from(this.db.collection(collection).insertMany(data))
+            ),
+            map((): T[] => {
+                return data;
+            }) // return data that was saved
+        );
     }
 
     private async saveDataToDB(
@@ -83,7 +345,7 @@ export class MediaService {
     }
 
     private getFullThumbPath(file: string): string {
-        // Returns a fullPath to the thumbnail version of file
+    // Returns a fullPath to the thumbnail version of file
         return (
             uniqueFilename(
                 path.join(__dirname, cfg.PHOTO_DIR.PATH + cfg.PHOTO_DIR.CACHE_DIR),
@@ -96,13 +358,13 @@ export class MediaService {
     private async createSomeThumbs(
         thumbsRemaining: Promise<sharp.OutputInfo>[]
     ): Promise<void> {
-        // Need to limit the number of thumbs created silmultaneously due to memory and resource
-        // issues.  Started to run into problems at more than 300 at a time, so I figure 50
-        // should be a safe number for most environments.  Settable in config.
+    // Need to limit the number of thumbs created silmultaneously due to memory and resource
+    // issues.  Started to run into problems at more than 300 at a time, so I figure 50
+    // should be a safe number for most environments.  Settable in config.
         const numToDo =
-            thumbsRemaining.length > cfg.THUMBS.MAX_CREATE_AT_ONCE
-                ? cfg.THUMBS.MAX_CREATE_AT_ONCE
-                : thumbsRemaining.length;
+      thumbsRemaining.length > cfg.THUMBS.MAX_CREATE_AT_ONCE
+          ? cfg.THUMBS.MAX_CREATE_AT_ONCE
+          : thumbsRemaining.length;
         if (numToDo > 0) {
             // still have work to do
             const newPArray: Promise<sharp.OutputInfo>[] = [];
@@ -114,21 +376,16 @@ export class MediaService {
             }
             await Promise.all(newPArray); // wait on creation of up to MAX items
             console.log(
-                new Date().toLocaleString() +
-                    ' : Finished creating ' +
-                    numToDo +
-                    ' thumbnails.'
+                new Date().toLocaleString() + ' : Finished creating ' + numToDo + ' thumbnails.'
             );
             if (thumbsRemaining.length > 0) await this.createSomeThumbs(thumbsRemaining); // recurse remaining
         }
     }
 
     private async makeThumbsIfNeeded(files: string[]): Promise<void> {
-        // This function checks all files in the files array to see if
-        // thumbnails already exist, and creates them if they do not.
-        await fs.ensureDir(
-            path.join(__dirname, cfg.PHOTO_DIR.PATH, cfg.PHOTO_DIR.CACHE_DIR)
-        );
+    // This function checks all files in the files array to see if
+    // thumbnails already exist, and creates them if they do not.
+        await fs.ensureDir(path.join(__dirname, cfg.PHOTO_DIR.PATH, cfg.PHOTO_DIR.CACHE_DIR));
         let pArray1: Promise<boolean>[] = []; // promise array to build
         for (let i = 0; i < files.length; i += 1) {
             const thumb = this.getFullThumbPath(files[i]);
@@ -151,16 +408,16 @@ export class MediaService {
         if (pArray2.length > 0) {
             console.log(
                 new Date().toLocaleString() +
-                    ' : About to create ' +
-                    pArray2.length +
-                    ' thumbnails.  This could take a while...'
+          ' : About to create ' +
+          pArray2.length +
+          ' thumbnails.  This could take a while...'
             );
             await this.createSomeThumbs(pArray2);
         }
     }
 
     private getFullPosterPath(file: string): string {
-        // Returns a fullPath to the thumbnail version of file
+    // Returns a fullPath to the thumbnail version of file
         return (
             uniqueFilename(
                 path.join(__dirname, cfg.VIDEO_DIR.PATH + cfg.VIDEO_DIR.CACHE_DIR),
@@ -172,10 +429,10 @@ export class MediaService {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private ffmpegPromise(...args: any): Promise<string> {
-        // This "promisifies" the spawn function call to ffmpeg.  Needed to write my own
-        // rather than using a generic one such as 'child-process-es6-promise' because
-        // ffmpeg throws info into stderr instead of stdout even if it's not an error,
-        // so I check the return code too.
+    // This "promisifies" the spawn function call to ffmpeg.  Needed to write my own
+    // rather than using a generic one such as 'child-process-es6-promise' because
+    // ffmpeg throws info into stderr instead of stdout even if it's not an error,
+    // so I check the return code too.
         const name: string = args[0];
         const ffArgs = args[1];
         const options = args[2];
@@ -184,7 +441,7 @@ export class MediaService {
                 const ffmpeg = spawn(name, ffArgs, options);
                 let dataOut = ''; // buffer results sent
                 let dataErr = '';
-                ffmpeg.stdout.on(
+                ffmpeg.stdout.on( // ffmpeg appears to never use stdout ...
                     'data',
                     (data): void => {
                         dataOut += data;
@@ -199,13 +456,15 @@ export class MediaService {
                 ffmpeg.on(
                     'close',
                     (returnCode): void => {
+                        const outputArray = dataErr.split(/\r?\n/g); // split on line breaks
+                        const lastLine = outputArray[outputArray.length - 2];
+                        if (lastLine.startsWith('Output file is empty,')) {
+                            returnCode = 1; // arbitrary number to detect an error
+                        }
                         if (dataErr && returnCode !== 0) {
-                            console.log(
-                                'ffmpegPromise Error! Return code is: ' + returnCode
-                            );
-                            reject(dataErr);
+                            reject(lastLine);
                         } else {
-                            resolve(dataOut);
+                            resolve(lastLine);
                         }
                     }
                 );
@@ -215,14 +474,14 @@ export class MediaService {
     }
 
     private async createSomePosters(postersRemaining: string[]): Promise<void> {
-        // Need to limit the number of posters created silmultaneously due to memory and resource
-        // issues. Instead of doing the thumbExists check, then setting up the whole promise array,
-        // then executing it a batch at a time, this time we are doing the check, the promise array
-        // setup and 'await Promise.all' if needed all in the same batch.
+    // Need to limit the number of posters created silmultaneously due to memory and resource
+    // issues. Instead of doing the thumbExists check, then setting up the whole promise array,
+    // then executing it a batch at a time, this time we are doing the check, the promise array
+    // setup and 'await Promise.all' if needed all in the same batch.
         const numToDo =
-            postersRemaining.length > cfg.POSTERS.MAX_CREATE_AT_ONCE
-                ? cfg.POSTERS.MAX_CREATE_AT_ONCE
-                : postersRemaining.length;
+      postersRemaining.length > cfg.POSTERS.MAX_CREATE_AT_ONCE
+          ? cfg.POSTERS.MAX_CREATE_AT_ONCE
+          : postersRemaining.length;
         if (numToDo > 0) {
             // still have work to do
             let pArray1: Promise<boolean>[] = []; // promise array to build
@@ -234,10 +493,7 @@ export class MediaService {
                 let pArray2: Promise<string>[] = [];
                 for (let i = 0; i < numToDo; i += 1) {
                     if (!postersExist[i]) {
-                        const fileIn = path.join(
-                            __dirname,
-                            cfg.VIDEO_DIR.PATH + postersRemaining[0]
-                        );
+                        const fileIn = path.join(__dirname, cfg.VIDEO_DIR.PATH + postersRemaining[0]);
                         const fileOut = this.getFullPosterPath(postersRemaining[0]);
                         pArray2.push(
                             this.ffmpegPromise('ffmpeg', [
@@ -259,10 +515,7 @@ export class MediaService {
                 }
                 if (pArray2.length > 0) {
                     console.log(
-                        new Date().toLocaleString() +
-                            ' : Creating ' +
-                            pArray2.length +
-                            ' posters...'
+                        new Date().toLocaleString() + ' : Creating ' + pArray2.length + ' posters...'
                     );
                     await Promise.all(pArray2);
                 }
@@ -280,9 +533,9 @@ export class MediaService {
     }
 
     private async makePostersIfNeeded(files: string[]): Promise<void> {
-        // Doing this differently than creating thumbs, since we are dealing with streams and
-        // events with spawn of a child process for every ffmpeg call.  With spawn it starts
-        // executing as soon as it is set up, so need to handle it differently than 'sharp'.
+    // Doing this differently than creating thumbs, since we are dealing with streams and
+    // events with spawn of a child process for every ffmpeg call.  With spawn it starts
+    // executing as soon as it is set up, so need to handle it differently than 'sharp'.
         try {
             await fs.ensureDir(
                 path.join(__dirname, cfg.VIDEO_DIR.PATH + cfg.VIDEO_DIR.CACHE_DIR)
@@ -290,9 +543,9 @@ export class MediaService {
             const posterFiles = files.slice(); // clone the files array since we'll be modifying it
             console.log(
                 new Date().toLocaleString() +
-                    ' : Found ' +
-                    posterFiles.length +
-                    ' videos.  Will create posters if needed.'
+          ' : Found ' +
+          posterFiles.length +
+          ' videos.  Will create posters if needed.'
             );
             await this.createSomePosters(posterFiles);
         } catch (err) {
@@ -319,11 +572,13 @@ export class MediaService {
                     _id: aIndex,
                     name: splitPaths[splitPaths.length - 1],
                     path: fullPath,
+                    fullPath: fullPath,
                     description: '',
                     featuredMedia: {
                         // blank to start with
                         _id: -1,
                         filename: '',
+                        path: '',
                         fullPath: '',
                         thumbPath: '',
                         caption: ''
@@ -338,6 +593,7 @@ export class MediaService {
                     0,
                     -(splitPaths[splitPaths.length - 1].length + 1)
                 );
+                // prettier-ignore
                 const targetAlbumIndex =
                     targetAlbumPath === prevTargetAlbumPath
                         ? prevTargetAlbumIndex
@@ -354,24 +610,24 @@ export class MediaService {
     }
 
     private getRelTorPPath(file: string, mediaType: string): string {
-        // Get Relative Thumb or Poster Path
-        // Returns a valid web URL path for the client to retrieve the thumbnail
+    // Get Relative Thumb or Poster Path
+    // Returns a valid web URL path for the client to retrieve the thumbnail
         let url = '';
         if (mediaType === 'photo') {
             url =
-                uniqueFilename(
-                    cfg.PHOTO_DIR.PATH + cfg.PHOTO_DIR.CACHE_DIR,
-                    cfg.THUMBS.PREFIX,
-                    file
-                ) + cfg.THUMBS.SUFFIX;
+        uniqueFilename(
+            cfg.PHOTO_DIR.PATH + cfg.PHOTO_DIR.CACHE_DIR,
+            cfg.THUMBS.PREFIX,
+            file
+        ) + cfg.THUMBS.SUFFIX;
         } else {
             // mediaType === 'video
             url =
-                uniqueFilename(
-                    cfg.VIDEO_DIR.PATH + cfg.VIDEO_DIR.CACHE_DIR,
-                    cfg.POSTERS.PREFIX,
-                    file
-                ) + cfg.POSTERS.SUFFIX;
+        uniqueFilename(
+            cfg.VIDEO_DIR.PATH + cfg.VIDEO_DIR.CACHE_DIR,
+            cfg.POSTERS.PREFIX,
+            file
+        ) + cfg.POSTERS.SUFFIX;
         }
         return url;
     }
@@ -391,8 +647,8 @@ export class MediaService {
         files: string[],
         mediaType: string
     ): Media[] {
-        // Builds the main photos array to be saved in the database, and also builds
-        // the photos arrays that are stored within each album.
+    // Builds the main photos array to be saved in the database, and also builds
+    // the photos arrays that are stored within each album.
         let prevTargetAlbumPath = '';
         const medias: Media[] = [];
         // const thumbPathKey = 'thumbPath';
@@ -403,13 +659,13 @@ export class MediaService {
             (file): void => {
                 const splitPaths = file.split('/');
                 const mediaFilename = splitPaths[splitPaths.length - 1];
-                const prefix =
-                    mediaType === 'photo' ? cfg.PHOTO_DIR.PATH : cfg.VIDEO_DIR.PATH;
+                const prefix = mediaType === 'photo' ? cfg.PHOTO_DIR.PATH : cfg.VIDEO_DIR.PATH;
                 const mediaFullPath = `${prefix}${file}`;
                 const thumbPath = this.getRelTorPPath(file, mediaType);
                 const media: Media = {
                     _id: fIndex, // id of this Photo/Video
                     filename: mediaFilename, // filename without path
+                    path: prefix,
                     fullPath: mediaFullPath, // full path and filename of media
                     thumbPath: thumbPath, // path + filename of thumbnail relative to root URL
                     caption: ''
@@ -425,6 +681,7 @@ export class MediaService {
                     albums[targetAlbumIndex].featuredMedia = {
                         _id: fIndex,
                         filename: mediaFilename,
+                        path: prefix,
                         fullPath: mediaFullPath,
                         thumbPath: thumbPath,
                         caption: ''
@@ -444,13 +701,12 @@ export class MediaService {
                                 albums[parentAlbumIndex].featuredMedia = {
                                     _id: fIndex,
                                     filename: mediaFilename,
+                                    path: prefix,
                                     fullPath: mediaFullPath,
                                     thumbPath: thumbPath,
                                     caption: ''
                                 };
-                                albums[
-                                    parentAlbumIndex
-                                ].featuredMedia.thumbPath = thumbPath;
+                                albums[parentAlbumIndex].featuredMedia.thumbPath = thumbPath;
                             }
                         }
                     } // end for (walking up the parent tree)
@@ -468,12 +724,13 @@ export class MediaService {
     }
 
     private buildVideos(paths: string[], files: string[]): MediaData {
-        //    const PREFIX = '/protected/videos/'
+    //    const PREFIX = '/protected/videos/'
         const newAlbums: VideoAlbum[] = this.buildAlbumsArray(paths, 'video');
         const newVideos: Video[] = this.buildMediaArray(newAlbums, files, 'video');
         newAlbums[0].featuredMedia = {
             _id: newVideos[0]._id,
             filename: newVideos[0].filename,
+            path: newVideos[0].path,
             fullPath: newVideos[0].fullPath,
             thumbPath: newVideos[0].thumbPath,
             caption: ''
@@ -483,13 +740,14 @@ export class MediaService {
     }
 
     private buildPhotos(paths: string[], files: string[]): MediaData {
-        //    const PREFIX = '/protected/images/'
+    //    const PREFIX = '/protected/images/'
         const newAlbums: PhotoAlbum[] = this.buildAlbumsArray(paths, 'photo');
         const newPhotos: Photo[] = this.buildMediaArray(newAlbums, files, 'photo');
         // root album featuredMedia is not set by above code, so set it manually to the first photo
         newAlbums[0].featuredMedia = {
             _id: newPhotos[0]._id,
             filename: newPhotos[0].filename,
+            path: newPhotos[0].path,
             fullPath: newPhotos[0].fullPath,
             thumbPath: newPhotos[0].thumbPath,
             caption: ''
@@ -498,13 +756,36 @@ export class MediaService {
         return { albums: newAlbums, media: newPhotos };
     }
 
-    private isPhotoSuffix(str: string): boolean {
+    private isMedia(filename: string, tests: string[]): boolean {
+        const split = filename.split('.');
+        const suffix = split[split.length - 1].toLowerCase();
         // TODO: add more recognized picture formats
+        return tests.find((test): boolean => test === suffix) !== undefined;
+    }
+
+    // private isPhoto(filename: string): boolean {
+    //     const test = '';
+    //     return this.isMedia(filename, ['jpg', 'jpeg', 'gif'])
+    //     // const split = filename.split('.');
+    //     // const suffix = split[split.length - 1].toLowerCase();
+    //     // // TODO: add more recognized picture formats
+    //     // return suffix === 'jpg' || suffix === 'jpeg';
+    // }
+
+    // private isVideo(filename: string): boolean {
+    //     const split = filename.split('.');
+    //     const suffix = split[split.length - 1].toLowerCase();
+    //     // TODO: add more recognized video formats
+    //     return suffix === 'mp4' || suffix === 'mov';
+    // }
+
+    private isPhotoSuffix(str: string): boolean {
+    // TODO: add more recognized picture formats
         return str === '.jpg' || str === 'jpeg';
     }
 
     private isVideoSuffix(str: string): boolean {
-        // TODO: add more recognized video formats
+    // TODO: add more recognized video formats
         return str === '.mp4' || str === '.mov';
     }
 
@@ -522,18 +803,14 @@ export class MediaService {
 
     public getPhotoById = async (id: number): Promise<Photo> => {
         if (id < 0 || typeof id !== 'number') throw new Error('404 Bad ID.');
-        const photo: Photo | null = await this.db
-            .collection('photos')
-            .findOne({ _id: id });
+        const photo: Photo | null = await this.db.collection('photos').findOne({ _id: id });
         if (!photo) throw new Error('404 Unknown Photo id: ' + id);
         return photo;
     };
 
     public getVideoById = async (id: number): Promise<Video> => {
         if (id < 0 || typeof id !== 'number') throw new Error('404 Bad ID.');
-        const video: Video | null = await this.db
-            .collection('videos')
-            .findOne({ _id: id });
+        const video: Video | null = await this.db.collection('videos').findOne({ _id: id });
         if (!video) throw new Error('404 Unknown Video id: ' + id);
         return video;
     };
@@ -554,9 +831,7 @@ export class MediaService {
             .map(Number);
         const pArray: Promise<PhotoAlbum>[] = []; // set up promises array for all of the albums being requested
         for (let i = 0; i < idsArray.length; i += 1) {
-            const photoAlbum = this.db
-                .collection('photoAlbums')
-                .findOne({ _id: idsArray[i] });
+            const photoAlbum = this.db.collection('photoAlbums').findOne({ _id: idsArray[i] });
             pArray.push(photoAlbum);
         }
         const albums = await Promise.all(pArray);
@@ -648,10 +923,9 @@ export class MediaService {
     };
 
     public getVideoByPath = async (pathEncoded: string): Promise<Video> => {
-        // Note - this function currently assumes that the path sent does NOT include
-        // the VIDEO_DIR.PATH at the front.  TODO: check for this instead of assuming ...
-        const thisPath =
-            cfg.VIDEO_DIR.PATH + pathEncoded.slice(1, -1).replace(/\+/g, '/');
+    // Note - this function currently assumes that the path sent does NOT include
+    // the VIDEO_DIR.PATH at the front.  TODO: check for this instead of assuming ...
+        const thisPath = cfg.VIDEO_DIR.PATH + pathEncoded.slice(1, -1).replace(/\+/g, '/');
         const video = await this.db.collection('videos').findOne({ fullPath: thisPath });
         if (!video) throw new Error('404 Unknown Video: ' + thisPath);
         return video;

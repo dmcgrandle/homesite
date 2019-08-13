@@ -50,7 +50,10 @@ router.get('/photo-by-id/:id', (req: RequestWithUser, res: express.Response): vo
 router.get('/album-by-path/:path', (req: RequestWithUser, res: express.Response): void => {
     userSvc
         .isValidLevel(req.user, 2)
-        .then((): Promise<PhotoAlbum> => mediaSvc.getPhotoAlbumByPath(req.params.path))
+        .then((): Promise<PhotoAlbum> => {
+            const result = mediaSvc.getPhotoAlbumByPath(req.params.path);
+            return result;
+        })
         .then((album): Response => res.status(200).json(album))
         .catch((err): void => errSvc.processError(err, res));
 });

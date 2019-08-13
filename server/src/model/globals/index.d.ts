@@ -1,4 +1,3 @@
-// import { Config } from '../config';
+// uses new import syntax from https://devblogs.microsoft.com/typescript/announcing-typescript-2-9-rc/
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare var config: any;
+declare var config: import('../config').Config;

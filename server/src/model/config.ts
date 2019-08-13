@@ -1,4 +1,5 @@
 import { SMTPAuth } from './user';
+import { Media } from './media';
 
 export interface Config {
     dbService: {
@@ -50,6 +51,11 @@ export interface Config {
             PREFIX: string;
             SUFFIX: string;
             MAX_CREATE_AT_ONCE: number;
+        };
+        DEFAULT_FEATURE: Media;
+        EXT: {
+            PHOTO: string[];
+            VIDEO: string[];
         };
     };
     downloadService: {

@@ -34,23 +34,16 @@ class DownloadService {
         );
     }
 
-    private readDownloadsFromDisk(): Observable<InsertWriteOpResult> {
+    private readDownloadsFromDisk(): Observable<boolean> {
+        // prettier-ignore
         return from(database).pipe(
             tap((db): Db => (this.db = db)),
-            mergeMap(
-                (): Observable<FileObject> => fileSvc.dirsAndFiles(cfg.DOWNLOAD_DIR.PATH)
-            ),
-            filter((file: FileObject): boolean => file.filename[0] !== '.'), // filter hidden
+            mergeMap((): Observable<FileObject> => fileSvc.dirsAndFiles(cfg.DOWNLOAD_DIR.PATH, false)),
             filter((file): boolean => file.isFile === true), // no directories
             filter((file): boolean => file.path === cfg.DOWNLOAD_DIR.PATH), // no files from subdirectories
-            concatMap(
-                (file, index): Observable<Download> => this.rxToDownload(file, index)
-            ),
+            concatMap((file, index): Observable<Download> => this.rxToDownload(file, index)),
             toArray(),
-            mergeMap(
-                (downloads): Observable<InsertWriteOpResult> =>
-                    this.saveDataToDB(cfg.DB_COLLECTION_NAME, downloads)
-            )
+            mergeMap((downloads): Observable<boolean> => this.saveDataToDB(cfg.DB_COLLECTION_NAME, downloads))
         );
     }
 
@@ -102,49 +95,62 @@ class DownloadService {
         );
     };
 
-    private saveDataToDB(
-        collection: string,
-        data: Download[]
-    ): Observable<InsertWriteOpResult> {
+    private saveDataToDB(collection: string, data: Download[]): Observable<boolean> {
         return from(this.db.collection(collection).countDocuments()).pipe(
             mergeMap(
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (count): Observable<any> => 
+                (count): Observable<any> =>
                     count > 0 ? from(this.db.collection(collection).drop()) : empty()
             ),
             mergeMap(
                 (): Observable<InsertWriteOpResult> =>
                     from(this.db.collection(collection).insertMany(data))
-            )
+            ),
+            map((res): boolean => res.result.n > 0) // return true on success
         );
     }
 
     private grepPromise(search: string): Promise<string | undefined> {
         // This "promisifies" the spawn function call to grep.
-        return new Promise((resolve, reject): void => {
-            // Note - we want to escape any characters in search that are non-alphanumeric
-            // Also want to search at the beginning of a line only, and ending with |
-            /* eslint-disable-next-line no-useless-escape */ // Not useless in this case!
-            const regexSearch = '^' + search.replace(/(?=\W)/g, '\\') + '|';
-            const grep = spawnProc('grep', ['-e', regexSearch, cfg.TYPE_DESCRIPTION_DB]);
-            let dataOut = ''; // buffer results sent
-            let dataErr = '';
-            grep.stdout.on('data', (data): void => {
-                dataOut += data;
-            });
-            grep.stderr.on('data', (data): void => {
-                dataErr += data;
-            });
-            grep.on('close', (returnCode): void => {
-                if (dataErr && returnCode !== 0) {
-                    logDS('grepPromise Error! Return code is: ' + returnCode);
-                    reject(dataErr);
-                } else {
-                    resolve(dataOut);
-                }
-            });
-            grep.on('error', (err): void => reject(err));
-        });
+        return new Promise(
+            (resolve, reject): void => {
+                // Note - we want to escape any characters in search that are non-alphanumeric
+                // Also want to search at the beginning of a line only, and ending with |
+                /* eslint-disable-next-line no-useless-escape */ // Not useless in this case!
+                const regexSearch = '^' + search.replace(/(?=\W)/g, '\\') + '|';
+                const grep = spawnProc('grep', [
+                    '-e',
+                    regexSearch,
+                    cfg.TYPE_DESCRIPTION_DB
+                ]);
+                let dataOut = ''; // buffer results sent
+                let dataErr = '';
+                grep.stdout.on(
+                    'data',
+                    (data): void => {
+                        dataOut += data;
+                    }
+                );
+                grep.stderr.on(
+                    'data',
+                    (data): void => {
+                        dataErr += data;
+                    }
+                );
+                grep.on(
+                    'close',
+                    (returnCode): void => {
+                        if (dataErr && returnCode !== 0) {
+                            logDS('grepPromise Error! Return code is: ' + returnCode);
+                            reject(dataErr);
+                        } else {
+                            resolve(dataOut);
+                        }
+                    }
+                );
+                grep.on('error', (err): void => reject(err));
+            }
+        );
     }
 
     private async getTypeDescription(type: string): Promise<string> {
@@ -182,17 +188,16 @@ class DownloadService {
             .toLowerCase();
         return from(this.getTypeDescription(suffix.slice(1))).pipe(
             map(
-                (type): Download =>
-                    ({
-                        _id: index,
-                        filename: file.filename,
-                        fullPath: cfg.DOWNLOAD_DIR.PATH + file.filename,
-                        suffix: suffix,
-                        type: type,
-                        size: file.size,
-                        sizeHR: this.humanFileSize(file.size, cfg.USE_SI_SIZE),
-                        icon: 'fiv-viv fiv-icon-' + suffix.slice(1)
-                    })
+                (type): Download => ({
+                    _id: index,
+                    filename: file.filename,
+                    fullPath: cfg.DOWNLOAD_DIR.PATH + file.filename,
+                    suffix: suffix,
+                    type: type,
+                    size: file.size,
+                    sizeHR: this.humanFileSize(file.size, cfg.USE_SI_SIZE),
+                    icon: 'fiv-viv fiv-icon-' + suffix.slice(1)
+                })
             )
         );
     }
@@ -235,7 +240,7 @@ class DownloadService {
             errSvc.exit(err);
         }
         return download;
-    };
+    }
 
     private async getDownloadById(id: number): Promise<Download> {
         const dlReturned = await this.db
@@ -252,7 +257,7 @@ class DownloadService {
             .findOne({ filename: dlName });
         if (!download) throw new Error('404 Unknown File.');
         return download;
-    };
+    }
 
     public async getList(): Promise<Download[]> {
         let downloads = [new Download()];
@@ -265,7 +270,7 @@ class DownloadService {
             errSvc.exit(err, 1);
         }
         return downloads;
-    };
+    }
 
     public async delete(dlName: string): Promise<Download> {
         await this.getDownload(dlName); // verify it exists before doing any work
@@ -286,7 +291,7 @@ class DownloadService {
             throw new Error('404 Eror deleting file - File not found in database.');
         }
         return result.value;
-    };
+    }
 
     public async renameFile(filenameChanged: FilenameChangedObj): Promise<Download> {
         const originalDl = await this.getDownloadById(filenameChanged._id);
@@ -328,7 +333,7 @@ class DownloadService {
         } else {
             return originalDl;
         }
-    };
+    }
 }
 // }
 

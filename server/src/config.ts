@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* config.ts - main config for server in homesite */
 
-import { Config } from './model';
+import { Config, Media } from './model';
 
 async function initConfig(): Promise<Config> {
     return {
@@ -59,6 +59,11 @@ async function initConfig(): Promise<Config> {
                 PREFIX: 'thumb',
                 SUFFIX: '.jpg',
                 MAX_CREATE_AT_ONCE: 20
+            },
+            DEFAULT_FEATURE: new Media({_id: 0}),
+            EXT: {
+                PHOTO: ['jpg', 'jpeg'],
+                VIDEO: ['mp4', 'mov']
             }
         },
         downloadService: {
