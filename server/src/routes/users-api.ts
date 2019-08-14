@@ -138,8 +138,8 @@ router.delete('/one', (req: RequestWithUser, res: Response): void => {
  */
 router.get('/list', (req: RequestWithUser, res: Response): void => {
     userSvc
-        .rxErrIfNotValidLevel(req.user, 4)
-        .pipe(switchMap((): Observable<User[]> => userSvc.rxGetListSansPasswords()))
+        .errIfNotValidLevel(req.user, 4)
+        .pipe(switchMap((): Observable<User[]> => userSvc.getListSansPasswords()))
         .subscribe(
             (userList): Response => res.status(200).json(userList),
             (err): void => errSvc.processError(err, res)

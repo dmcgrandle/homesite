@@ -5,7 +5,7 @@
 // External Imports:
 import { Db, InsertWriteOpResult } from 'mongodb';
 import * as fs from 'fs-extra';
-import { from, Observable, combineLatest, of, EMPTY, defer, Subscription } from 'rxjs';
+import { from, Observable, combineLatest, of, EMPTY, defer, Subscription, throwError } from 'rxjs';
 import { tap, mergeMap, reduce, filter, concatMap } from 'rxjs/operators';
 import { toArray, map, share, catchError, groupBy } from 'rxjs/operators';
 import * as path from 'path';
@@ -49,6 +49,7 @@ export class MediaService {
     }
 
     private readMedia(dir: string, mediaType: string): Observable<MediaAlbum[]> {
+    // follow pattern from here: https://rangle.io/blog/rxjs-where-is-the-if-else-operator/
         const tests = mediaType === 'photo' ? cfg.EXT.PHOTO : cfg.EXT.VIDEO;
         const source$ = from(database).pipe(
             tap((db): Db => (this.db = db)),
@@ -58,14 +59,10 @@ export class MediaService {
         const medias$ = source$.pipe(
             filter((item): boolean => item.isFile === true), // only files
             filter((file): boolean => this.isMedia(file.filename, tests)), // only valid suffixes
-            concatMap(
-                (file): Observable<FileObject> => this.makeThumbIfNeeded(file, mediaType)
-            ),
+            concatMap((file): Observable<FileObject> => this.makeThumbIfNeeded(file, mediaType)),
             map((file, index): Media => this.toMedia(file, index, mediaType)),
             toArray(),
-            mergeMap(
-                (medias): Observable<Media[]> => this.saveDataToDB(mediaType + 's', medias)
-            )
+            mergeMap((medias): Observable<Media[]> => this.saveDataToDB(mediaType + 's', medias))
         );
         const groupedFileObjects$ = source$.pipe(
             // create as many higher-order observables as we have directories and group
@@ -80,6 +77,7 @@ export class MediaService {
             ),
             toArray()
         );
+        // use combineLatest instead of merge so both emit/complete before calling toMediaAlbum
         return combineLatest(medias$, groupedFileObjects$).pipe(
             map(
                 ([medias, gFOs]): MediaAlbum[] =>
@@ -88,19 +86,15 @@ export class MediaService {
                             this.toMediaAlbum(medias, gFOs, dirContents, index, tests)
                     )
             ),
-            // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-            mergeMap(albums => this.saveDataToDB(mediaType + 'Albums', albums))
+            mergeMap(
+                (albums): Observable<MediaAlbum[]> => this.saveDataToDB(mediaType + 'Albums', albums)
+            )
         );
     }
 
-    private getMediaIds(
-        medias: Media[],
-        dirContents: FileObject[],
-        tests: string[]
-    ): number[] {
+    private getMediaIds(medias: Media[], dirContents: FileObject[], tests: string[]): number[] {
         const mediasInDir = dirContents.filter(
-            (item): boolean | undefined =>
-                item.isFile === true && this.isMedia(item.filename, tests)
+            (item): boolean | undefined => item.isFile === true && this.isMedia(item.filename, tests)
         );
         return mediasInDir.map(
             (file): number => {
@@ -112,18 +106,14 @@ export class MediaService {
         );
     }
 
-    private getAlbumIds(
-        groupedFileObjects: FileObject[][],
-        dirContents: FileObject[]
-    ): number[] {
+    private getAlbumIds(groupedFileObjects: FileObject[][], dirContents: FileObject[]): number[] {
         const dirsInDirContents = dirContents.filter(
             (item): boolean | undefined => item.isFile === false
         );
         const result = dirsInDirContents.map(
             (dir): number => {
                 const foundId = groupedFileObjects.findIndex(
-                    (dirArray): boolean =>
-                        dirArray[0].filename === path.join(dir.path || '', dir.filename)
+                    (dirArray): boolean => dirArray[0].filename === path.join(dir.path || '', dir.filename)
                 );
                 return foundId;
             }
@@ -138,45 +128,48 @@ export class MediaService {
         } else {
             thumb = this.getVideoThumbPath(file.filename);
         }
-        // prettier-ignore
         return from(fs.pathExists(thumb)).pipe(
-            concatMap((exists): Observable<sharp.OutputInfo | unknown> => {
-                if (!exists) {
-                    const fileIn = path.join(__dirname, file.path || '', file.filename);
-                    const result$ = defer((): Observable<sharp.OutputInfo | unknown> => {
-                        if (mediaType === 'photo') {
-                            return from(sharp(fileIn)
-                                .resize(cfg.THUMBS.WIDTH, null, { fit: 'inside' })
-                                .toFormat(cfg.THUMBS.FORMAT)
-                                .toFile(thumb)
+            concatMap(
+                (exists): Observable<sharp.OutputInfo | string> => {
+                    if (!exists) {
+                        const fileIn = path.join(__dirname, file.path || '', file.filename);
+                        return defer(
+                            (): Observable<sharp.OutputInfo | string> => {
+                                if (mediaType === 'photo') {
+                                    return from(
+                                        sharp(fileIn)
+                                            .resize(cfg.THUMBS.WIDTH, null, { fit: 'inside' })
+                                            .toFormat(cfg.THUMBS.FORMAT)
+                                            .toFile(thumb)
+                                    );
+                                } else {
+                                    return this.ffmpeg$('ffmpeg', [
+                                        '-ss',
+                                        '00:00:03',
+                                        '-i',
+                                        fileIn,
+                                        '-vframes',
+                                        '1',
+                                        '-q:v',
+                                        '2',
+                                        '-vf',
+                                        'scale=' + cfg.POSTERS.WIDTH + ':-1',
+                                        thumb
+                                    ]);
+                                }
+                            }
+                        ).pipe(
+                            catchError(
+                                (err): Observable<never> => {
+                                    console.log(err, `creating thumb for ${file.filename} in ${file.path}`);
+                                    return EMPTY; // bad item won't be added back into Observable stream
+                                }
                             )
-                        } else {
-                            return from(this.ffmpegPromise('ffmpeg', 
-                                [
-                                    '-ss',
-                                    '00:00:03',
-                                    '-i',
-                                    fileIn,
-                                    '-vframes',
-                                    '1',
-                                    '-q:v',
-                                    '2',
-                                    '-vf',
-                                    'scale=' + cfg.POSTERS.WIDTH + ':-1',
-                                    thumb
-                                ]
-                            ))
-                        }
-                    }).pipe(
-                        catchError((err): Observable<never> => {
-                            console.log(err, `creating thumb for ${file.filename} in ${file.path}`);
-                            return EMPTY; // bad file won't be added back into Observable stream
-                        })
-                    )
-                    return result$;
+                        );
+                    }
+                    return of('Thumb exists'); // Just send back something to be mapped into file
                 }
-                return of('Thumb exists'); // Just send back something to be mapped into file
-            }),
+            ),
             map((): FileObject => file) // map file back into Observable stream
         );
     }
@@ -257,26 +250,20 @@ export class MediaService {
         );
     }
 
-    private ffmpegPromise(...args: [string, string[], SpawnOptions?]): Promise<string> {
-    // This "promisifies" the spawn function call to ffmpeg.  Needed to write my own
-    // rather than using a generic one such as 'child-process-es6-promise' because
-    // ffmpeg throws info into stderr instead of stdout even if it's not an error,
-    // so I check the return code too.
+    private ffmpeg$(...args: [string, string[], SpawnOptions?]): Observable<string> {
+    // This makes an Observable out of the spawn function call to ffmpeg.  Need a custom
+    // Observable because ffmpeg throws info into stderr instead of stdout even if it's not an
+    // error, so the return code is checked and also parse for empty file to detect that.
         const name: string = args[0];
         const ffArgs = args[1];
         const options = args[2];
-        return new Promise(
-            (resolve, reject): void => {
+        return new Observable(
+            (observer): void => {
                 const ffmpeg = spawn(name, ffArgs, options || {});
                 let dataErr = '';
-                ffmpeg.stderr &&
-          ffmpeg.stderr.on(
-              // ffmpeg apparently only uses stderr, not stdout
-              'data',
-              (data): void => {
-                  dataErr += data;
-              }
-          );
+                if (ffmpeg.stderr) {
+                    ffmpeg.stderr.on('data', (data: string): string => (dataErr += data));
+                }
                 ffmpeg.on(
                     'close',
                     (returnCode): void => {
@@ -286,13 +273,14 @@ export class MediaService {
                             returnCode = 1; // arbitrary number to detect an error
                         }
                         if (dataErr && returnCode !== 0) {
-                            reject(lastLine);
+                            observer.error(lastLine);
                         } else {
-                            resolve(lastLine);
+                            observer.next(lastLine);
+                            observer.complete();
                         }
                     }
                 );
-                ffmpeg.on('error', (err): void => reject(err));
+                ffmpeg.on('error', (err): void => observer.error(err));
             }
         );
     }
@@ -303,18 +291,12 @@ export class MediaService {
         let url = '';
         if (mediaType === 'photo') {
             url =
-        uniqueFilename(
-            cfg.PHOTO_DIR.PATH + cfg.PHOTO_DIR.CACHE_DIR,
-            cfg.THUMBS.PREFIX,
-            file
-        ) + cfg.THUMBS.SUFFIX;
+        uniqueFilename(cfg.PHOTO_DIR.PATH + cfg.PHOTO_DIR.CACHE_DIR, cfg.THUMBS.PREFIX, file) +
+        cfg.THUMBS.SUFFIX;
         } else {
             url =
-        uniqueFilename(
-            cfg.VIDEO_DIR.PATH + cfg.VIDEO_DIR.CACHE_DIR,
-            cfg.POSTERS.PREFIX,
-            file
-        ) + cfg.POSTERS.SUFFIX;
+        uniqueFilename(cfg.VIDEO_DIR.PATH + cfg.VIDEO_DIR.CACHE_DIR, cfg.POSTERS.PREFIX, file) +
+        cfg.POSTERS.SUFFIX;
         }
         return url;
     }
@@ -329,20 +311,31 @@ export class MediaService {
     // -------------------
     // Exported methods:
 
+    public getMediaById(id: number, mediaType: string): Observable<Photo> {
+        if (id < 0 || typeof id !== 'number') return throwError(new Error(`404 ${id} - Bad ID.`));
+        return from(this.db.collection(mediaType + 's').findOne({ _id: id })).pipe(
+            mergeMap(
+                (photo: Photo): Observable<Photo> =>
+                    photo ? of(photo) : throwError(new Error(`404 Unknown ${mediaType} id: ${id}`))
+            )
+        );
+    }
+
+    public getAlbumById(id: number, mediaType: string): Observable<MediaAlbum> {
+        if (id < 0 || typeof id !== 'number') return throwError(new Error(`404 ${id} - Bad ID.`));
+        return from(this.db.collection(mediaType + 'Albums').findOne({ _id: id })).pipe(
+            mergeMap(
+                (album): Observable<MediaAlbum> =>
+                    album ? of(album) : throwError(new Error(`404 Unknown ${mediaType}Album id: ${id}`))
+            )
+        );
+    }
+
     public getPhotoAlbumById = async (id: number): Promise<PhotoAlbum> => {
         if (id < 0 || typeof id !== 'number') throw new Error('404 Bad ID.');
-        const album: MediaAlbum | null = await this.db
-            .collection('photoAlbums')
-            .findOne({ _id: id });
+        const album: MediaAlbum | null = await this.db.collection('photoAlbums').findOne({ _id: id });
         if (!album) throw new Error('404 Unknown Album.');
         return album;
-    };
-
-    public getPhotoById = async (id: number): Promise<Photo> => {
-        if (id < 0 || typeof id !== 'number') throw new Error('404 Bad ID.');
-        const photo: Photo | null = await this.db.collection('photos').findOne({ _id: id });
-        if (!photo) throw new Error('404 Unknown Photo id: ' + id);
-        return photo;
     };
 
     public getVideoById = async (id: number): Promise<Video> => {
