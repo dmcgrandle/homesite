@@ -27,19 +27,6 @@ router.use(
 router.use(tokenSvc.middlewareCheck());
 router.use(bodyParser.json());
 
-// router.get(
-//     '/list',
-//     (req: RequestWithUser, res: Response): void => {
-//         userSvc
-//             .rxErrIfNotValidLevel(req.user, 4)
-//             .pipe(switchMap((): Observable<User[]> => userSvc.rxGetListSansPasswords()))
-//             .subscribe(
-//                 (userList): Response => res.status(200).json(userList),
-//                 (err): void => errSvc.processError(err, res)
-//             );
-//     }
-// );
-
 /* GET photo with given id.  Needs level 2+ access */
 router.get(
     '/photo-by-id/:id',
@@ -67,16 +54,6 @@ router.get(
             );
     }
 );
-// router.get(
-//     '/album-by-id/:id',
-//     (req: RequestWithUser, res: express.Response): void => {
-//         userSvc
-//             .isValidLevel(req.user, 2) // check username in jwt token for level
-//             .then((): Promise<PhotoAlbum> => mediaSvc.getPhotoAlbumById(Number(req.params.id)))
-//             .then((album): Response => res.status(200).json(album))
-//             .catch((err): void => errSvc.processError(err, res));
-//     }
-// );
 
 /* GET album with given path.  Needs level 2+ access
     Format of :path - array of id strings, made URL-friendly with no spaces, and
@@ -86,15 +63,14 @@ router.get(
     '/album-by-path/:path',
     (req: RequestWithUser, res: express.Response): void => {
         userSvc
-            .isValidLevel(req.user, 2)
-            .then(
-                (): Promise<PhotoAlbum> => {
-                    const result = mediaSvc.getPhotoAlbumByPath(req.params.path);
-                    return result;
-                }
+            .errIfNotValidLevel(req.user, 2)
+            .pipe(
+                switchMap((): Observable<PhotoAlbum> => mediaSvc.getAlbumByPath(req.params.path, 'photo'))
             )
-            .then((album): Response => res.status(200).json(album))
-            .catch((err): void => errSvc.processError(err, res));
+            .subscribe(
+                (album): Response => res.status(200).json(album),
+                (err): void => errSvc.processError(err, res)
+            );
     }
 );
 
@@ -103,13 +79,15 @@ router.get(
     by replacing [] with () and commas with +, so for example the array [ 0, 2, 7 ]
     becomes (0+2+7) and entire url is "http://example.com/api/photos/albums/(0+2+7)"     */
 router.get(
-    '/albums/:albumIds',
+    '/albums/:ids',
     (req: RequestWithUser, res: express.Response): void => {
         userSvc
-            .isValidLevel(req.user, 2)
-            .then((): Promise<PhotoAlbum[]> => mediaSvc.getPhotoAlbums(req.params.albumIds))
-            .then((albums): Response => res.status(200).json(albums))
-            .catch((err): void => errSvc.processError(err, res));
+            .errIfNotValidLevel(req.user, 2)
+            .pipe(switchMap((): Observable<PhotoAlbum[]> => mediaSvc.getAlbums(req.params.ids, 'photo')))
+            .subscribe(
+                (albums): Response => res.status(200).json(albums),
+                (err): void => errSvc.processError(err, res)
+            );
     }
 );
 

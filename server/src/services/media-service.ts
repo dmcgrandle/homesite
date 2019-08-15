@@ -15,7 +15,7 @@ import { spawn, SpawnOptions } from 'child_process';
 
 // Project Imports:
 import { Media, Photo, Video, FileObject } from '../model';
-import { PhotoAlbum, VideoAlbum, MediaAlbum } from '../model';
+import { PhotoAlbum, MediaAlbum } from '../model';
 import { database } from './db-service';
 import { fileSvc } from './file-service';
 import { errSvc } from './err-service';
@@ -331,48 +331,30 @@ export class MediaService {
         );
     }
 
-    public getPhotoAlbumById = async (id: number): Promise<PhotoAlbum> => {
-        if (id < 0 || typeof id !== 'number') throw new Error('404 Bad ID.');
-        const album: MediaAlbum | null = await this.db.collection('photoAlbums').findOne({ _id: id });
-        if (!album) throw new Error('404 Unknown Album.');
-        return album;
-    };
+    public getAlbumByPath(pathEncoded: string, mediaType: string): Observable<MediaAlbum> {
+        const path = pathEncoded.slice(1, -1).replace(/\+/g, '/');
+        return from(this.db.collection(mediaType + 'Albums').findOne({ path: path })).pipe(
+            mergeMap(
+                (album): Observable<MediaAlbum> =>
+                    album ? of(album) : throwError(new Error(`404 Unknown ${mediaType}Album path: ${path}`))
+            )
+        );
+    }
 
-    public getVideoById = async (id: number): Promise<Video> => {
-        if (id < 0 || typeof id !== 'number') throw new Error('404 Bad ID.');
-        const video: Video | null = await this.db.collection('videos').findOne({ _id: id });
-        if (!video) throw new Error('404 Unknown Video id: ' + id);
-        return video;
-    };
-
-    public getPhotoAlbumByPath = async (pathEncoded: string): Promise<PhotoAlbum> => {
-        const thisPath: string = pathEncoded.slice(1, -1).replace(/\+/g, '/');
-        const album: PhotoAlbum | null = await this.db
-            .collection('photoAlbums')
-            .findOne({ path: thisPath });
-        if (!album) throw new Error('404 Unknown Album: ' + thisPath);
-        return album;
-    };
-
-    public getPhotoAlbums = async (albumIdsList: string): Promise<PhotoAlbum[]> => {
-        const idsArray = albumIdsList
-            .slice(1, -1)
-            .split('+')
-            .map(Number);
-        const pArray: Promise<PhotoAlbum>[] = []; // set up promises array for all of the albums being requested
-        for (let i = 0; i < idsArray.length; i += 1) {
-            const photoAlbum = this.db.collection('photoAlbums').findOne({ _id: idsArray[i] });
-            pArray.push(photoAlbum);
-        }
-        const albums = await Promise.all(pArray);
-        for (let i = 0; i < idsArray.length; i += 1) {
-            if (!albums[i]) {
-                // validity check
-                throw new Error('403 Album IDs list: ' + albumIdsList + ' is invalid.');
-            }
-        }
-        return albums;
-    };
+    // prettier-ignore
+    public getAlbums(encodedIds: string, mediaType: string): Observable<PhotoAlbum[]> {
+        const ids = encodedIds.slice(1, -1).split('+').map(Number);
+        return from(ids).pipe(
+            concatMap((id): Observable<MediaAlbum> =>
+                from(this.db.collection(mediaType + 'Albums').findOne({ _id: id })).pipe(
+                    mergeMap((album): Observable<MediaAlbum> =>
+                        album ? of(album) : throwError(new Error(`403 Album IDs list: ${encodedIds} is invalid.`))
+                    )
+                )
+            ),
+            toArray()
+        );
+    }
 
     public getPhotos = async (mediaIds: string): Promise<Photo[]> => {
         const idsArray = mediaIds
@@ -424,32 +406,6 @@ export class MediaService {
         const posters: string[] = [];
         videos.forEach((video): number => posters.push(video.thumbPath));
         return posters;
-    };
-
-    public getVideoAlbums = async (albumIdsList: string): Promise<VideoAlbum[]> => {
-        const idsArray = albumIdsList
-            .slice(1, -1)
-            .split('+')
-            .map(Number);
-        const pArray = []; // set up promises array for all of the albums being requested
-        for (let i = 0; i < idsArray.length; i += 1) {
-            pArray.push(this.db.collection('videoAlbums').findOne({ _id: idsArray[i] }));
-        }
-        const albums = await Promise.all(pArray);
-        for (let i = 0; i < idsArray.length; i += 1) {
-            if (!albums[i]) {
-                // validity check
-                throw new Error('403 Album IDs list: ' + albumIdsList + ' is invalid.');
-            }
-        }
-        return albums;
-    };
-
-    public getVideoAlbumByPath = async (pathEncoded: string): Promise<VideoAlbum> => {
-        const thisPath = pathEncoded.slice(1, -1).replace(/\+/g, '/');
-        const album = await this.db.collection('videoAlbums').findOne({ path: thisPath });
-        if (!album) throw new Error('404 Unknown Album: ' + thisPath);
-        return album;
     };
 
     public getVideoByPath = async (pathEncoded: string): Promise<Video> => {

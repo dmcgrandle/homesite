@@ -4,6 +4,8 @@
 import * as express from 'express';
 import { Response } from 'express';
 import * as bodyParser from 'body-parser';
+import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 // Project Imports:
 import { RequestWithUser, Video, VideoAlbum } from 'src/model';
@@ -18,9 +20,7 @@ const router = express.Router();
 // middleware that is specific to this router
 router.use(
     (req, res, next): void => {
-        console.log(
-            new Date().toLocaleString() + " : Videos API called - '" + req.originalUrl + "'"
-        );
+        console.log(new Date().toLocaleString() + " : Videos API called - '" + req.originalUrl + "'");
         next();
     }
 );
@@ -32,10 +32,26 @@ router.get(
     '/video-by-id/:id',
     (req: RequestWithUser, res: express.Response): void => {
         userSvc
-            .isValidLevel(req.user, 2) // check username in jwt token for level
-            .then((): Promise<Video> => mediaSvc.getVideoById(Number(req.params.id)))
-            .then((video): Response => res.status(200).json(video))
-            .catch((err): void => errSvc.processError(err, res));
+            .errIfNotValidLevel(req.user, 2)
+            .pipe(switchMap((): Observable<Video> => mediaSvc.getMediaById(+req.params.id, 'video')))
+            .subscribe(
+                (video): Response => res.status(200).json(video),
+                (err): void => errSvc.processError(err, res)
+            );
+    }
+);
+
+/* GET album with given id.  Needs level 2+ access */
+router.get(
+    '/album-by-id/:id',
+    (req: RequestWithUser, res: express.Response): void => {
+        userSvc
+            .errIfNotValidLevel(req.user, 2)
+            .pipe(switchMap((): Observable<VideoAlbum> => mediaSvc.getAlbumById(+req.params.id, 'video')))
+            .subscribe(
+                (album): Response => res.status(200).json(album),
+                (err): void => errSvc.processError(err, res)
+            );
     }
 );
 
@@ -47,10 +63,14 @@ router.get(
     '/album-by-path/:path',
     (req: RequestWithUser, res: express.Response): void => {
         userSvc
-            .isValidLevel(req.user, 2)
-            .then((): Promise<VideoAlbum> => mediaSvc.getVideoAlbumByPath(req.params.path))
-            .then((album): Response => res.status(200).json(album))
-            .catch((err): void => errSvc.processError(err, res));
+            .errIfNotValidLevel(req.user, 2)
+            .pipe(
+                switchMap((): Observable<VideoAlbum> => mediaSvc.getAlbumByPath(req.params.path, 'video'))
+            )
+            .subscribe(
+                (album): Response => res.status(200).json(album),
+                (err): void => errSvc.processError(err, res)
+            );
     }
 );
 
@@ -76,13 +96,15 @@ Format of :albumsIds - array of id numbers, made URL-friendly with no spaces, an
 by replacing [] with () and commas with +, so for example the array [ 0, 2, 7 ]
 becomes (0+2+7) and entire url is "http://example.com/api/photos/albums/(0+2+7)"     */
 router.get(
-    '/albums/:albumIds',
+    '/albums/:ids',
     (req: RequestWithUser, res: express.Response): void => {
         userSvc
-            .isValidLevel(req.user, 2)
-            .then((): Promise<VideoAlbum[]> => mediaSvc.getVideoAlbums(req.params.albumIds))
-            .then((albums): Response => res.status(200).json(albums))
-            .catch((err): void => errSvc.processError(err, res));
+            .errIfNotValidLevel(req.user, 2)
+            .pipe(switchMap((): Observable<VideoAlbum[]> => mediaSvc.getAlbums(req.params.ids, 'video')))
+            .subscribe(
+                (albums): Response => res.status(200).json(albums),
+                (err): void => errSvc.processError(err, res)
+            );
     }
 );
 
