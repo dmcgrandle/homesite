@@ -4,6 +4,8 @@
 import * as express from 'express';
 import { Response } from 'express';
 import * as bodyParser from 'body-parser';
+import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 // Project Imports:
 import { RequestWithUser, Download } from 'src/model';
@@ -25,18 +27,36 @@ router.use((req, res, next): void => {
 router.use(tokenSvc.middlewareCheck());
 router.use(bodyParser.json());
 
-/* GET: list of downloads directory.  Needs level 2+ access */
-router.get('/list', (req: RequestWithUser, res: express.Response): void => {
+/**
+ * GET list of downloads
+ * @remarks
+ *
+ * Set up an API GET response for '/api/list' that returns an array of downloads.
+ * Requires level 2+ access.
+ *
+ * @callback - validates user level, gets downloads list and sends back to client.
+ */
+router.get('/list', (req: RequestWithUser, res: Response): void => {
     userSvc
-        .isValidLevel(req.user, 2) // check username in jwt token for level
-        .then((): Promise<Download[]> => dlSvc.getList())
-        .then((downloads: Download[]): Response => res.status(200).json(downloads))
-        .catch((err): void => errSvc.processError(err, res));
+        .errIfNotValidLevel(req.user, 2)
+        .pipe(switchMap((): Observable<Download[]> => dlSvc.getList()))
+        .subscribe(
+            (downloads): Response => res.status(200).json(downloads),
+            (err): void => errSvc.processError(err, res)
+        );
 });
 
-/*  POST: upload a file to the downloads directory.  Needs level 3+ access
-    Set this up a little differently than other router handlers: set up a middleware
-    chain by defining 3 "next" functions that get called in order. */
+/**
+ * POST an upload into the downloads directory
+ * @remarks
+ *
+ * Set up an API POST response for '/api/upload' that returns the download object created 
+ * for the upload.  Set this up a little differently than other router handlers: set up a 
+ * middleware chain by defining 3 "next" functions that get called in order.
+ * Requires level 3+ access.
+ *
+ * @callback - validates user level, uploads the file, sends a response back with download.
+ */
 router.post(
     '/upload',
     userSvc.testLevelAtOrAbove3,
@@ -44,8 +64,12 @@ router.post(
     (req: RequestWithUser, res: express.Response): void => {
         dlSvc
             .updateDownloadsDB(req.file)
-            .then((download: Download): Response => res.status(200).json(download))
-            .catch((err): void => errSvc.processError(err, res));
+            .subscribe(
+                (download: Download): Response => {
+                    return res.status(200).json(download)
+                },
+                (err): void => errSvc.processError(err, res)
+            )
     }
 );
 

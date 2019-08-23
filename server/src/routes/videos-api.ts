@@ -27,7 +27,16 @@ router.use(
 router.use(tokenSvc.middlewareCheck());
 router.use(bodyParser.json());
 
-/* GET video with given id.  Needs level 2+ access */
+/**
+ * GET a video object by specifying the requested id number
+ * @remarks
+ *
+ * Set up an API GET response for '/api/videos/video-by-id/:id' that returns a video object
+ * in JSON format.
+ *
+ * @callback - validates user level, gets the video object and sends back to client.
+ * Also processes any errors returned.
+ */
 router.get(
     '/video-by-id/:id',
     (req: RequestWithUser, res: express.Response): void => {
@@ -41,7 +50,16 @@ router.get(
     }
 );
 
-/* GET album with given id.  Needs level 2+ access */
+/**
+ * GET a video album object by specifying the requested id number
+ * @remarks
+ *
+ * Set up an API GET response for '/api/videos/album-by-id/:id' that returns a video album object
+ * in JSON format.
+ *
+ * @callback - validates user level, gets the video album object and sends back to client.
+ * Also processes any errors returned.
+ */
 router.get(
     '/album-by-id/:id',
     (req: RequestWithUser, res: express.Response): void => {
@@ -55,10 +73,22 @@ router.get(
     }
 );
 
-/* GET album with given path string.  Needs level 2+ access
-Format of :path - array of id strings, made URL-friendly with no spaces, and
-by replacing / with +, so for example the path '/test/one/two' becomes
-(test+one+two) and entire url is "http://example.com/api/videos/album/(test+one+two)" */
+/**
+ * GET a video album object by specifying the path.
+ * @remarks
+ *
+ * Set up an API GET response for '/api/videos/album-by-path/:path' that returns a video album object
+ * in JSON format.  This api call requires user level 2+ for access.
+ * 
+ * Format of :path - array of id strings, made URL-friendly with no spaces, and
+ * by replacing / with +, so for example the path 'test/one/two' becomes (test+one+two)
+ * and entire url is "http://example.com/api/videos/album/(test+one+two)".  Note - the
+ * path can be relative (such as the previous example), or a full path can be specified
+ * such as '/protected/videos/test/one/two': (+protected+videos+test+one+two), note the initial +
+ *
+ * @callback - validates user level 2+, gets the video album object and sends back to client.
+ * Also processes any errors returned.
+ */
 router.get(
     '/album-by-path/:path',
     (req: RequestWithUser, res: express.Response): void => {
@@ -74,20 +104,35 @@ router.get(
     }
 );
 
-/* GET video with given path string.  Needs level 2+ access
-Format of :path - array of id strings, made URL-friendly with no spaces, and
-by replacing / with +, so for example the path '/test/one/two/video.mp4' becomes
-(test+one+two+video.mp4) and entire url is
-"http://example.com/api/videos/album/(test+one+two+video.mp4)"  The last parameter
-is the name of the video */
+/**
+ * GET a video object by specifying the path.
+ * @remarks
+ *
+ * Set up an API GET response for '/api/videos/video-by-path/:path' that returns a video object
+ * in JSON format.  This api call requires user level 2+ for access.
+ * 
+ * Format of :path - array of id strings, made URL-friendly with no spaces, and
+ * by replacing / with +, so for example the path 'test/one/two' becomes (test+one+two)
+ * and entire url is "http://example.com/api/videos/album/(test+one+two+video.mp4)".  Note - the
+ * path can be relative (such as the previous example), or a full path can be specified
+ * such as '/protected/videos/test/one/two/video.mp4': (+protected+videos+test+one+two+video.mp4), 
+ * note the initial +  The last parameter is the name of the video.
+ *
+ * @callback - validates user level 2+, gets the video object and sends back to client.
+ * Also processes any errors returned.
+ */
 router.get(
     '/video-by-path/:path',
     (req: RequestWithUser, res: express.Response): void => {
         userSvc
-            .isValidLevel(req.user, 2)
-            .then((): Promise<Video> => mediaSvc.getVideoByPath(req.params.path))
-            .then((video): Response => res.status(200).json(video))
-            .catch((err): void => errSvc.processError(err, res));
+            .errIfNotValidLevel(req.user, 2)
+            .pipe(
+                switchMap((): Observable<Video> => mediaSvc.getMediaByPath(req.params.path, 'video'))
+            )
+            .subscribe(
+                (video): Response => res.status(200).json(video),
+                (err): void => errSvc.processError(err, res)
+            );
     }
 );
 
@@ -109,24 +154,41 @@ router.get(
 );
 
 router.get(
-    '/videos/:mediaIds',
+    '/videos/:ids',
     (req: RequestWithUser, res: express.Response): void => {
         userSvc
-            .isValidLevel(req.user, 2)
-            .then((): Promise<Video[]> => mediaSvc.getVideos(req.params.mediaIds))
-            .then((videos): Response => res.status(200).json(videos))
-            .catch((err): void => errSvc.processError(err, res));
+            .errIfNotValidLevel(req.user, 2)
+            .pipe(switchMap((): Observable<Video[]> => mediaSvc.getMedias(req.params.ids, 'video')))
+            .subscribe(
+                (videos): Response => res.status(200).json(videos),
+                (err): void => errSvc.processError(err, res)
+            );
     }
 );
 
 router.get(
-    '/posters/:mediaIds',
+    '/thumbs/:ids',
     (req: RequestWithUser, res: express.Response): void => {
         userSvc
-            .isValidLevel(req.user, 2)
-            .then((): Promise<string[]> => mediaSvc.getPosters(req.params.mediaIds))
-            .then((posters): Response => res.status(200).json(posters))
-            .catch((err): void => errSvc.processError(err, res));
+            .errIfNotValidLevel(req.user, 2)
+            .pipe(switchMap((): Observable<string[]> => mediaSvc.getThumbs(req.params.ids, 'video')))
+            .subscribe(
+                (videos): Response => res.status(200).json(videos),
+                (err): void => errSvc.processError(err, res)
+            );
+    }
+);
+
+router.get(
+    '/posters/:ids', // for compatibility with clients that may use the old syntax
+    (req: RequestWithUser, res: express.Response): void => {
+        userSvc
+            .errIfNotValidLevel(req.user, 2)
+            .pipe(switchMap((): Observable<string[]> => mediaSvc.getThumbs(req.params.ids, 'video')))
+            .subscribe(
+                (videos): Response => res.status(200).json(videos),
+                (err): void => errSvc.processError(err, res)
+            );
     }
 );
 

@@ -41,6 +41,26 @@ router.get(
     }
 );
 
+/* GET photo with given path string (relative or full path).  Needs level 2+ access
+Format of :path - array of id strings, made URL-friendly with no spaces, and
+by replacing / with +, so for example the path 'test/one/two/photo.jpg' becomes
+(test+one+two+photo.jpg) and entire url is
+"http://example.com/api/videos/album/(test+one+two+photo.jpg)" */
+router.get(
+    '/photo-by-path/:path',
+    (req: RequestWithUser, res: express.Response): void => {
+        userSvc
+            .errIfNotValidLevel(req.user, 2)
+            .pipe(
+                switchMap((): Observable<Photo> => mediaSvc.getMediaByPath(req.params.path, 'photo'))
+            )
+            .subscribe(
+                (photo): Response => res.status(200).json(photo),
+                (err): void => errSvc.processError(err, res)
+            );
+    }
+);
+
 /* GET album with given id.  Needs level 2+ access */
 router.get(
     '/album-by-id/:id',
@@ -92,27 +112,29 @@ router.get(
 );
 
 router.get(
-    '/photos/:mediaIds',
+    '/photos/:ids',
     (req: RequestWithUser, res: express.Response): void => {
         userSvc
-            .isValidLevel(req.user, 2)
-            .then((): Promise<Photo[]> => mediaSvc.getPhotos(req.params.mediaIds))
-            .then((photos): Response => res.status(200).json(photos))
-            .catch((err): void => errSvc.processError(err, res));
+            .errIfNotValidLevel(req.user, 2)
+            .pipe(switchMap((): Observable<Photo[]> => mediaSvc.getMedias(req.params.ids, 'photo')))
+            .subscribe(
+                (photos): Response => res.status(200).json(photos),
+                (err): void => errSvc.processError(err, res)
+            );
     }
 );
 
 router.get(
-    '/thumbs/:mediaIds',
+    '/thumbs/:ids',
     (req: RequestWithUser, res: express.Response): void => {
         userSvc
-            .isValidLevel(req.user, 2)
-            .then((): Promise<string[]> => mediaSvc.getThumbs(req.params.mediaIds))
-            .then((thumbs): Response => res.status(200).json(thumbs))
-            .catch((err): void => errSvc.processError(err, res));
+            .errIfNotValidLevel(req.user, 2)
+            .pipe(switchMap((): Observable<string[]> => mediaSvc.getThumbs(req.params.ids, 'photo')))
+            .subscribe(
+                (photos): Response => res.status(200).json(photos),
+                (err): void => errSvc.processError(err, res)
+            );
     }
 );
-
-// Internal functions:
 
 export default router;

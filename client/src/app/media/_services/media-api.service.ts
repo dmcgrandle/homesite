@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 
 // imports from homesite outside of media module:
 import { AlertMessageDialogComponent } from 'shared/alert-message-dialog/alert-message-dialog.component';
+import { AppConfig } from 'app.config';
 
 import { MediaAlbum, Media } from '../_helpers/classes';
 
@@ -36,10 +37,10 @@ export class MediaAPIService implements OnDestroy {
         );
     }
 
-    public getMediaByPath(mediaType: string, path: string): Observable<Media> {
+    public getMediaByFullpath(mediaType: string, path: string): Observable<Media> {
         const fullPath = '(' + path.split('/').join('+') + ')';
         return <Observable<Media>>(
-            this.http.get(`/api/${mediaType}s/${mediaType}-by-path/${fullPath}`)
+            this.http.get(`/api/${mediaType}s/${mediaType}-by-fullpath/${fullPath}`)
         );
     }
 
@@ -48,7 +49,7 @@ export class MediaAPIService implements OnDestroy {
         url: Observable<UrlSegment[]>
     ): Observable<Media> {
         return url.pipe(
-            switchMap(segments => this.getMediaByPath(mediaType, segments.join('/')))
+            switchMap(segments => this.getMediaByFullpath(mediaType, segments.join('/')))
         );
     }
 

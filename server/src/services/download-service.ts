@@ -5,11 +5,11 @@ const logDS = require('debug')('homesite:download-service');
 
 // External Imports:
 // import * as fs from 'fs-extra';
-import { Db, InsertWriteOpResult } from 'mongodb';
+import { Db, InsertWriteOpResult, ReplaceWriteOpResult, InsertOneWriteOpResult } from 'mongodb';
 import { Request, Response, NextFunction } from 'express';
 import * as multer from 'multer';
 import { spawn as spawnProc } from 'child_process';
-import { Observable, from, empty } from 'rxjs';
+import { Observable, from, of, defer, forkJoin } from 'rxjs';
 import { tap, filter, concatMap, map, toArray, mergeMap } from 'rxjs/operators';
 
 // Project Imports:
@@ -27,15 +27,13 @@ class DownloadService {
     public init(): void {
         this.readDownloadsFromDisk().subscribe(
             (): void =>
-                console.log(
-                    `${new Date().toLocaleString()} : created new "download" document in db.`
-                ),
+                console.log(`${new Date().toLocaleString()} : created new "download" document in db.`),
             (err): void => errSvc.exit(err, 1)
         );
     }
 
     private readDownloadsFromDisk(): Observable<boolean> {
-        // prettier-ignore
+    // prettier-ignore
         return from(database).pipe(
             tap((db): Db => (this.db = db)),
             mergeMap((): Observable<FileObject> => fileSvc.dirsAndFiles(cfg.DOWNLOAD_DIR.PATH, false)),
@@ -72,11 +70,7 @@ class DownloadService {
             (): void => {
                 logDS('finished uploading.');
                 if (req.file) {
-                    logDS(
-                        `${new Date().toLocaleString()} : File Uploaded: "${
-                            req.file.filename
-                        }"`
-                    );
+                    logDS(`${new Date().toLocaleString()} : File Uploaded: "${req.file.filename}"`);
                 }
             }
         );
@@ -99,30 +93,25 @@ class DownloadService {
         return from(this.db.collection(collection).countDocuments()).pipe(
             mergeMap(
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (count): Observable<any> =>
-                    count > 0 ? from(this.db.collection(collection).drop()) : empty()
+                (count): Promise<any> | Observable<number> =>
+                    count > 0 ? this.db.collection(collection).drop() : of(0)
             ),
             mergeMap(
-                (): Observable<InsertWriteOpResult> =>
-                    from(this.db.collection(collection).insertMany(data))
+                (): Promise<InsertWriteOpResult> => this.db.collection(collection).insertMany(data)
             ),
             map((res): boolean => res.result.n > 0) // return true on success
         );
     }
 
-    private grepPromise(search: string): Promise<string | undefined> {
-        // This "promisifies" the spawn function call to grep.
-        return new Promise(
-            (resolve, reject): void => {
+    // This makes an Observable of the spawn function call to grep within the type description file
+    private getTypeDescription(search: string): Observable<string> {
+        return new Observable<string>(
+            (observer): void => {
                 // Note - we want to escape any characters in search that are non-alphanumeric
                 // Also want to search at the beginning of a line only, and ending with |
                 /* eslint-disable-next-line no-useless-escape */ // Not useless in this case!
                 const regexSearch = '^' + search.replace(/(?=\W)/g, '\\') + '|';
-                const grep = spawnProc('grep', [
-                    '-e',
-                    regexSearch,
-                    cfg.TYPE_DESCRIPTION_DB
-                ]);
+                const grep = spawnProc('grep', ['-e', regexSearch, cfg.TYPE_DESCRIPTION_DB]);
                 let dataOut = ''; // buffer results sent
                 let dataErr = '';
                 grep.stdout.on(
@@ -142,30 +131,20 @@ class DownloadService {
                     (returnCode): void => {
                         if (dataErr && returnCode !== 0) {
                             logDS('grepPromise Error! Return code is: ' + returnCode);
-                            reject(dataErr);
+                            observer.error(dataErr);
                         } else {
-                            resolve(dataOut);
+                            observer.next(dataOut);
+                            observer.complete();
                         }
                     }
                 );
-                grep.on('error', (err): void => reject(err));
+                grep.on('error', (err): void => observer.error(err));
             }
-        );
-    }
-
-    private async getTypeDescription(type: string): Promise<string> {
-        const grepResult = await this.grepPromise(type);
-        let removeLF = '';
-        if (grepResult) {
-            // if no result, grepResult will be 'undefined'
-            const description = grepResult.split('|')[1]; // get just the description
-            removeLF = description.slice(0, -1); // strip the linefeed off the end
-        }
-        return removeLF;
+        ).pipe(map((result): string => result ? result.split('|')[1].slice(0, -1) : ''))
     }
 
     private humanFileSize(bytes: number, si: boolean): string {
-        // taken from mpen's answer in https://stackoverflow.com/questions/10420352/ but linted
+    // taken from mpen's answer in https://stackoverflow.com/questions/10420352/ but linted
         const thresh = si ? 1000 : 1024;
         if (Math.abs(bytes) < thresh) {
             return bytes + ' B';
@@ -183,10 +162,8 @@ class DownloadService {
     }
 
     private rxToDownload(file: FileObject, index: number): Observable<Download> {
-        const suffix: string = file.filename
-            .slice(file.filename.lastIndexOf('.'))
-            .toLowerCase();
-        return from(this.getTypeDescription(suffix.slice(1))).pipe(
+        const suffix = file.filename.slice(file.filename.lastIndexOf('.')).toLowerCase();
+        return this.getTypeDescription(suffix.slice(1)).pipe(
             map(
                 (type): Download => ({
                     _id: index,
@@ -202,74 +179,57 @@ class DownloadService {
         );
     }
 
-    public async updateDownloadsDB(file: FileObject): Promise<Download> {
-        const suffix: string = file.filename
-            .slice(file.filename.lastIndexOf('.'))
-            .toLowerCase();
-        const download = new Download({
-            filename: file.filename,
-            fullPath: '/' + file.path,
-            suffix: suffix,
-            size: file.size,
-            sizeHR: this.humanFileSize(file.size, cfg.USE_SI_SIZE),
-            icon: 'fiv-viv fiv-icon-' + suffix.slice(1)
-        });
-        try {
-            // Find the last download, then create a new one at the end of the collection
-            const lastDl = await this.db
+    private lastDl(): Observable<Download> {
+        return from(
+            this.db
                 .collection(cfg.DB_COLLECTION_NAME)
                 .find()
                 .sort({ _id: -1 })
                 .limit(1)
-                .next();
-            download._id = lastDl._id + 1;
-            download.type = await this.getTypeDescription(suffix.slice(1));
-            const dlReturned = await this.db
+                .next()
+        );
+    }
+
+    // public methods:
+    public getList(): Observable<Download[]> {
+        return from(
+            this.db
                 .collection(cfg.DB_COLLECTION_NAME)
-                .findOne({ filename: file.filename });
-            if (dlReturned) {
-                // a download with the same name exists - update it
-                download._id = dlReturned._id;
-                await this.db
-                    .collection(cfg.DB_COLLECTION_NAME)
-                    .replaceOne({ _id: dlReturned._id }, download);
-            } else {
-                await this.db.collection(cfg.DB_COLLECTION_NAME).insertOne(download);
-            }
-        } catch (err) {
-            errSvc.exit(err);
-        }
-        return download;
+                .find({})
+                .toArray()
+        );
+    }
+
+    public updateDownloadsDB(file: FileObject): Observable<Download> {
+        const col = cfg.DB_COLLECTION_NAME;
+        const newDl$ = this.rxToDownload(file, -1);
+        const nextId$ = this.lastDl().pipe(map((lastDl): number => lastDl._id + 1));
+        const existingDl$ = this.db.collection(col).findOne({ filename: file.filename });
+        return forkJoin(newDl$, nextId$, existingDl$).pipe(
+            mergeMap(([newDl, nextId, existingDl]): Observable<Download> =>
+                defer((): Promise<ReplaceWriteOpResult | InsertOneWriteOpResult> => {
+                    if (existingDl) {
+                        newDl._id = existingDl._id;
+                        return this.db.collection(col).replaceOne({ _id: newDl._id }, newDl);
+                    } else {
+                        newDl._id = nextId;
+                        return this.db.collection(col).insertOne(newDl);
+                    }
+                }).pipe(map((): Download => newDl)) // use defer to easily map to Download from Promise
+            )
+        );
     }
 
     private async getDownloadById(id: number): Promise<Download> {
-        const dlReturned = await this.db
-            .collection(cfg.DB_COLLECTION_NAME)
-            .findOne({ _id: id });
-        if (!dlReturned)
-            throw new Error('404 Unknown FileId.  Please report this error.');
+        const dlReturned = await this.db.collection(cfg.DB_COLLECTION_NAME).findOne({ _id: id });
+        if (!dlReturned) throw new Error('404 Unknown FileId.  Please report this error.');
         return dlReturned;
     }
 
     public async getDownload(dlName: string): Promise<Download> {
-        const download = await this.db
-            .collection(cfg.DB_COLLECTION_NAME)
-            .findOne({ filename: dlName });
+        const download = await this.db.collection(cfg.DB_COLLECTION_NAME).findOne({ filename: dlName });
         if (!download) throw new Error('404 Unknown File.');
         return download;
-    }
-
-    public async getList(): Promise<Download[]> {
-        let downloads = [new Download()];
-        try {
-            downloads = await this.db
-                .collection(cfg.DB_COLLECTION_NAME)
-                .find({})
-                .toArray();
-        } catch (err) {
-            errSvc.exit(err, 1);
-        }
-        return downloads;
     }
 
     public async delete(dlName: string): Promise<Download> {
@@ -277,17 +237,13 @@ class DownloadService {
         try {
             await fileSvc.deleteFile(`.${cfg.DOWNLOAD_DIR.PATH}${dlName}`);
         } catch (err) {
-            throw new Error(
-                `404 Error deleting file on disk File "${dlName}" not found.`
-            );
+            throw new Error(`404 Error deleting file on disk File "${dlName}" not found.`);
         }
         const result = await this.db
             .collection(cfg.DB_COLLECTION_NAME)
             .findOneAndDelete({ filename: dlName });
         if (result.lastErrorObject.n !== 1) {
-            logDS(
-                'Serious error: delete in download-service.js file deleted ok, but not found in db.'
-            );
+            logDS('Serious error: delete in download-service.js file deleted ok, but not found in db.');
             throw new Error('404 Eror deleting file - File not found in database.');
         }
         return result.value;
@@ -298,30 +254,22 @@ class DownloadService {
         if (filenameChanged.newFilename !== originalDl.filename) {
             //only rename if needed
             try {
-                const newFileFullPath = `.${cfg.DOWNLOAD_DIR.PATH}${
-                    filenameChanged.newFilename
-                }`;
+                const newFileFullPath = `.${cfg.DOWNLOAD_DIR.PATH}${filenameChanged.newFilename}`;
                 await fileSvc.renameFile(`.${originalDl.fullPath}`, newFileFullPath);
             } catch (err) {
                 throw new Error(
-                    `404 Error renaming file on disk - Original File "${
-                        originalDl.filename
-                    }" not found.`
+                    `404 Error renaming file on disk - Original File "${originalDl.filename}" not found.`
                 );
             }
-            const result = await this.db
-                .collection(cfg.DB_COLLECTION_NAME)
-                .findOneAndUpdate(
-                    { _id: filenameChanged._id },
-                    {
-                        $set: {
-                            filename: filenameChanged.newFilename,
-                            fullPath: `${cfg.DOWNLOAD_DIR.PATH}${
-                                filenameChanged.newFilename
-                            }`
-                        }
+            const result = await this.db.collection(cfg.DB_COLLECTION_NAME).findOneAndUpdate(
+                { _id: filenameChanged._id },
+                {
+                    $set: {
+                        filename: filenameChanged.newFilename,
+                        fullPath: `${cfg.DOWNLOAD_DIR.PATH}${filenameChanged.newFilename}`
                     }
-                );
+                }
+            );
             if (result.lastErrorObject.n !== 1) {
                 throw new Error(
                     '404 Error renaming file in db - Unknown File Id.  Please report this error.'

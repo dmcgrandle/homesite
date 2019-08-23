@@ -34,11 +34,11 @@ async function initConfig(): Promise<Config> {
         fileService: {},
         mediaService: {
             PHOTO_DIR: {
-                PATH: '/protected/images/', // Note: the trailing slash is important ...
+                PATH: '/protected/images',
                 CACHE_DIR: '.cache'
             },
             VIDEO_DIR: {
-                PATH: '/protected/videos/',
+                PATH: '/protected/videos',
                 CACHE_DIR: '.cache'
             },
             THUMBS: {
