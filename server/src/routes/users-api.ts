@@ -117,22 +117,30 @@ router.post('/changepw-by-pw', (req: RequestWithUser, res: Response): void => {
     .catch((err): void => errSvc.processError(err, res));
 });
 
+/**
+ * DELETE a single user
+ * @remarks
+ *
+ * Set up API DELETE on '/api/users/one' that deletes a single User
+ *
+ * @callback - validates user level, deletes user, returns confirmation msg.
+ */
 /* DELETE /one to delete a single user.  Needs level 4+ access */
 router.delete('/one', (req: RequestWithUser, res: Response): void => {
   userSvc
-    .isValidLevel(req.user, 4) // check username in jwt token for level
-    .then((): Promise<User> => userSvc.delete(req.body))
-    .then(
-      (delUser: User): Response => res.status(200).send('user ' + delUser.username + ' is deleted')
-    )
-    .catch((err): void => errSvc.processError(err, res));
+    .errIfNotValidLevel(req.user, 4) // check username in jwt token for level
+    .pipe(switchMap((): Observable<User> => userSvc.delete(req.body)))
+    .subscribe(
+      (delUser: User): Response => res.status(200).send('user ' + delUser.username + ' is deleted'),
+      (err): void => errSvc.processError(err, res)
+    );
 });
 
 /**
  * GET list of users
  * @remarks
  *
- * Set up an API GET response for '/api/list' that returns an array of Users
+ * Set up an API GET response for '/api/users/list' that returns an array of Users
  *
  * @callback - validates user level, gets user list and sends back to client.
  */

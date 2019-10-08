@@ -271,16 +271,25 @@ class UserService {
     return user;
   };
 
-  public delete = async (user: User): Promise<User> => {
+  public delete(user: User): Observable<User> {
     if (user.username === 'admin') throw new Error('403 Cannot delete admin user');
-    const result = await this.db
-      .collection(cfg.DB_COLLECTION_NAME)
-      .findOneAndUpdate({ username: user.username }, { $set: { level: 0 } });
-    if (result.lastErrorObject.n !== 1) {
-      throw new Error('404 Unknown User.  Please try another username or register a new user.');
-    }
-    return result.value;
-  };
+    return from(
+      this.db
+        .collection(cfg.DB_COLLECTION_NAME)
+        .findOneAndUpdate({ username: user.username }, { $set: { level: 0 } })
+    ).pipe(
+      map(
+        (result): User => {
+          if (result.lastErrorObject.n !== 1) {
+            throw new Error(
+              '404 Unknown User.  Please try another username or register a new user.'
+            );
+          }
+          return result.value;
+        }
+      )
+    );
+  }
 
   public update = async (passedUser: User): Promise<User | null> => {
     // user._id is the only uneditable field ...
@@ -337,9 +346,9 @@ class UserService {
     return result.value;
   };
 
-  private delay(timeout: number): Promise<void> {
-    return new Promise((resolve): number => setTimeout(resolve, timeout));
-  }
+  // private delay(timeout: number): Promise<void> {
+  //   return new Promise((resolve): number => setTimeout(resolve, timeout));
+  // }
 
   public emailReset = async (user: User): Promise<User> => {
     const token = await tokenSvc.getEmailChangeToken(user.username);
@@ -348,8 +357,7 @@ class UserService {
       from: cfg.mail.smtp_config.auth.user,
       to: user.email,
       subject: 'Username or Password Forgotten',
-      text: 
-`Dear ${user.name},
+      text: `Dear ${user.name},
 
 This is the reminder email you requested.  Your username is ${user.username}.
 To log in with this username, click the following link:

@@ -18,123 +18,98 @@ import { errSvc } from '../services/err-service';
 const router = express.Router();
 
 // middleware that is specific to this router
-router.use(
-    (req, res, next): void => {
-        console.log(new Date().toLocaleString() + " : Photos API called - '" + req.originalUrl + "'");
-        next();
-    }
-);
+router.use((req, res, next): void => {
+  console.log(new Date().toLocaleString() + " : Photos API called - '" + req.originalUrl + "'");
+  next();
+});
 router.use(tokenSvc.middlewareCheck());
 router.use(bodyParser.json());
 
 /* GET photo with given id.  Needs level 2+ access */
-router.get(
-    '/photo-by-id/:id',
-    (req: RequestWithUser, res: express.Response): void => {
-        userSvc
-            .errIfNotValidLevel(req.user, 4)
-            .pipe(switchMap((): Observable<Photo> => mediaSvc.getMediaById(+req.params.id, 'photo')))
-            .subscribe(
-                (photo): Response => res.status(200).json(photo),
-                (err): void => errSvc.processError(err, res)
-            );
-    }
-);
+router.get('/photo-by-id/:id', (req: RequestWithUser, res: express.Response): void => {
+  userSvc
+    .errIfNotValidLevel(req.user, 4)
+    .pipe(switchMap((): Observable<Photo> => mediaSvc.getMediaById(+req.params.id, 'photo')))
+    .subscribe(
+      (photo): Response => res.status(200).json(photo),
+      (err): void => errSvc.processError(err, res)
+    );
+});
 
 /* GET photo with given path string (relative or full path).  Needs level 2+ access
 Format of :path - array of id strings, made URL-friendly with no spaces, and
 by replacing / with +, so for example the path 'test/one/two/photo.jpg' becomes
 (test+one+two+photo.jpg) and entire url is
 "http://example.com/api/videos/album/(test+one+two+photo.jpg)" */
-router.get(
-    '/photo-by-path/:path',
-    (req: RequestWithUser, res: express.Response): void => {
-        userSvc
-            .errIfNotValidLevel(req.user, 2)
-            .pipe(
-                switchMap((): Observable<Photo> => mediaSvc.getMediaByPath(req.params.path, 'photo'))
-            )
-            .subscribe(
-                (photo): Response => res.status(200).json(photo),
-                (err): void => errSvc.processError(err, res)
-            );
-    }
-);
+router.get('/photo-by-path/:path', (req: RequestWithUser, res: express.Response): void => {
+  userSvc
+    .errIfNotValidLevel(req.user, 2)
+    .pipe(switchMap((): Observable<Photo> => mediaSvc.getMediaByPath(req.params.path, 'photo')))
+    .subscribe(
+      (photo): Response => res.status(200).json(photo),
+      (err): void => errSvc.processError(err, res)
+    );
+});
 
 /* GET album with given id.  Needs level 2+ access */
-router.get(
-    '/album-by-id/:id',
-    (req: RequestWithUser, res: express.Response): void => {
-        userSvc
-            .errIfNotValidLevel(req.user, 2)
-            .pipe(switchMap((): Observable<PhotoAlbum> => mediaSvc.getAlbumById(+req.params.id, 'photo')))
-            .subscribe(
-                (album): Response => res.status(200).json(album),
-                (err): void => errSvc.processError(err, res)
-            );
-    }
-);
+router.get('/album-by-id/:id', (req: RequestWithUser, res: express.Response): void => {
+  userSvc
+    .errIfNotValidLevel(req.user, 2)
+    .pipe(switchMap((): Observable<PhotoAlbum> => mediaSvc.getAlbumById(+req.params.id, 'photo')))
+    .subscribe(
+      (album): Response => res.status(200).json(album),
+      (err): void => errSvc.processError(err, res)
+    );
+});
 
 /* GET album with given path.  Needs level 2+ access
     Format of :path - array of id strings, made URL-friendly with no spaces, and
     by replacing / with +, so for example the path '/test/one/two' becomes
     (test+one+two) and entire url is "http://example.com/api/photos/album/(test+one+two)" */
-router.get(
-    '/album-by-path/:path',
-    (req: RequestWithUser, res: express.Response): void => {
-        userSvc
-            .errIfNotValidLevel(req.user, 2)
-            .pipe(
-                switchMap((): Observable<PhotoAlbum> => mediaSvc.getAlbumByPath(req.params.path, 'photo'))
-            )
-            .subscribe(
-                (album): Response => res.status(200).json(album),
-                (err): void => errSvc.processError(err, res)
-            );
-    }
-);
+router.get('/album-by-path/:path', (req: RequestWithUser, res: express.Response): void => {
+  userSvc
+    .errIfNotValidLevel(req.user, 2)
+    .pipe(
+      switchMap((): Observable<PhotoAlbum> => mediaSvc.getAlbumByPath(req.params.path, 'photo'))
+    )
+    .subscribe(
+      (album): Response => res.status(200).json(album),
+      (err): void => errSvc.processError(err, res)
+    );
+});
 
 /*  GET array of albums of with given ids.  Needs level 2+ access
     Format of :albumsIds - array of id numbers, made URL-friendly with no spaces, and
     by replacing [] with () and commas with +, so for example the array [ 0, 2, 7 ]
     becomes (0+2+7) and entire url is "http://example.com/api/photos/albums/(0+2+7)"     */
-router.get(
-    '/albums/:ids',
-    (req: RequestWithUser, res: express.Response): void => {
-        userSvc
-            .errIfNotValidLevel(req.user, 2)
-            .pipe(switchMap((): Observable<PhotoAlbum[]> => mediaSvc.getAlbums(req.params.ids, 'photo')))
-            .subscribe(
-                (albums): Response => res.status(200).json(albums),
-                (err): void => errSvc.processError(err, res)
-            );
-    }
-);
+router.get('/albums/:ids', (req: RequestWithUser, res: express.Response): void => {
+  userSvc
+    .errIfNotValidLevel(req.user, 2)
+    .pipe(switchMap((): Observable<PhotoAlbum[]> => mediaSvc.getAlbums(req.params.ids, 'photo')))
+    .subscribe(
+      (albums): Response => res.status(200).json(albums),
+      (err): void => errSvc.processError(err, res)
+    );
+});
 
-router.get(
-    '/photos/:ids',
-    (req: RequestWithUser, res: express.Response): void => {
-        userSvc
-            .errIfNotValidLevel(req.user, 2)
-            .pipe(switchMap((): Observable<Photo[]> => mediaSvc.getMedias(req.params.ids, 'photo')))
-            .subscribe(
-                (photos): Response => res.status(200).json(photos),
-                (err): void => errSvc.processError(err, res)
-            );
-    }
-);
+router.get('/photos/:ids', (req: RequestWithUser, res: express.Response): void => {
+  userSvc
+    .errIfNotValidLevel(req.user, 2)
+    .pipe(switchMap((): Observable<Photo[]> => mediaSvc.getMedias(req.params.ids, 'photo')))
+    .subscribe(
+      (photos): Response => res.status(200).json(photos),
+      (err): void => errSvc.processError(err, res)
+    );
+});
 
-router.get(
-    '/thumbs/:ids',
-    (req: RequestWithUser, res: express.Response): void => {
-        userSvc
-            .errIfNotValidLevel(req.user, 2)
-            .pipe(switchMap((): Observable<string[]> => mediaSvc.getThumbs(req.params.ids, 'photo')))
-            .subscribe(
-                (photos): Response => res.status(200).json(photos),
-                (err): void => errSvc.processError(err, res)
-            );
-    }
-);
+router.get('/thumbs/:ids', (req: RequestWithUser, res: express.Response): void => {
+  userSvc
+    .errIfNotValidLevel(req.user, 2)
+    .pipe(switchMap((): Observable<string[]> => mediaSvc.getThumbs(req.params.ids, 'photo')))
+    .subscribe(
+      (photos): Response => res.status(200).json(photos),
+      (err): void => errSvc.processError(err, res)
+    );
+});
 
 export default router;
