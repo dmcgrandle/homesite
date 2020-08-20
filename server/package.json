@@ -14,7 +14,7 @@
         "lint": "eslint --ext .js,.ts ./src"
     },
     "dependencies": {
-        "bcrypt": "^3.0.4",
+        "bcrypt": "^5.0.0",
         "body-parser": "^1.18.3",
         "cookie-parser": "^1.4.4",
         "crypto-ts": "^1.0.2",
