@@ -31,7 +31,7 @@
         "multer": "^1.4.1",
         "nodemailer": "^4.7.0",
         "rxjs": "^6.5.2",
-        "sharp": "^0.21.0",
+        "sharp": "^0.30.5",
         "through2": "^2.0.5",
         "typescript": "^3.5.3",
         "unique-filename": "^1.1.1"
